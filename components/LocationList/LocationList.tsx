@@ -18,25 +18,22 @@ export default function LocationList({
   return (
     <section className={styles.section}>
       <h2 className={styles.title}>Усі місця відпочинку</h2>
-      <SearchBox
-        regions={regions}
-        locationTypes={locationTypes}
-        onSearch={() => {}}
-        onRegionChange={() => {}}
-        onTypeChange={() => {}}
-        onSortChange={() => {}}
-      />
+      <SearchBox regions={regions} locationTypes={locationTypes} />
       <div className={styles.grid}>
-        {locations.map((location) => (
-          <LocationCard
-            key={location._id}
-            _id={location._id}
-            image={location.image}
-            name={location.name}
-            locationType={location.locationType}
-            rate={location.rate}
-          />
-        ))}
+        {locations.length === 0 ? (
+          <p className={styles.empty}>Нічого не знайдено</p>
+        ) : (
+          locations.map((location) => (
+            <LocationCard
+              key={location._id}
+              _id={location._id}
+              image={location.image}
+              name={location.name}
+              locationType={location.locationType}
+              rate={location.rate}
+            />
+          ))
+        )}
       </div>
       <Pagination onLoadMore={() => {}} />
     </section>

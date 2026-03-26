@@ -1,33 +1,30 @@
+"use client";
+
+import { useLocationStore } from "@/lib/store/locationStore";
 import styles from "./SearchBox.module.css";
 
 type SearchBoxProps = {
   regions: string[];
   locationTypes: string[];
-  onSearch: (value: string) => void;
-  onRegionChange: (value: string) => void;
-  onTypeChange: (value: string) => void;
-  onSortChange: (value: string) => void;
 };
 
-export default function SearchBox({
-  regions,
-  locationTypes,
-  onSearch,
-  onRegionChange,
-  onTypeChange,
-  onSortChange,
-}: SearchBoxProps) {
+export default function SearchBox({ regions, locationTypes }: SearchBoxProps) {
+  const { filters, setSearch, setRegion, setLocationType, setSort } =
+    useLocationStore();
+
   return (
     <div className={styles.wrapper}>
       <input
         className={styles.search}
         type="text"
         placeholder="Пошук"
-        onChange={(e) => onSearch(e.target.value)}
+        value={filters.search}
+        onChange={(e) => setSearch(e.target.value)}
       />
       <select
         className={styles.select}
-        onChange={(e) => onRegionChange(e.target.value)}
+        value={filters.region}
+        onChange={(e) => setRegion(e.target.value)}
       >
         <option value="">Регіон</option>
         {regions.map((region) => (
@@ -38,7 +35,8 @@ export default function SearchBox({
       </select>
       <select
         className={styles.select}
-        onChange={(e) => onTypeChange(e.target.value)}
+        value={filters.locationType}
+        onChange={(e) => setLocationType(e.target.value)}
       >
         <option value="">Тип локації</option>
         {locationTypes.map((type) => (
@@ -49,7 +47,8 @@ export default function SearchBox({
       </select>
       <select
         className={styles.select}
-        onChange={(e) => onSortChange(e.target.value)}
+        value={filters.sort}
+        onChange={(e) => setSort(e.target.value)}
       >
         <option value="">Сортування</option>
         <option value="name">За назвою</option>
