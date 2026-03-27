@@ -33,7 +33,9 @@ export default function LocationCard({
           />
         </div>
         <h3 className={styles.title}>{name}</h3>
-        <button className={styles.button}>Переглянути локацію</button>
+        <Link href={`/locations/${_id}`} className={styles.button}>
+  Переглянути локацію
+</Link>
       </div>
     </div>
   );
