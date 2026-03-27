@@ -9,6 +9,7 @@ type LocationCardProps = Pick<
 >;
 
 export default function LocationCard({
+  _id,
   image,
   name,
   locationType,
