@@ -80,7 +80,8 @@ font-size:26px;
 font-size:18px;
 }
 
-.advantagesGrid {grid-template-columns: repeat(3, 1fr);
+.advantagesGrid {
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .advantagesCard:nth-child(3) {
