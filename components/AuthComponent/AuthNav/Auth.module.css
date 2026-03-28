@@ -99,8 +99,8 @@
 
 
 
-.inputError {
-    border-color: red !important;
+.input.inputError {
+    border-color: red;
 }
 
 .error {
