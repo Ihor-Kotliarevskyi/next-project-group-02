@@ -1,5 +1,5 @@
 import AuthNav from '@/components/AuthComponent/AuthNav/AuthNav';
-import RegistrationForm from '@/components/AuthComponent/RegistrationForm/RegistrationForm';
+import LoginForm from '@/components/AuthComponent/LoginForm/LoginForm';
 
 export default function Page() {
     return (
