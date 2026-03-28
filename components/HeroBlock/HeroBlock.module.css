@@ -1,0 +1,120 @@
+.hero {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.heroImage {
+  object-fit: cover;
+  z-index: 0;
+}
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 1;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 2;
+  color: white;
+  width: 100%;
+}
+
+.heroContent h1 {
+  font-size: 32px;
+  line-height: 1.2;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.heroContent p {
+  font-size: 16px;
+  margin-bottom: 32px;
+  opacity: 0.9;
+  text-align: left;
+}
+
+.heroSearch {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.heroSearch input {
+  font-size: 16px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  outline: none;
+  width: 100%;
+  background-color: #FFE5D9;
+  color: #00000099;
+  transition: all 0.25s ease;
+}
+
+.heroSearch button {
+  font-size: 16px;
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+  background: #CC6534;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.heroSearch input:focus {
+  border: 1px solid #CC6534;
+}
+
+.heroSearch button:hover {
+  background: #FFE5D9;
+  transform: translateY(-2px);
+  color: black;
+}
+
+/*Tablet*/
+@media screen and (min-width: 768px) {
+  .hero {
+    padding: 32px;
+  }
+
+  .heroContent h1 {
+    font-size: 48px;
+  }
+
+  .heroContent p {
+    font-size: 16px;
+  }
+
+  .heroSearch {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .heroSearch input {
+    width: 331px;
+  } 
+}
+
+/*Desktop*/
+@media screen and (min-width: 1440px) {
+  .heroContent {
+    max-width: 900px;
+    padding: 64px;
+  }
+
+  .heroContent h1 {
+    font-size: 56px;
+  }
+
+  .heroContent p {
+    font-size: 20px;
+  }
+}

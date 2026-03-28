@@ -1,10 +1,15 @@
 import FeedbackSection from "@/components/FeedbackSection/FeedbackSection";
+import LocationList from "@/components/LocationList/LocationList";
 
 export default function Page() {
   return (
     <main>
       <h1>Главная страница</h1>
 
+      {/* Код из main: список локаций */}
+      <LocationList locations={[]} regions={[]} locationTypes={[]} />
+
+      {/* Твой код: секция отзывов */}
       <FeedbackSection locationId="1" />
     </main>
   );

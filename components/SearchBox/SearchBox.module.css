@@ -1,0 +1,75 @@
+/* Mobile */
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.search {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.search::placeholder {
+  color: #aaa;
+}
+
+.select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: #fff;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  padding-right: 32px;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  box-sizing: border-box;
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  .wrapper {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .search {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .select {
+    flex: 1;
+    min-width: 140px;
+    width: auto;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1280px) {
+  .wrapper {
+    flex-wrap: nowrap;
+    margin-bottom: 32px;
+  }
+
+  .search {
+    flex: 2;
+  }
+
+  .select {
+    flex: 1;
+  }
+}
