@@ -1,3 +1,9 @@
-export default function HomePage() {
-    return <main><h1>Home</h1></main>;
+import LocationList from "@/components/LocationList/LocationList";
+
+export default function Page() {
+  return (
+    <main>
+      <LocationList locations={[]} regions={[]} locationTypes={[]} />
+    </main>
+  );
 }
