@@ -23,15 +23,15 @@
   transition: all 0.25s ease;
 }
 .advantagesCardTitle {
-color:#1B391B;
-font-size:18px;
-font-weight: bold;
-padding-bottom: 16px;
+  color: #1B391B;
+  font-size: 18px;
+  font-weight: bold;
+  padding-bottom: 16px;
 }
 
 .advantagesCardText {
-font-size:16px;
-color: #1B391B;
+  font-size: 16px;
+  color: #1B391B;
 }
 
 .advantagesIcon {
