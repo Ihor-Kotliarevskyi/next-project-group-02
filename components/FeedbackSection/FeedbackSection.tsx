@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { getFeedbacks } from "@/lib/api/feedbacks";
 import { FeedBackCard } from "../FeedBackCard/FeedBackCard";
 import { Feedback } from "../../types/feedBackCard";
@@ -9,7 +10,8 @@ export const FeedbackSection = ({ locationId }: { locationId: string }) => {
 
   useEffect(() => {
     getFeedbacks(locationId).then((res) => {
-      setReviews(res.data);
+      console.log(res);
+      setReviews(res.data || res);
     });
   }, [locationId]);
 

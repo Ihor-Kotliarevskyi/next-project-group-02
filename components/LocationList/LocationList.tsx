@@ -1,3 +1,4 @@
+"use client";
 import LocationCard from "@/components/LocationCard/LocationCard";
 import SearchBox from "@/components/SearchBox/SearchBox";
 import Pagination from "@/components/Pagination/Pagination";

@@ -10,7 +10,7 @@ export default function Page() {
       <LocationList locations={[]} regions={[]} locationTypes={[]} />
 
       {/* Твой код: секция отзывов */}
-      <FeedbackSection locationId="1" />
+      <FeedbackSection locationId="68d568270e6bcc357e9833ef" />
     </main>
   );
 }

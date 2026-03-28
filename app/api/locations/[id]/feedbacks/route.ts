@@ -1,26 +1,33 @@
-import { NextResponse } from "next/server";
+
+
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
-  req: Request,
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> } 
 ) {
   try {
-    const { searchParams } = new URL(req.url);
+    const { id } = await params; 
 
+    const { searchParams } = new URL(req.url);
     const page = searchParams.get("page") ?? "1";
     const limit = searchParams.get("limit") ?? "3";
+      const targetUrl = `https://node-project-group-02.onrender.com/locations/${id}/feedbacks?page=${page}&limit=${limit}`
 
-    const res = await fetch(
-      `http://localhost:5000/feedbacks/${params.id}?page=${page}&limit=${limit}`
-    );
+    const res = await fetch(targetUrl, { 
+      cache: 'no-store',
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    if (!res.ok) {
+      return NextResponse.json({ message: "Backend error" }, { status: res.status });
+    }
 
     const data = await res.json();
-
     return NextResponse.json(data);
+    
   } catch (error) {
-    return NextResponse.json(
-      { message: "Failed to load feedbacks" },
-      { status: 500 }
-    );
+    console.error("Proxy Error:", error);
+    return NextResponse.json({ message: "Fetch failed" }, { status: 500 });
   }
 }
