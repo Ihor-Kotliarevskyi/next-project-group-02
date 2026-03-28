@@ -322,75 +322,6 @@ export default NotFound;
 
 </file>
 
-<file path="components/FeedBackCard/FeedBackCard.tsx">
-import { Feedback } from "../../types/feedBackCard";
-import styles from "./FeedBackCard.module.css";
-export const FeedBackCard = ({ userName, description, rate }: Feedback) => {
-  return (
-    <div className={styles.card}>
-      <div>⭐ {rate}</div>
-      <p>{description}</p>
-      <span>{userName}</span>
-    </div>
-  );
-};
-</file>
-
-<file path="components/FeedbackSection/FeedbackSection.module.css">
-.grid {
-    display: grid;
-    gap: 16px;
-}
-
-@media (min-width: 768px) {
-    .grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (min-width: 1280px) {
-    .grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-</file>
-
-<file path="components/FeedbackSection/FeedbackSection.tsx">
-"use client";
-import { useEffect, useState } from "react";
-import { getFeedbacks } from "@/lib/api/feedbacks";
-import { FeedBackCard } from "../FeedBackCard/FeedBackCard";
-import { Feedback } from "../../types/feedBackCard";
-import style from "./FeedbackSection.module.css";
-export const FeedbackSection = ({ locationId }: { locationId: string }) => {
-  const [reviews, setReviews] = useState<Feedback[]>([]);
-
-  useEffect(() => {
-    getFeedbacks(locationId).then((res) => {
-      setReviews(res.data);
-    });
-  }, [locationId]);
-
-  return (
-    <div>
-      <h2>Відгуки</h2>
-
-      <div className={style.grid}>
-        {reviews.map((review) => (
-          <FeedBackCard
-            key={review._id}
-            userName={review.userName}
-            description={review.description}
-            rate={review.rate}
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
-export default FeedbackSection;
-</file>
-
 <file path="components/Footer/Footer.module.css">
 
 </file>
@@ -488,9 +419,12 @@ export default eslintConfig;
 import  clientApi  from './clientApi';
 
 export const getFeedbacks = async (locationId: string, page = 1) => {
-  const { data } = await clientApi.get(`/feedbacks/${locationId}`, {
-    params: { page, limit: 3 },
-  });
+  const { data } = await clientApi.get(
+    `/feedbacks/${locationId}`,
+    {
+      params: { page, limit: 3 },
+    }
+  );
 
   return data;
 };
@@ -668,11 +602,85 @@ export default function Loading() {
 
 </file>
 
+<file path="components/FeedBackCard/FeedBackCard.tsx">
+import styles from "./FeedBackCard.module.css";
+type Props = {
+  userName: string;
+  description: string;
+  rate: number;
+};
+export const FeedBackCard = ({ userName, description, rate }: Props) => {
+  return (
+    <div className={styles.card}>
+      <div>⭐ {rate}</div>
+      <p>{description}</p>
+      <span>{userName}</span>
+    </div>
+  );
+};
+</file>
+
+<file path="components/FeedbackSection/FeedbackSection.module.css">
+.grid {
+    display: grid;
+    gap: 16px;
+}
+
+@media (min-width: 768px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1280px) {
+    .grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+</file>
+
+<file path="components/FeedbackSection/FeedbackSection.tsx">
+"use client";
+import { useEffect, useState } from "react";
+import { getFeedbacks } from "@/lib/api/feedbacks";
+import { FeedBackCard } from "../FeedBackCard/FeedBackCard";
+import { Feedback } from "../../types/feedBackCard";
+import style from "./FeedbackSection.module.css";
+export const FeedbackSection = ({ locationId }: { locationId: string }) => {
+  const [reviews, setReviews] = useState<Feedback[]>([]);
+
+  useEffect(() => {
+    getFeedbacks(locationId).then((res) => {
+      console.log(res);
+      setReviews(res.data);
+    });
+  }, [locationId]);
+
+  return (
+    <div>
+      <h2>Відгуки</h2>
+
+      <div className={style.grid}>
+        {reviews.map((review) => (
+          <FeedBackCard
+            key={review._id}
+            userName={review.userName}
+            description={review.description}
+            rate={review.rate}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+export default FeedbackSection;
+</file>
+
 <file path="lib/api/clientApi.ts">
 import axios from 'axios';
 
 const clientApi = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
+  baseURL: 'http://localhost:5000', 
   withCredentials: true,
 });
 
@@ -709,10 +717,14 @@ export default clientApi;
 </file>
 
 <file path="app/page.tsx">
+import FeedbackSection from "@/components/FeedbackSection/FeedbackSection";
+
 export default function Page() {
   return (
     <main>
       <h1>Главная страница</h1>
+
+      <FeedbackSection locationId="1" />
     </main>
   );
 }

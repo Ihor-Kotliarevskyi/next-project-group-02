@@ -9,7 +9,6 @@ export const FeedbackSection = ({ locationId }: { locationId: string }) => {
 
   useEffect(() => {
     getFeedbacks(locationId).then((res) => {
-      console.log(res);
       setReviews(res.data);
     });
   }, [locationId]);
