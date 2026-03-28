@@ -9,18 +9,18 @@ export default function HeroBlock() {
   const [query, setQuery] = useState("");
   const router = useRouter();
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const trimmedQuery = query.trim();
     if (!trimmedQuery) return;
 
     router.push(`/locations?query=${encodeURIComponent(trimmedQuery)}`);
-  };
+  }, [query, router]);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleSearch();
     }
-  };
+  }, [handleSearch]);
 
   return (
     <section className={styles.hero}>
