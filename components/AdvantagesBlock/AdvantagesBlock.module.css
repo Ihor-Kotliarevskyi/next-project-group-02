@@ -1,0 +1,89 @@
+.advantagesSection {
+  padding: 64px 20px;
+  background: #fdf4ee;
+  text-align: left;
+}
+
+.advantagesTitle {
+  color: #1B391B;
+  font-weight: bold;
+  font-size: 28px;
+  margin-bottom: 32px;
+}
+
+.advantagesGrid {
+  display: grid;
+  gap: 24px;
+}
+
+.advantagesCard {
+  background: #FFE5D9;
+  padding: 16px;
+  border-radius: 16px;
+  transition: all 0.25s ease;
+}
+.advantagesCardTitle {
+color:#1B391B;
+font-size:18px;
+font-weight: bold;
+padding-bottom: 16px;
+}
+
+.advantagesCardText {
+font-size:16px;
+color: #1B391B;
+}
+
+.advantagesIcon {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 16px;
+}
+
+.advantagesIconImg {
+  object-fit: contain;
+}
+
+/*Tablet*/
+@media (min-width: 768px) {
+.advantagesSection {
+  padding: 64px 32px;
+}
+.advantagesTitle {
+  font-size: 44px;
+}
+  .advantagesGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .advantagesCard:nth-child(3) {
+    grid-column: span 2; 
+  }
+  .advantagesIcon {
+  width: 64px;
+  height: 64px;
+}
+}
+/*Desktop*/
+@media screen and (min-width: 1440px) {
+  .advantagesSection {
+  padding: 112px 64px;
+}
+.advantagesTitle {
+  font-size: 52px;
+}
+.advantagesCardTitle {
+font-size:26px;
+}
+.advantagesCardText {
+font-size:18px;
+}
+
+.advantagesGrid {grid-template-columns: repeat(3, 1fr);
+}
+
+.advantagesCard:nth-child(3) {
+  grid-column: auto;
+}
+}
