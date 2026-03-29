@@ -102,8 +102,8 @@ export default function ReviewsSection({
             slidesPerView={1}
             spaceBetween={16}
             breakpoints={{
-              704: { slidesPerView: 2, spaceBetween: 16 },
-              1440: { slidesPerView: 3, spaceBetween: 16 },
+              704: { slidesPerView: 2, spaceBetween: 24 },
+              1312: { slidesPerView: 3, spaceBetween: 24 },
             }}
           >
             {reviews.map((review) => (

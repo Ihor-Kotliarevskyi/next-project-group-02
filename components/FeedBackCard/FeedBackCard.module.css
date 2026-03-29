@@ -51,16 +51,9 @@
 @media (min-width: 704px) {
     .card {
         padding: 16px;
-        width: 340px;
+    
     }
 
-    .description {
-        font-size: 15px;
-    }
-
-    .author {
-        font-size: 14px;
-    }
 
     .star {
         font-size: 20px;
@@ -68,5 +61,15 @@
 
     .locationType {
         font-size: 13px;
+    }
+}
+
+@media (min-width: 1312px) {
+    .description {
+            font-size: 20px;        
+        }
+
+    .author {
+        font-size: 18px;
     }
 }

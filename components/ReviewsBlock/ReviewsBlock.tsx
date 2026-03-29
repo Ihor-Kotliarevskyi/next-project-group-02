@@ -11,6 +11,13 @@ import { Feedback } from "@/types/feedBackCard";
 import clientApi from "@/lib/api/clientApi";
 import styles from "./ReviewsBlock.module.css";
 
+// Known location IDs that have feedbacks — fetched directly, no loop needed
+const SEEDED_LOCATION_IDS = [
+  "68d568270e6bcc357e9833e8",
+  "68d568270e6bcc357e9833e9",
+  "68d568270e6bcc357e9833ea",
+];
+
 export default function ReviewsBlock() {
   const [reviews, setReviews] = useState<Feedback[]>([]);
   const [loading, setLoading] = useState(true);
@@ -25,23 +32,41 @@ export default function ReviewsBlock() {
         setLoading(true);
         setError(null);
 
-        const locRes = await clientApi.get("/locations", {
-          params: { page: 1, limit: 20 },
-        });
-        const locations: { _id: string }[] = locRes.data?.data ?? [];
-
         const collected: Feedback[] = [];
-        for (const loc of locations) {
+
+        // First try the known seeded locations (fast path)
+        for (const id of SEEDED_LOCATION_IDS) {
           if (collected.length >= 9) break;
           try {
-            const fbRes = await clientApi.get(
-              `/locations/${loc._id}/feedbacks`,
-              { params: { page: 1, limit: 9 - collected.length } },
-            );
+            const fbRes = await clientApi.get(`/locations/${id}/feedbacks`, {
+              params: { page: 1, limit: 9 - collected.length },
+            });
             const feedbacks: Feedback[] = fbRes.data?.data ?? [];
             collected.push(...feedbacks);
           } catch {
-            // skip locations with no feedbacks
+            // skip
+          }
+        }
+
+        // If still empty, scan first 20 locations (fallback for when DB is fresh)
+        if (collected.length === 0) {
+          const locRes = await clientApi.get("/locations", {
+            params: { page: 1, limit: 20 },
+          });
+          const locations: { _id: string }[] = locRes.data?.data ?? [];
+
+          for (const loc of locations) {
+            if (collected.length >= 9) break;
+            try {
+              const fbRes = await clientApi.get(
+                `/locations/${loc._id}/feedbacks`,
+                { params: { page: 1, limit: 9 - collected.length } },
+              );
+              const feedbacks: Feedback[] = fbRes.data?.data ?? [];
+              collected.push(...feedbacks);
+            } catch {
+              // skip
+            }
           }
         }
 
@@ -73,8 +98,8 @@ export default function ReviewsBlock() {
             slidesPerView={1}
             spaceBetween={16}
             breakpoints={{
-              704: { slidesPerView: 2, spaceBetween: 16 },
-              1312: { slidesPerView: 3, spaceBetween: 16 },
+              704: { slidesPerView: 2, spaceBetween: 24 },
+              1312: { slidesPerView: 3, spaceBetween: 24 },
             }}
             onSwiper={(swiper) => {
               swiperRef.current = swiper;
@@ -92,7 +117,6 @@ export default function ReviewsBlock() {
                   userName={review.userName}
                   description={review.description}
                   rate={review.rate}
-                  locationType={review.locationType}
                 />
               </SwiperSlide>
             ))}

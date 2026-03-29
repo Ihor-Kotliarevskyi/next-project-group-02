@@ -68,6 +68,10 @@
         padding: 64px 32px;
     }
 
+    /* .swiper-wrapper {
+         column-gap: 24px;
+    } */
+
     .title {
         font-size: 44px;
     }
@@ -79,6 +83,6 @@
     }
 
     .title {
-        font-size: 44px;
+        font-size: 52px;
     }
 }

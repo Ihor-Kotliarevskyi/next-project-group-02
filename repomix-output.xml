@@ -2531,7 +2531,7 @@ export default function ReviewsSection({
             spaceBetween={16}
             breakpoints={{
               704: { slidesPerView: 2, spaceBetween: 16 },
-              1440: { slidesPerView: 3, spaceBetween: 16 },
+              1312: { slidesPerView: 3, spaceBetween: 16 },
             }}
           >
             {reviews.map((review) => (
@@ -2571,6 +2571,31 @@ export default function ReviewsSection({
     </section>
   );
 }
+</file>
+
+<file path="lib/api/feedbacks.ts">
+import axios from "axios";
+import clientApi from "./clientApi";
+
+export const getFeedbacks = async (locationId: string, page = 1, retries = 2) => {
+  for (let i = 0; i <= retries; i++) {
+    try {
+      const { data } = await clientApi.get(`/locations/${locationId}/feedbacks`, {
+        params: { page, limit: 3 },
+      });
+      return data;
+    } catch (err: unknown) {
+      const isLast = i === retries;
+      const status = axios.isAxiosError(err) ? err.response?.status : undefined;
+
+      if (isLast || (status !== undefined && status !== 404 && status !== 500)) {
+        throw err;
+      }
+
+      await new Promise((res) => setTimeout(res, 2000));
+    }
+  }
+};
 </file>
 
 <file path="components/ReviewsBlock/ReviewsBlock.module.css">
@@ -2644,6 +2669,10 @@ export default function ReviewsSection({
         padding: 64px 32px;
     }
 
+    /* .swiper-wrapper {
+         column-gap: 24px;
+    } */
+
     .title {
         font-size: 44px;
     }
@@ -2674,6 +2703,13 @@ import { Feedback } from "@/types/feedBackCard";
 import clientApi from "@/lib/api/clientApi";
 import styles from "./ReviewsBlock.module.css";
 
+// Known location IDs that have feedbacks — fetched directly, no loop needed
+const SEEDED_LOCATION_IDS = [
+  "68d568270e6bcc357e9833e8",
+  "68d568270e6bcc357e9833e9",
+  "68d568270e6bcc357e9833ea",
+];
+
 export default function ReviewsBlock() {
   const [reviews, setReviews] = useState<Feedback[]>([]);
   const [loading, setLoading] = useState(true);
@@ -2688,23 +2724,41 @@ export default function ReviewsBlock() {
         setLoading(true);
         setError(null);
 
-        const locRes = await clientApi.get("/locations", {
-          params: { page: 1, limit: 20 },
-        });
-        const locations: { _id: string }[] = locRes.data?.data ?? [];
-
         const collected: Feedback[] = [];
-        for (const loc of locations) {
+
+        // First try the known seeded locations (fast path)
+        for (const id of SEEDED_LOCATION_IDS) {
           if (collected.length >= 9) break;
           try {
-            const fbRes = await clientApi.get(
-              `/locations/${loc._id}/feedbacks`,
-              { params: { page: 1, limit: 9 - collected.length } },
-            );
+            const fbRes = await clientApi.get(`/locations/${id}/feedbacks`, {
+              params: { page: 1, limit: 9 - collected.length },
+            });
             const feedbacks: Feedback[] = fbRes.data?.data ?? [];
             collected.push(...feedbacks);
           } catch {
-            // skip locations with no feedbacks
+            // skip
+          }
+        }
+
+        // If still empty, scan first 20 locations (fallback for when DB is fresh)
+        if (collected.length === 0) {
+          const locRes = await clientApi.get("/locations", {
+            params: { page: 1, limit: 20 },
+          });
+          const locations: { _id: string }[] = locRes.data?.data ?? [];
+
+          for (const loc of locations) {
+            if (collected.length >= 9) break;
+            try {
+              const fbRes = await clientApi.get(
+                `/locations/${loc._id}/feedbacks`,
+                { params: { page: 1, limit: 9 - collected.length } },
+              );
+              const feedbacks: Feedback[] = fbRes.data?.data ?? [];
+              collected.push(...feedbacks);
+            } catch {
+              // skip
+            }
           }
         }
 
@@ -2755,7 +2809,6 @@ export default function ReviewsBlock() {
                   userName={review.userName}
                   description={review.description}
                   rate={review.rate}
-                  locationType={review.locationType}
                 />
               </SwiperSlide>
             ))}
@@ -2800,31 +2853,6 @@ export default function ReviewsBlock() {
 }
 </file>
 
-<file path="lib/api/feedbacks.ts">
-import axios from "axios";
-import clientApi from "./clientApi";
-
-export const getFeedbacks = async (locationId: string, page = 1, retries = 2) => {
-  for (let i = 0; i <= retries; i++) {
-    try {
-      const { data } = await clientApi.get(`/locations/${locationId}/feedbacks`, {
-        params: { page, limit: 3 },
-      });
-      return data;
-    } catch (err: unknown) {
-      const isLast = i === retries;
-      const status = axios.isAxiosError(err) ? err.response?.status : undefined;
-
-      if (isLast || (status !== undefined && status !== 404 && status !== 500)) {
-        throw err;
-      }
-
-      await new Promise((res) => setTimeout(res, 2000));
-    }
-  }
-};
-</file>
-
 <file path="lib/api/clientApi.ts">
 import axios from "axios";
 
@@ -2834,81 +2862,6 @@ export const clientApi = axios.create({
 });
 
 export default clientApi;
-</file>
-
-<file path="components/FeedBackCard/FeedBackCard.module.css">
-.card {
-    background: #ffe5d9;
-    border-radius: 16px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    min-height: 203px;
-}
-
-.stars {
-    display: flex;
-    gap: 4px;
-    align-items: center;
-}
-
-.star {
-    color: #FFC107;
-    font-size: 18px;
-    line-height: 1;
-}
-
-.description {
-    font-size: 16px;
-    color: #4c2613;
-    line-height: 1.5;
-    flex: 1;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 4;
-    -webkit-box-orient: vertical;
-    font-weight: 400;
-}
-
-.author {
-    font-size: 16px;
-    font-weight: 600;
-    color: #4c2613;
-    margin-top: 4px;
-    line-height: 1.5;
-}
-
-.locationType {
-    font-size: 12px;
-    color: #888;
-    font-weight: 400;
-    margin-top: -4px;
-}
-
-/* Tablet */
-@media (min-width: 704px) {
-    .card {
-        padding: 16px;
-        width: 340px;
-    }
-
-    .description {
-        font-size: 15px;
-    }
-
-    .author {
-        font-size: 14px;
-    }
-
-    .star {
-        font-size: 20px;
-    }
-
-    .locationType {
-        font-size: 13px;
-    }
-}
 </file>
 
 <file path="components/FeedBackCard/FeedBackCard.tsx">
@@ -2981,6 +2934,81 @@ export const FeedBackCard = ({
     </div>
   );
 };
+</file>
+
+<file path="components/FeedBackCard/FeedBackCard.module.css">
+.card {
+    background: #ffe5d9;
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 203px;
+}
+
+.stars {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.star {
+    color: #FFC107;
+    font-size: 18px;
+    line-height: 1;
+}
+
+.description {
+    font-size: 16px;
+    color: #4c2613;
+    line-height: 1.5;
+    flex: 1;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    font-weight: 400;
+}
+
+.author {
+    font-size: 16px;
+    font-weight: 600;
+    color: #4c2613;
+    margin-top: 4px;
+    line-height: 1.5;
+}
+
+.locationType {
+    font-size: 12px;
+    color: #888;
+    font-weight: 400;
+    margin-top: -4px;
+}
+
+/* Tablet */
+@media (min-width: 704px) {
+    .card {
+        padding: 16px;
+        /* max-width: 340px; */
+    }
+
+    .description {
+        font-size: 15px;
+    }
+
+    .author {
+        font-size: 14px;
+    }
+
+    .star {
+        font-size: 20px;
+    }
+
+    .locationType {
+        font-size: 13px;
+    }
+}
 </file>
 
 <file path="package.json">
