@@ -29,7 +29,7 @@ export function useAuth(redirectTo: string = '/') {
     const loading = toast.loading(isLogin ? 'Вхід...' : 'Реєстрація...');
 
     try {
-      const res = await fetch(isLogin ? '/api/login' : '/api/register', {
+      const res = await fetch(isLogin ? '/api/auth/login' : '/api/auth/register', {
         method: 'POST',
         body: JSON.stringify(values),
         headers: { 'Content-Type': 'application/json' },

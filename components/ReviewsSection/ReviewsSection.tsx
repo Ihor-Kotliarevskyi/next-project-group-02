@@ -2,6 +2,11 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+
 import { FeedBackCard } from "@/components/FeedBackCard/FeedBackCard";
 import { Feedback } from "@/types/feedBackCard";
 import clientApi from "@/lib/api/clientApi";
@@ -87,22 +92,36 @@ export default function ReviewsSection({
       )}
 
       {!loading && !error && reviews.length > 0 && (
-        <>
-          <div className={styles.grid}>
+        <div className={styles.swiperContainer}>
+          <Swiper
+            modules={[Navigation]}
+            navigation={{
+              prevEl: `.${styles.prevBtn}`,
+              nextEl: `.${styles.nextBtn}`,
+            }}
+            slidesPerView={1}
+            spaceBetween={16}
+            breakpoints={{
+              768: { slidesPerView: 2, spaceBetween: 16 },
+              1440: { slidesPerView: 3, spaceBetween: 16 },
+            }}
+          >
             {reviews.map((review) => (
-              <FeedBackCard
-                key={review._id}
-                userName={review.userName}
-                description={review.description}
-                rate={review.rate}
-              />
+              <SwiperSlide key={review._id}>
+                <FeedBackCard
+                  userName={review.userName}
+                  description={review.description}
+                  rate={review.rate}
+                  locationType={review.locationType}
+                />
+              </SwiperSlide>
             ))}
-          </div>
+          </Swiper>
 
           {totalPages > 1 && (
             <div className={styles.controls}>
               <button
-                className={styles.arrowBtn}
+                className={`${styles.arrowBtn} ${styles.prevBtn}`}
                 onClick={handlePrev}
                 disabled={page <= 1}
                 aria-label="Попередня сторінка відгуків"
@@ -110,7 +129,7 @@ export default function ReviewsSection({
                 ←
               </button>
               <button
-                className={styles.arrowBtn}
+                className={`${styles.arrowBtn} ${styles.nextBtn}`}
                 onClick={handleNext}
                 disabled={page >= totalPages}
                 aria-label="Наступна сторінка відгуків"
@@ -119,7 +138,7 @@ export default function ReviewsSection({
               </button>
             </div>
           )}
-        </>
+        </div>
       )}
     </section>
   );

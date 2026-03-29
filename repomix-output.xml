@@ -42,8 +42,8 @@ The content is organized as follows:
 <directory_structure>
 .gitignore
 app/(auth routes)/layout.tsx
-app/(auth routes)/sign-in/page.tsx
-app/(auth routes)/sign-up/page.tsx
+app/(auth routes)/login/page.tsx
+app/(auth routes)/register/page.tsx
 app/(private routes)/profile/edit/page.tsx
 app/(private routes)/profile/page.tsx
 app/@modal/default.tsx
@@ -67,6 +67,10 @@ app/page.module.css
 app/page.tsx
 components/AdvantagesBlock/AdvantagesBlock.module.css
 components/AdvantagesBlock/AdvantagesBlock.tsx
+components/AuthComponent/AuthNav/Auth.module.css
+components/AuthComponent/AuthNav/AuthNav.tsx
+components/AuthComponent/LoginForm/LoginForm.tsx
+components/AuthComponent/RegistrationForm/RegistrationForm.tsx
 components/AuthProvider/AuthProvider.tsx
 components/FeedBackCard/FeedBackCard.module.css
 components/FeedBackCard/FeedBackCard.tsx
@@ -94,6 +98,7 @@ components/SearchBox/SearchBox.module.css
 components/SearchBox/SearchBox.tsx
 components/TanStackProvider/TanStackProvider.tsx
 eslint.config.mjs
+hooks/useAuth.ts
 lib/api/api.ts
 lib/api/clientApi.ts
 lib/api/feedbacks.ts
@@ -101,6 +106,7 @@ lib/api/serverApi.ts
 lib/store/authStore.ts
 lib/store/feedbackStore.ts
 lib/store/locationStore.ts
+middleware.ts
 next.config.ts
 package.json
 public/file.svg
@@ -118,6 +124,7 @@ tsconfig.json
 types/feedBackCard.ts
 types/location.ts
 types/user.ts
+utils/validationSchemas.ts
 </directory_structure>
 
 <files>
@@ -167,20 +174,32 @@ yarn-error.log*
 next-env.d.ts
 </file>
 
-<file path="app/(auth routes)/sign-in/page.tsx">
+<file path="app/(auth routes)/login/page.tsx">
+import AuthNav from '@/components/AuthComponent/AuthNav/AuthNav';
+import LoginForm from '@/components/AuthComponent/LoginForm/LoginForm';
 
+export default function Page() {
+    return (
+        <>
+            <AuthNav />
+            <LoginForm />
+        </>
+    );
+}
 </file>
 
-<file path="app/(auth routes)/sign-up/page.tsx">
+<file path="app/(auth routes)/register/page.tsx">
+import AuthNav from '@/components/AuthComponent/AuthNav/AuthNav';
+import RegistrationForm from '@/components/AuthComponent/RegistrationForm/RegistrationForm';
 
-</file>
-
-<file path="app/(private routes)/profile/edit/page.tsx">
-
-</file>
-
-<file path="app/(private routes)/profile/page.tsx">
-
+export default function Page() {
+    return (
+        <>
+            <AuthNav />
+            <RegistrationForm />
+        </>
+    );
+}
 </file>
 
 <file path="app/api/_utils/utils.ts">
@@ -192,34 +211,6 @@ export function logErrorResponse(errorObj: unknown): void {
   console.log(`${green}> ${yellow}Error Response Data:${reset}`);
   console.dir(errorObj, { depth: null, colors: true });
 }
-</file>
-
-<file path="app/api/api.ts">
-
-</file>
-
-<file path="app/api/auth/login/route.ts">
-
-</file>
-
-<file path="app/api/auth/logout/route.ts">
-
-</file>
-
-<file path="app/api/auth/register/route.ts">
-
-</file>
-
-<file path="app/api/auth/session/route.ts">
-
-</file>
-
-<file path="app/api/locations/[id]/route.ts">
-
-</file>
-
-<file path="app/api/users/me/route.ts">
-
 </file>
 
 <file path="app/globals.css">
@@ -428,6 +419,435 @@ export default function AdvantagesBlock() {
       </div>
     </section>
   );
+}
+</file>
+
+<file path="components/AuthComponent/AuthNav/Auth.module.css">
+.wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #FFF2EC;
+}
+
+.content {
+    flex: 1;
+    width: 100%;
+    padding: 0 20px;
+    margin: 0 auto;
+}
+
+.form {
+    max-width: 335px;
+    margin: 0 auto;
+}
+
+/* HEADER */
+
+.header {
+    padding: 20px;
+}
+
+.logo {
+    font-size: 16px;
+    color: #333;
+}
+
+/* CONTENT */
+
+.formGroup {
+    gap: 8px;
+    margin-bottom: 16px;
+}
+@media (min-width: 375px) {
+    .content {
+        padding: 0 24px;
+    }
+}
+
+
+.title {
+    font-family: var(--font-family);
+    font-weight: 700;
+    font-size: 28px;
+    line-height: 120%;
+    letter-spacing: -0.01em;
+    text-align: center;
+    color: var(--color-scheme-1-text);
+}
+
+
+
+.form {
+    text-align: left;
+}
+
+
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 18px;
+    position: relative;
+    
+}
+
+
+
+.formGroup label {
+    font-size: 14px;
+    color: #333;
+}
+
+
+
+.input {
+    width: 100%;
+    border: 1px solid #FFE5D9;
+    padding: 14px 16px;
+    border-radius: 8px;
+    background-color: #FFE5D9; 
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.input::placeholder {
+    color: #9a8f88;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #FFE5D9;
+    background-color: #FFE5D9;
+}
+
+
+
+.input.inputError {
+    border-color: red;
+}
+
+.error {
+    font-size: 12px;
+    color: red;
+}
+
+
+
+.submitBtn {
+    width: 100%;
+    margin-top: 16px;
+
+    padding: 14px 0;
+    border-radius: 6px;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    background-color: #c7642f; 
+    border: none;
+    color: white;
+
+    transition: 0.2s;
+}
+
+.submitBtn:hover {
+    background-color: #a95325;
+}
+
+.submitBtn:active {
+    background-color: #8e471f;
+}
+
+.submitBtn:disabled {
+    opacity: 0.5;
+}
+
+
+.footer {
+    padding: 20px 0;
+    text-align: center;
+}
+
+.footer p {
+    font-size: 12px;
+    color: #555;
+}
+
+
+.buttonsBlock {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-bottom: 24px;
+    position: relative;
+}
+
+.authBtn {
+    cursor: pointer;
+    position: relative;
+    padding-bottom: 6px;
+}
+
+.authBtn.active {
+    color: #000;
+}
+
+/* общая линия */
+.buttonsBlock::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
+    height: 1px;
+    background-color: #e5d6cc;
+}
+
+/* линия под активной вкладкой */
+.authBtn.active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+
+    width: 100%;
+    height: 1px;
+    background-color: #c5b5aa;
+}
+</file>
+
+<file path="components/AuthComponent/AuthNav/AuthNav.tsx">
+'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import css from './Auth.module.css';
+
+export default function AuthNav() {
+    const pathname = usePathname();
+
+    return (
+        <div className={css.buttonsBlock}>
+            <Link
+                href="/register"
+                className={`${css.authBtn} ${
+                    pathname.startsWith('/register') ? css.active : ''
+                }`}
+                aria-current={
+                    pathname.startsWith('/register') ? 'page' : undefined
+                }
+            >
+                Реєстрація
+            </Link>
+
+            <Link
+                href="/login"
+                className={`${css.authBtn} ${
+                    pathname.startsWith('/login') ? css.active : ''
+                }`}
+                aria-current={
+                    pathname.startsWith('/login') ? 'page' : undefined
+                }
+            >
+                Вхід
+            </Link>
+        </div>
+    );
+}
+</file>
+
+<file path="components/AuthComponent/LoginForm/LoginForm.tsx">
+"use client";
+
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import { signInSchema } from "@/utils/validationSchemas";
+import { useAuth } from "@/hooks/useAuth";
+import css from "../../AuthComponent/AuthNav/Auth.module.css";
+
+function LoginFormInner() {
+    const searchParams = useSearchParams();
+    const redirectTo = searchParams.get("redirect") || "/";
+    const { submitAuth } = useAuth(redirectTo);
+
+    return (
+        <div className={css.wrapper}>
+        <div className={css.content}>
+            <Formik
+            initialValues={{ email: "", password: "" }}
+            validationSchema={signInSchema}
+            onSubmit={(values, helpers) => submitAuth(true, values, helpers)}
+            >
+            {({ isSubmitting, errors, touched }) => (
+                <Form className={css.form}>
+                <h2 className={css.title}>Вхід</h2>
+
+                <div className={css.formGroup}>
+                    <label htmlFor="email">Пошта*</label>
+                    <Field
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="hello@relaxmap.ua"
+                    className={`${css.input} ${
+                        errors.email && touched.email ? css.inputError : ""
+                    }`}
+                    />
+                    <ErrorMessage
+                    name="email"
+                    component="p"
+                    className={css.error}
+                    />
+                </div>
+
+                <div className={css.formGroup}>
+                    <label htmlFor="password">Пароль*</label>
+                    <Field
+                    id="password"
+                    name="password"
+                    type="password"
+                    autoComplete="current-password"
+                    placeholder="********"
+                    className={`${css.input} ${
+                        errors.password && touched.password ? css.inputError : ""
+                    }`}
+                    />
+                    <ErrorMessage
+                    name="password"
+                    component="p"
+                    className={css.error}
+                    />
+                </div>
+
+                <button
+                    className={css.submitBtn}
+                    type="submit"
+                    disabled={isSubmitting}
+                >
+                    {isSubmitting ? "..." : "Увійти"}
+                </button>
+                </Form>
+            )}
+            </Formik>
+        </div>
+        </div>
+    );
+}
+
+export default function LoginForm() {
+    return (
+        <Suspense fallback={null}>
+            <LoginFormInner />
+        </Suspense>
+    );
+}
+</file>
+
+<file path="components/AuthComponent/RegistrationForm/RegistrationForm.tsx">
+"use client";
+
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import { signUpSchema } from "@/utils/validationSchemas";
+import { useAuth } from "@/hooks/useAuth";
+import css from "../../AuthComponent/AuthNav/Auth.module.css";
+
+function RegistrationFormInner() {
+    const searchParams = useSearchParams();
+    const redirectTo = searchParams.get("redirect") || "/";
+    const { submitAuth } = useAuth(redirectTo);
+
+    return (
+        <div className={css.wrapper}>
+        <div className={css.content}>
+            <Formik
+            initialValues={{ name: "", email: "", password: "" }}
+            validationSchema={signUpSchema}
+            onSubmit={(values, helpers) => submitAuth(false, values, helpers)}
+            >
+            {({ isSubmitting, errors, touched }) => (
+                <Form className={css.form}>
+                <h2 className={css.title}>Реєстрація</h2>
+
+                <div className={css.formGroup}>
+                    <label htmlFor="name">Імʼя*</label>
+                    <Field
+                    id="name"
+                    name="name"
+                    type="text"
+                    autoComplete="name"
+                    placeholder="Ваше імʼя"
+                    className={`${css.input} ${
+                        errors.name && touched.name ? css.inputError : ""
+                    }`}
+                    />
+                    <ErrorMessage name="name" component="p" className={css.error} />
+                </div>
+
+                <div className={css.formGroup}>
+                    <label htmlFor="email">Пошта*</label>
+                    <Field
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="hello@relaxmap.ua"
+                    className={`${css.input} ${
+                        errors.email && touched.email ? css.inputError : ""
+                    }`}
+                    />
+                    <ErrorMessage
+                    name="email"
+                    component="p"
+                    className={css.error}
+                    />
+                </div>
+
+                <div className={css.formGroup}>
+                    <label htmlFor="password">Пароль*</label>
+                    <Field
+                    id="password"
+                    name="password"
+                    type="password"
+                    autoComplete="new-password"
+                    placeholder="********"
+                    className={`${css.input} ${
+                        errors.password && touched.password ? css.inputError : ""
+                    }`}
+                    />
+                    <ErrorMessage
+                    name="password"
+                    component="p"
+                    className={css.error}
+                    />
+                </div>
+
+                <button
+                    className={css.submitBtn}
+                    type="submit"
+                    disabled={isSubmitting}
+                >
+                    {isSubmitting ? "..." : "Зареєструватись"}
+                </button>
+                </Form>
+            )}
+            </Formik>
+        </div>
+        </div>
+    );
+}
+
+export default function RegistrationForm() {
+    return (
+        <Suspense fallback={null}>
+            <RegistrationFormInner />
+        </Suspense>
+    );
 }
 </file>
 
@@ -681,6 +1101,83 @@ const eslintConfig = defineConfig([
 export default eslintConfig;
 </file>
 
+<file path="hooks/useAuth.ts">
+'use client';
+
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
+import type { FormikHelpers } from 'formik';
+import { useAuthStore } from '@/lib/store/authStore';
+
+type LoginValues = {
+  email: string;
+  password: string;
+};
+
+type RegisterValues = {
+  name: string;
+  email: string;
+  password: string;
+};
+
+export function useAuth(redirectTo: string = '/') {
+  const router = useRouter();
+  const setUser = useAuthStore((state) => state.setUser);
+
+  async function submitAuth<T extends LoginValues | RegisterValues>(
+    isLogin: boolean,
+    values: T,
+    helpers: FormikHelpers<T>
+  ) {
+    const { setSubmitting, setFieldError, resetForm } = helpers;
+    const loading = toast.loading(isLogin ? 'Вхід...' : 'Реєстрація...');
+
+    try {
+      const res = await fetch(isLogin ? '/api/auth/login' : '/api/auth/register', {
+        method: 'POST',
+        body: JSON.stringify(values),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        const message =
+          data?.response?.message ||
+          data?.response?.error ||
+          data?.error ||
+          'Помилка';
+        throw new Error(message);
+      }
+
+      if (!data) throw new Error('Користувача не отримано');
+
+      setUser(data);
+      resetForm();
+      toast.success(isLogin ? 'Успішний вхід' : 'Реєстрація успішна');
+      router.push(redirectTo);
+      router.refresh()
+
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Щось пішло не так';
+
+      if (message.toLowerCase().includes('email')) {
+        setFieldError('email', message);
+      } else if (message.toLowerCase().includes('password')) {
+        setFieldError('password', message);
+      }
+
+      toast.error(message);
+    } finally {
+      toast.dismiss(loading);
+      setSubmitting(false);
+    }
+  }
+
+  return { submitAuth };
+}
+</file>
+
 <file path="lib/api/api.ts">
 
 </file>
@@ -689,12 +1186,40 @@ export default eslintConfig;
 
 </file>
 
-<file path="lib/store/authStore.ts">
+<file path="lib/store/feedbackStore.ts">
 
 </file>
 
-<file path="lib/store/feedbackStore.ts">
+<file path="middleware.ts">
+import { NextRequest, NextResponse } from 'next/server';
 
+// Routes that require authentication
+const PROTECTED_ROUTES = ['/profile', '/favorites', '/settings']; 
+
+export function middleware(req: NextRequest) {
+    const { pathname, searchParams } = req.nextUrl;
+
+    const isProtected = PROTECTED_ROUTES.some(route =>
+        pathname.startsWith(route)
+    );
+
+    if (!isProtected) return NextResponse.next();
+
+    // Check for your auth cookie (use your real cookie name)
+    const isAuthenticated = req.cookies.has('accessToken');
+
+    if (!isAuthenticated) {
+        const loginUrl = new URL('/login', req.url);
+        loginUrl.searchParams.set('redirect', pathname); 
+        return NextResponse.redirect(loginUrl);
+    }
+
+    return NextResponse.next();
+}
+
+export const config = {
+    matcher: ['/profile/:path*', '/favorites/:path*', '/settings/:path*'],
+};
 </file>
 
 <file path="next.config.ts">
@@ -845,58 +1370,167 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 </file>
 
-<file path="app/(auth routes)/layout.tsx">
-export default function AuthLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return <>{children}</>;
+<file path="utils/validationSchemas.ts">
+import * as Yup from 'yup';
+
+export const signUpSchema = Yup.object().shape({
+    name: Yup.string()
+        .min(2, 'Імʼя повинно містити щонайменше 2 символи')
+        .max(20, 'Імʼя може містити максимум 20 символів')
+        .required('Це поле обовʼязкове!'),
+    email: Yup.string()
+        .email('Введіть коректний e-mail')
+        .required('Це поле обовʼязкове!'),
+    password: Yup.string()
+        .min(8, 'Пароль повинен містити не менше 8 символів')
+        .max(40, 'Пароль може містити максимум 40 символів')
+        .required('Це поле обовʼязкове!'),
+});
+
+export const signInSchema = Yup.object({
+    email: Yup.string()
+        .email('Введіть коректний e-mail')
+        .required('Це поле обовʼязкове!'),
+    password: Yup.string()
+        .min(8, 'Пароль повинен містити не менше 8 символів')
+        .max(40, 'Пароль може містити максимум 40 символів')
+        .required('Це поле обовʼязкове!'),
+});
+</file>
+
+<file path="app/(private routes)/profile/edit/page.tsx">
+export default function Page() {
+    return <div>Profile Page</div>;
 }
 </file>
 
-<file path="app/@modal/default.tsx">
-export default function Default() {
-  return null;
+<file path="app/(private routes)/profile/page.tsx">
+export default function Page() {
+    return <div>Profile Page</div>;
 }
 </file>
 
-<file path="app/@modal/loading.tsx">
-export default function Loading() {
-  return null;
-}
+<file path="app/api/api.ts">
+import axios from 'axios';
+
+export const api = axios.create({
+    baseURL: process.env.BACKEND_API_URL,
+    headers: {
+        'Content-Type': 'application/json',
+    },
+});
 </file>
 
-<file path="app/api/locations/route.ts">
+<file path="app/api/auth/login/route.ts">
 import { NextRequest, NextResponse } from "next/server";
- 
-const BACKEND = "https://node-project-group-02.onrender.com";
- 
-export async function GET(req: NextRequest) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const query = searchParams.toString();
-    const url = `${BACKEND}/locations${query ? `?${query}` : ""}`;
- 
-    const res = await fetch(url, {
-      cache: "no-store",
-      headers: { "Content-Type": "application/json" },
-    });
- 
-    if (!res.ok) {
-      return NextResponse.json(
-        { message: "Backend error" },
-        { status: res.status },
-      );
+import { api } from "../../api";
+import { isAxiosError } from "axios";
+import { logErrorResponse } from "../../_utils/utils";
+
+export async function POST(req: NextRequest) {
+    try {
+        const body = await req.json();
+
+        const apiRes = await api.post("auth/login", body);
+
+        const response = NextResponse.json(apiRes.data, {
+        status: apiRes.status,
+        });
+
+        const cookies = apiRes.headers["set-cookie"];
+
+        if (cookies && Array.isArray(cookies)) {
+        cookies.forEach((cookie) => {
+            response.headers.append("set-cookie", cookie);
+        });
+        }
+
+        return response;
+    } catch (error) {
+        if (isAxiosError(error)) {
+        logErrorResponse(error.response?.data);
+
+        return NextResponse.json(
+            {
+            error: error.message,
+            response: error.response?.data,
+            },
+            { status: error.response?.status || 500 }
+        );
+        }
+
+        logErrorResponse({ message: (error as Error).message });
+
+        return NextResponse.json(
+        { error: "Internal Server Error" },
+        { status: 500 }
+        );
     }
- 
-    const data = await res.json();
-    return NextResponse.json(data);
-  } catch (error) {
-    console.error("Locations proxy error:", error);
-    return NextResponse.json({ message: "Fetch failed" }, { status: 500 });
-  }
 }
+</file>
+
+<file path="app/api/auth/logout/route.ts">
+export async function GET() { return Response.json({ message: "Not implemented" }); }
+</file>
+
+<file path="app/api/auth/register/route.ts">
+import { NextRequest, NextResponse } from "next/server";
+import { api } from "../../api";
+import { isAxiosError } from "axios";
+import { logErrorResponse } from "../../_utils/utils";
+
+export async function POST(req: NextRequest) {
+    try {
+        const body = await req.json();
+
+        const apiRes = await api.post("auth/register", body);
+
+        const response = NextResponse.json(apiRes.data, {
+        status: apiRes.status,
+        });
+
+        const cookies = apiRes.headers["set-cookie"];
+
+        if (cookies && Array.isArray(cookies)) {
+        cookies.forEach((cookie) => {
+            response.headers.append("set-cookie", cookie);
+        });
+        }
+
+        return response;
+    } catch (error) {
+        if (isAxiosError(error)) {
+        logErrorResponse(error.response?.data);
+
+        return NextResponse.json(
+            {
+            error: error.message,
+            response: error.response?.data,
+            },
+            { status: error.response?.status || 500 }
+        );
+        }
+
+        logErrorResponse({ message: (error as Error).message });
+
+        return NextResponse.json(
+            { error: "Internal Server Error" },
+            { status: 500 }
+        );
+    }
+}
+</file>
+
+<file path="app/api/auth/session/route.ts">
+export async function GET() { return Response.json({ message: "Not implemented" }); }
+</file>
+
+<file path="app/api/locations/[id]/route.ts">
+export async function GET() { return Response.json({ message: "Not implemented" }); }
+</file>
+
+<file path="app/api/users/me/route.ts">
+export async function GET() { return Response.json({ message: "Not implemented" }); }
 </file>
 
 <file path="app/layout.tsx">
@@ -930,12 +1564,6 @@ export default function RootLayout({
       <body>{children}</body>
     </html>
   );
-}
-</file>
-
-<file path="app/loading.tsx">
-export default function Loading() {
-  return <p className="loading">Завантаження...</p>;
 }
 </file>
 
@@ -1067,6 +1695,7 @@ export default function Loading() {
 </file>
 
 <file path="components/LocationCard/LocationCard.tsx">
+import Link from "next/link";
 import Image from "next/image";
 import ReactStars from "react-rating-stars-component";
 import styles from "./LocationCard.module.css";
@@ -1103,8 +1732,8 @@ export default function LocationCard({
         </div>
         <h3 className={styles.title}>{name}</h3>
         <Link href={`/locations/${_id}`} className={styles.button}>
-  Переглянути локацію
-</Link>
+          Переглянути локацію
+        </Link>
       </div>
     </div>
   );
@@ -1243,50 +1872,39 @@ export default function Pagination({ onLoadMore }: PaginationProps) {
 </file>
 
 <file path="components/ReviewsBlock/ReviewsBlock.module.css">
-/* Mobile */
 .section {
-    padding: 40px 16px;
-    background: #fdf4ee;
+    padding: 64px 20px;
+    background: #fff2ec;
 }
 
 .title {
-    font-size: 24px;
     font-weight: 700;
-    color: #1b391b;
-    margin-bottom: 24px;
+        font-size: 28px;
+        line-height: 1.2;
+        letter-spacing: -0.01em;
+        color: #4c2613;
+        margin-bottom: 40px;
 }
 
-.sliderWrapper {
-    overflow: hidden;
+.swiperContainer {
+    position: relative;
 }
-
-.sliderTrack {
-    display: flex;
-    gap: 16px;
-    transition: transform 0.35s ease;
-}
-
-.slide {
-    flex: 0 0 100%;
-    min-width: 0;
-}
-
 
 .controls {
     display: flex;
     justify-content: flex-end;
     gap: 8px;
-    margin-top: 40px;
+    margin-top: 24px;
 }
 
 .arrowBtn {
-    width: 40px;
-    height: 40px;
+    width: 48px;
+    height: 48px;
     border-radius: 8px;
-    border: 1px solid #cc6534;
-    background: transparent;
-    color: #cc6534;
-    font-size: 18px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    background: #ffe5d9;
+    color: #4c2613;
+    padding: 12px;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -1296,14 +1914,17 @@ export default function Pagination({ onLoadMore }: PaginationProps) {
 }
 
 .arrowBtn:hover:not(:disabled) {
-    background: #cc6534;
-    color: #fff;
+    background: #ffa57a;
+    border-color: #ffa57a;
+    color: #4c2613;
 }
 
 .arrowBtn:disabled {
-    border-color: #ccc;
-    color: #ccc;
+    background: #f2f2f2;
+    border-color: #ffa57a;
+    color: #4c2613;
     cursor: not-allowed;
+    opacity: 0.6;
 }
 
 .loading,
@@ -1315,7 +1936,6 @@ export default function Pagination({ onLoadMore }: PaginationProps) {
     font-size: 15px;
 }
 
-/* Tablet */
 @media (min-width: 768px) {
     .section {
         padding: 56px 32px;
@@ -1324,13 +1944,8 @@ export default function Pagination({ onLoadMore }: PaginationProps) {
     .title {
         font-size: 32px;
     }
-
-    .slide {
-        flex: 0 0 calc((100% - 16px) / 2);
-    }
 }
 
-/* Desktop */
 @media (min-width: 1312px) {
     .section {
         padding: 72px 64px;
@@ -1338,10 +1953,6 @@ export default function Pagination({ onLoadMore }: PaginationProps) {
 
     .title {
         font-size: 40px;
-    }
-
-    .slide {
-        flex: 0 0 calc((100% - 32px) / 3);
     }
 }
 </file>
@@ -1463,6 +2074,15 @@ export default function Pagination({ onLoadMore }: PaginationProps) {
         grid-template-columns: repeat(3, 1fr);
     }
 }
+
+.swiperContainer {
+    position: relative;
+}
+
+:global(.swiper-button-next),
+:global(.swiper-button-prev) {
+    display: none;
+}
 </file>
 
 <file path="components/ReviewsSection/ReviewsSection.tsx">
@@ -1470,6 +2090,11 @@ export default function Pagination({ onLoadMore }: PaginationProps) {
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+
 import { FeedBackCard } from "@/components/FeedBackCard/FeedBackCard";
 import { Feedback } from "@/types/feedBackCard";
 import clientApi from "@/lib/api/clientApi";
@@ -1555,22 +2180,36 @@ export default function ReviewsSection({
       )}
 
       {!loading && !error && reviews.length > 0 && (
-        <>
-          <div className={styles.grid}>
+        <div className={styles.swiperContainer}>
+          <Swiper
+            modules={[Navigation]}
+            navigation={{
+              prevEl: `.${styles.prevBtn}`,
+              nextEl: `.${styles.nextBtn}`,
+            }}
+            slidesPerView={1}
+            spaceBetween={16}
+            breakpoints={{
+              768: { slidesPerView: 2, spaceBetween: 16 },
+              1440: { slidesPerView: 3, spaceBetween: 16 },
+            }}
+          >
             {reviews.map((review) => (
-              <FeedBackCard
-                key={review._id}
-                userName={review.userName}
-                description={review.description}
-                rate={review.rate}
-              />
+              <SwiperSlide key={review._id}>
+                <FeedBackCard
+                  userName={review.userName}
+                  description={review.description}
+                  rate={review.rate}
+                  locationType={review.locationType}
+                />
+              </SwiperSlide>
             ))}
-          </div>
+          </Swiper>
 
           {totalPages > 1 && (
             <div className={styles.controls}>
               <button
-                className={styles.arrowBtn}
+                className={`${styles.arrowBtn} ${styles.prevBtn}`}
                 onClick={handlePrev}
                 disabled={page <= 1}
                 aria-label="Попередня сторінка відгуків"
@@ -1578,7 +2217,7 @@ export default function ReviewsSection({
                 ←
               </button>
               <button
-                className={styles.arrowBtn}
+                className={`${styles.arrowBtn} ${styles.nextBtn}`}
                 onClick={handleNext}
                 disabled={page >= totalPages}
                 aria-label="Наступна сторінка відгуків"
@@ -1587,7 +2226,7 @@ export default function ReviewsSection({
               </button>
             </div>
           )}
-        </>
+        </div>
       )}
     </section>
   );
@@ -1734,6 +2373,36 @@ export default function SearchBox({ regions, locationTypes }: SearchBoxProps) {
 }
 </file>
 
+<file path="lib/store/authStore.ts">
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+
+type User = {
+    id?: string;
+    name: string;
+    email: string;
+};
+
+type AuthState = {
+    user: User | null;
+    setUser: (user: User) => void;
+    logout: () => void;
+};
+
+export const useAuthStore = create<AuthState>()(
+    persist(
+        (set) => ({
+        user: null,
+        setUser: (user) => set({ user }),
+        logout: () => set({ user: null }),
+        }),
+        {
+        name: 'auth-storage', 
+        }
+    )
+);
+</file>
+
 <file path="lib/store/locationStore.ts">
 import { create } from "zustand";
 
@@ -1803,6 +2472,47 @@ export type Location = {
 };
 </file>
 
+<file path="app/(auth routes)/layout.tsx">
+"use client";
+
+import { Toaster } from "react-hot-toast";
+import css from "@/components/AuthComponent/AuthNav/Auth.module.css";
+
+export default function AuthLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <div className={css.wrapper}>
+      <header className={css.header}>
+        <div className={css.logo}>Relax</div>
+      </header>
+
+      <div className={css.content}>{children}</div>
+
+      <footer className={css.footer}>
+        <p>&copy; {new Date().getFullYear()} Relax Map</p>
+      </footer>
+
+      <Toaster position="top-right" />
+    </div>
+  );
+}
+</file>
+
+<file path="app/@modal/default.tsx">
+export default function Default() {
+  return null;
+}
+</file>
+
+<file path="app/@modal/loading.tsx">
+export default function Loading() {
+  return null;
+}
+</file>
+
 <file path="app/api/locations/[id]/feedbacks/route.ts">
 import { NextRequest, NextResponse } from "next/server";
 
@@ -1841,6 +2551,66 @@ export async function GET(
     console.error("Proxy Error:", error);
     return NextResponse.json({ message: "Fetch failed" }, { status: 500 });
   }
+}
+</file>
+
+<file path="app/api/locations/route.ts">
+import { NextRequest, NextResponse } from "next/server";
+ 
+const BACKEND = "https://node-project-group-02.onrender.com";
+ 
+export async function GET(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const query = searchParams.toString();
+    const url = `${BACKEND}/locations${query ? `?${query}` : ""}`;
+ 
+    const res = await fetch(url, {
+      cache: "no-store",
+      headers: { "Content-Type": "application/json" },
+    });
+ 
+    if (!res.ok) {
+      return NextResponse.json(
+        { message: "Backend error" },
+        { status: res.status },
+      );
+    }
+ 
+    const data = await res.json();
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error("Locations proxy error:", error);
+    return NextResponse.json({ message: "Fetch failed" }, { status: 500 });
+  }
+}
+</file>
+
+<file path="app/loading.tsx">
+"use client";
+
+import { ScaleLoader } from "react-spinners";
+import type { CSSProperties } from "react";
+
+const override: CSSProperties = {
+    display: "block",
+    margin: "0 auto",
+    borderColor: "#E76F51",
+};
+
+export default function Loading() {
+    return (
+        <div>
+        <ScaleLoader
+            color="#E76F51"
+            loading={true}
+            cssOverride={override}
+            aria-label="Loading...."
+            data-testid="loader"
+        />
+        <span>Зачекайте, будь ласка. Завантаження даних...</span>
+        </div>
+    );
 }
 </file>
 
@@ -1892,7 +2662,12 @@ export default function LocationList({
 <file path="components/ReviewsBlock/ReviewsBlock.tsx">
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+import type { Swiper as SwiperType } from "swiper";
+import "swiper/css";
+
 import { FeedBackCard } from "@/components/FeedBackCard/FeedBackCard";
 import { Feedback } from "@/types/feedBackCard";
 import clientApi from "@/lib/api/clientApi";
@@ -1902,21 +2677,9 @@ export default function ReviewsBlock() {
   const [reviews, setReviews] = useState<Feedback[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [slidesPerView, setSlidesPerView] = useState(1);
-  const wrapperRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const update = () => {
-      const w = window.innerWidth;
-      if (w >= 1440) setSlidesPerView(3);
-      else if (w >= 768) setSlidesPerView(2);
-      else setSlidesPerView(1);
-    };
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, []);
+  const [isBeginning, setIsBeginning] = useState(true);
+  const [isEnd, setIsEnd] = useState(false);
+  const swiperRef = useRef<SwiperType | null>(null);
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -1955,25 +2718,6 @@ export default function ReviewsBlock() {
     fetchReviews();
   }, []);
 
-  const maxIndex = Math.max(0, reviews.length - slidesPerView);
-
-  const prev = useCallback(() => {
-    setCurrentIndex((i) => Math.max(0, i - 1));
-  }, []);
-
-  const next = useCallback(() => {
-    setCurrentIndex((i) => Math.min(maxIndex, i + 1));
-  }, [maxIndex]);
-
-  const getTranslateX = (): number => {
-    const wrapper = wrapperRef.current;
-    if (!wrapper) return 0;
-    const gap = 16;
-    const slideWidth =
-      (wrapper.offsetWidth - gap * (slidesPerView - 1)) / slidesPerView;
-    return currentIndex * (slideWidth + gap);
-  };
-
   return (
     <section className={styles.section}>
       <h2 className={styles.title}>Останні відгуки</h2>
@@ -1985,43 +2729,70 @@ export default function ReviewsBlock() {
       )}
 
       {!loading && !error && reviews.length > 0 && (
-        <>
-          <div className={styles.sliderWrapper} ref={wrapperRef}>
-            <div
-              className={styles.sliderTrack}
-              style={{ transform: `translateX(-${getTranslateX()}px)` }}
-            >
-              {reviews.map((review) => (
-                <div key={review._id} className={styles.slide}>
-                  <FeedBackCard
-                    userName={review.userName}
-                    description={review.description}
-                    rate={review.rate}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
+        <div className={styles.swiperContainer}>
+          <Swiper
+            modules={[Navigation]}
+            slidesPerView={1}
+            spaceBetween={16}
+            breakpoints={{
+              768: { slidesPerView: 2, spaceBetween: 16 },
+              1312: { slidesPerView: 3, spaceBetween: 16 },
+            }}
+            onSwiper={(swiper) => {
+              swiperRef.current = swiper;
+              setIsBeginning(swiper.isBeginning);
+              setIsEnd(swiper.isEnd);
+            }}
+            onSlideChange={(swiper) => {
+              setIsBeginning(swiper.isBeginning);
+              setIsEnd(swiper.isEnd);
+            }}
+          >
+            {reviews.map((review) => (
+              <SwiperSlide key={review._id}>
+                <FeedBackCard
+                  userName={review.userName}
+                  description={review.description}
+                  rate={review.rate}
+                  locationType={review.locationType}
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
 
           <div className={styles.controls}>
             <button
               className={styles.arrowBtn}
-              onClick={prev}
-              disabled={currentIndex === 0}
+              onClick={() => swiperRef.current?.slidePrev()}
+              disabled={isBeginning}
               aria-label="Попередній відгук"
             >
-              ←
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 32 32"
+                fill="currentColor"
+              >
+                <path d="M15.643 1c0.171 0 0.318 0.053 0.482 0.217 0.165 0.172 0.217 0.326 0.217 0.498-0 0.174-0.053 0.322-0.217 0.486l-12.723 12.723h26.82c0.243 0 0.393 0.071 0.522 0.197 0.124 0.123 0.193 0.266 0.193 0.506s-0.069 0.383-0.193 0.506c-0.128 0.127-0.279 0.197-0.522 0.197h-26.82l12.711 12.709c0.165 0.165 0.221 0.319 0.223 0.502v0.002c0.001 0.133-0.028 0.25-0.111 0.369l-0.104 0.123c-0.16 0.162-0.306 0.214-0.484 0.213-0.189-0.002-0.346-0.062-0.512-0.227l-13.896-13.896c-0.106-0.108-0.158-0.193-0.182-0.25v-0.002c-0.030-0.073-0.047-0.153-0.047-0.248s0.017-0.173 0.047-0.244v-0.002c0.024-0.057 0.075-0.142 0.182-0.25l13.9-13.9c0.181-0.174 0.34-0.229 0.514-0.229z" />
+              </svg>
             </button>
             <button
               className={styles.arrowBtn}
-              onClick={next}
-              disabled={currentIndex >= maxIndex}
+              onClick={() => swiperRef.current?.slideNext()}
+              disabled={isEnd}
               aria-label="Наступний відгук"
             >
-              →
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 32 32"
+                fill="currentColor"
+              >
+                <path d="M16.289 1c0.142 0.001 0.266 0.035 0.389 0.121l0.123 0.105 13.896 13.896c0.106 0.108 0.158 0.193 0.182 0.25v0.002c0.030 0.073 0.047 0.153 0.047 0.248s-0.017 0.173-0.047 0.244v0.002c-0.024 0.057-0.075 0.142-0.182 0.25l-13.908 13.896c-0.183 0.181-0.34 0.232-0.506 0.232-0.161-0-0.306-0.049-0.473-0.221l-0.010-0.010-0.104-0.121c-0.084-0.119-0.113-0.235-0.113-0.365s0.030-0.245 0.113-0.363l0.104-0.121 12.723-12.723h-26.82c-0.244-0-0.389-0.070-0.51-0.191h-0.002c-0.122-0.122-0.191-0.268-0.191-0.512s0.070-0.39 0.191-0.512h0.002c0.121-0.121 0.266-0.191 0.51-0.191h26.82l-12.711-12.711c-0.123-0.123-0.186-0.24-0.211-0.369l-0.012-0.135c-0.002-0.18 0.050-0.327 0.211-0.488l0.002-0.002c0.16-0.161 0.307-0.214 0.486-0.213z" />
+              </svg>
             </button>
           </div>
-        </>
+        </div>
       )}
     </section>
   );
@@ -2030,13 +2801,13 @@ export default function ReviewsBlock() {
 
 <file path="components/FeedBackCard/FeedBackCard.module.css">
 .card {
-    background: #fff;
+    background: #ffe5d9;
     border-radius: 16px;
     padding: 16px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    min-height: 160px;
+    gap: 16px;
+    min-height: 203px;
 }
 
 .stars {
@@ -2051,21 +2822,23 @@ export default function ReviewsBlock() {
 }
 
 .description {
-    font-size: 14px;
-    color: #1b391b;
+    font-size: 16px;
+    color: #4c2613;
     line-height: 1.5;
     flex: 1;
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
+    font-weight: 400;
 }
 
 .author {
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 600;
-    color: #1b391b;
+    color: #4c2613;
     margin-top: 4px;
+    line-height: 1.5;
 }
 
 /* locationType below author — small grey label like in Figma */
@@ -2125,39 +2898,6 @@ export const getFeedbacks = async (locationId: string, page = 1, retries = 2) =>
 };
 </file>
 
-<file path="package.json">
-{
-  "name": "next-project-group-02",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
-  },
-  "dependencies": {
-    "axios": "^1.14.0",
-    "modern-normalize": "^3.0.1",
-    "next": "16.2.1",
-    "prop-types": "^15.8.1",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
-    "react-rating-stars-component": "^2.2.0",
-    "zustand": "^5.0.12"
-  },
-  "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
-    "babel-plugin-react-compiler": "1.0.0",
-    "eslint": "^9",
-    "eslint-config-next": "16.2.1",
-    "typescript": "^5.9.3"
-  }
-}
-</file>
-
 <file path="components/FeedBackCard/FeedBackCard.tsx">
 import styles from "./FeedBackCard.module.css";
 
@@ -2212,6 +2952,42 @@ export const clientApi = axios.create({
 });
 
 export default clientApi;
+</file>
+
+<file path="package.json">
+{
+  "name": "next-project-group-02",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "axios": "^1.14.0",
+    "formik": "^2.4.9",
+    "modern-normalize": "^3.0.1",
+    "next": "16.2.1",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-hot-toast": "^2.6.0",
+    "react-rating-stars-component": "^2.2.0",
+    "react-spinners": "^0.17.0",
+    "swiper": "^12.1.3",
+    "zustand": "^5.0.12"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "babel-plugin-react-compiler": "1.0.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.1",
+    "typescript": "^5.9.3"
+  }
+}
 </file>
 
 <file path="app/page.tsx">

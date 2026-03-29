@@ -114,3 +114,12 @@
         grid-template-columns: repeat(3, 1fr);
     }
 }
+
+.swiperContainer {
+    position: relative;
+}
+
+:global(.swiper-button-next),
+:global(.swiper-button-prev) {
+    display: none;
+}

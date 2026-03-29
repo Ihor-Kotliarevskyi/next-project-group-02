@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Image from "next/image";
 import ReactStars from "react-rating-stars-component";
 import styles from "./LocationCard.module.css";
@@ -34,8 +35,8 @@ export default function LocationCard({
         </div>
         <h3 className={styles.title}>{name}</h3>
         <Link href={`/locations/${_id}`} className={styles.button}>
-  Переглянути локацію
-</Link>
+          Переглянути локацію
+        </Link>
       </div>
     </div>
   );

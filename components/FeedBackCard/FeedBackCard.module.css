@@ -1,11 +1,11 @@
 .card {
-    background: #fff;
+    background: #ffe5d9;
     border-radius: 16px;
     padding: 16px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    min-height: 160px;
+    gap: 16px;
+    min-height: 203px;
 }
 
 .stars {
@@ -20,21 +20,23 @@
 }
 
 .description {
-    font-size: 14px;
-    color: #1b391b;
+    font-size: 16px;
+    color: #4c2613;
     line-height: 1.5;
     flex: 1;
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
+    font-weight: 400;
 }
 
 .author {
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 600;
-    color: #1b391b;
+    color: #4c2613;
     margin-top: 4px;
+    line-height: 1.5;
 }
 
 /* locationType below author — small grey label like in Figma */
