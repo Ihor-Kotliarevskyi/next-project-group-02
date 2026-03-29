@@ -83,8 +83,8 @@ const initialValues: LocationFormValues = {
       .required("Оберіть регіон"),
 
     description: Yup.string()
-      .min(10, "Мінімум 10 символів")
-      .max(600, "Максимум 600 символів")
+      .min(20, "Мінімум 20 символів")
+      .max(6000, "Максимум 6000символів")
       .required("Введіть опис"),
   });
   
@@ -95,28 +95,32 @@ const initialValues: LocationFormValues = {
     }
   }, [isEdit, id, router]);
 
-  const handleSubmit = async (
+ const handleSubmit = async (
   values: LocationFormValues,
   { setSubmitting }: FormikHelpers<LocationFormValues>
 ) => {
-  const formData = new FormData();
-
-  formData.append("name", values.name);
-  formData.append("locationType", values.locationType);
-  formData.append("region", values.region);
-  formData.append("description", values.description);
-
-  if (values.imageFile) {
-    formData.append("image", values.imageFile);
-  }
-
   try {
     const res = await fetch(
-      isEdit ? `/api/locations/${id}` : "/api/locations",
+      isEdit
+        ? '/locations/${id}'
+        : '/locations',
       {
         method: isEdit ? "PATCH" : "POST",
-        body: formData,
-        credentials: "include", 
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: values.name,
+          locationType: values.locationType,
+          region: values.region,
+          description: values.description,
+          image: placeholder,
+          coordinates: {
+            lat: 0,
+            lon: 0,
+          },
+        }),
+        credentials: "include",
       }
     );
 
@@ -124,13 +128,13 @@ const initialValues: LocationFormValues = {
 
     const data = await res.json();
 
-    router.push(`/locations/${data.id}`);
+    router.push('/locations/${data._id}');
   } catch (error) {
     toast.error("Не вдалося зберегти");
   } finally {
     setSubmitting(false);
   }
-  };
+};
   
   
   return (

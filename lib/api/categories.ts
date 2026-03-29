@@ -1,9 +1,18 @@
-type LocationType = {
-  name: string;
-};
-type Region = {
-  name: string;
+export interface LocationType {
+  _id: string;
+  type: string;
+  slug: string;
+  shortDescription: string;
 }
+
+
+type Region = {
+  _id: string;
+  region: string; 
+  slug: string;
+  level: string;
+  note: string;
+};
 
 export const fetchRegions = async (): Promise<string[]> => {
   const res = await fetch(
@@ -12,9 +21,10 @@ export const fetchRegions = async (): Promise<string[]> => {
 
   const data = await res.json();
 
-  return data.data.map((item: LocationType) => item.name);
-};
+  console.log("Fetched regions:", data.data.map((item: Region) => item.region)); 
 
+  return data.data.map((item: Region) => item.region);
+};
 
 export const fetchLocationTypes = async (): Promise<string[]> => {
   const res = await fetch(
@@ -23,5 +33,5 @@ export const fetchLocationTypes = async (): Promise<string[]> => {
 
   const data = await res.json();
 
-  return data.data.map((item: Region) => item.name);
+  return data.data.map((item: LocationType) => item.type);
 };
