@@ -24,9 +24,9 @@ type LocationDetails = {
 };
 
 type PageProps = {
-  params: Promise<{
+  params: {
     id: string;
-  }>;
+  }
 };
 
 async function getLocationById(id: string): Promise<LocationDetails | null> {
