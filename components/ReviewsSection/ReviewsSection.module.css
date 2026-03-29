@@ -1,0 +1,115 @@
+/* Mobile */
+.section {
+    padding: 32px 16px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1b391b;
+}
+
+.addButton {
+    padding: 10px 20px;
+    background: #cc6534;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+    white-space: nowrap;
+}
+
+.addButton:hover {
+    background: #b5572c;
+    transform: translateY(-2px);
+}
+
+.controls {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.arrowBtn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid #cc6534;
+    background: transparent;
+    color: #cc6534;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.arrowBtn:hover:not(:disabled) {
+    background: #cc6534;
+    color: #fff;
+}
+
+.arrowBtn:disabled {
+    border-color: #ccc;
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+.grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 1fr;
+}
+
+.loading,
+.error,
+.empty {
+    text-align: center;
+    color: #888;
+    padding: 24px 0;
+    font-size: 15px;
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+    .section {
+        padding: 40px 32px;
+    }
+
+    .title {
+        font-size: 30px;
+    }
+
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Desktop */
+@media (min-width: 1440px) {
+    .section {
+        padding: 48px 64px;
+    }
+
+    .title {
+        font-size: 36px;
+    }
+
+    .grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

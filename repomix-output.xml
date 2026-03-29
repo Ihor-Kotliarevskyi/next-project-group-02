@@ -212,40 +212,6 @@ export function logErrorResponse(errorObj: unknown): void {
 
 </file>
 
-<file path="app/api/locations/[id]/feedbacks/route.ts">
-import { NextRequest, NextResponse } from "next/server";
-
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> } 
-) {
-  try {
-    const { id } = await params; 
-
-    const { searchParams } = new URL(req.url);
-    const page = searchParams.get("page") ?? "1";
-    const limit = searchParams.get("limit") ?? "3";
-   const targetUrl = `https://node-project-group-02.onrender.com${id}?page=${page}&limit=${limit}`
-
-    const res = await fetch(targetUrl, { 
-      cache: 'no-store',
-      headers: { 'Content-Type': 'application/json' }
-    });
-
-    if (!res.ok) {
-      return NextResponse.json({ message: "Backend error" }, { status: res.status });
-    }
-
-    const data = await res.json();
-    return NextResponse.json(data);
-    
-  } catch (error) {
-    console.error("Proxy Error:", error);
-    return NextResponse.json({ message: "Fetch failed" }, { status: 500 });
-  }
-}
-</file>
-
 <file path="app/api/locations/[id]/route.ts">
 
 </file>
@@ -1229,51 +1195,6 @@ export default function LocationCard({
 }
 </file>
 
-<file path="components/LocationList/LocationList.tsx">
-"use client";
-import LocationCard from "@/components/LocationCard/LocationCard";
-import SearchBox from "@/components/SearchBox/SearchBox";
-import Pagination from "@/components/Pagination/Pagination";
-import styles from "./LocationList.module.css";
-import { Location } from "@/types/location";
-
-type LocationListProps = {
-  locations: Location[];
-  regions: string[];
-  locationTypes: string[];
-};
-
-export default function LocationList({
-  locations,
-  regions,
-  locationTypes,
-}: LocationListProps) {
-  return (
-    <section className={styles.section}>
-      <h2 className={styles.title}>Усі місця відпочинку</h2>
-      <SearchBox regions={regions} locationTypes={locationTypes} />
-      <div className={styles.grid}>
-        {locations.length === 0 ? (
-          <p className={styles.empty}>Нічого не знайдено</p>
-        ) : (
-          locations.map((location) => (
-            <LocationCard
-              key={location._id}
-              _id={location._id}
-              image={location.image}
-              name={location.name}
-              locationType={location.locationType}
-              rate={location.rate}
-            />
-          ))
-        )}
-      </div>
-      <Pagination onLoadMore={() => {}} />
-    </section>
-  );
-}
-</file>
-
 <file path="components/Pagination/Pagination.module.css">
 /* Mobile */
 .wrapper {
@@ -1481,17 +1402,6 @@ export default function SearchBox({ regions, locationTypes }: SearchBoxProps) {
 }
 </file>
 
-<file path="lib/api/feedbacks.ts">
-import clientApi from "./clientApi";
-
-export const getFeedbacks = async (locationId: string, page = 1) => {
-  const { data } = await clientApi.get(`/locations/${locationId}/feedbacks`, {
-    params: { page, limit: 3 },
-  });
-  return data;
-};
-</file>
-
 <file path="lib/store/locationStore.ts">
 import { create } from "zustand";
 
@@ -1546,6 +1456,92 @@ export type Location = {
 };
 </file>
 
+<file path="app/api/locations/[id]/feedbacks/route.ts">
+import { NextRequest, NextResponse } from "next/server";
+
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const { searchParams } = new URL(req.url);
+    const page = searchParams.get("page") ?? "1";
+    const limit = searchParams.get("limit") ?? "3";
+
+    const targetUrl = `https://node-project-group-02.onrender.com/feedbacks/${id}?page=${page}&limit=${limit}`;
+
+    // ADD THIS to see exactly what URL is being called
+    console.log(">>> Fetching:", targetUrl);
+
+    const res = await fetch(targetUrl, {
+      cache: "no-store",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    console.log(">>> Backend status:", res.status);
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.log(">>> Backend response body:", text);
+      return NextResponse.json({ message: "Backend error" }, { status: res.status });
+    }
+
+    const data = await res.json();
+    return NextResponse.json(data);
+
+  } catch (error) {
+    console.error("Proxy Error:", error);
+    return NextResponse.json({ message: "Fetch failed" }, { status: 500 });
+  }
+}
+</file>
+
+<file path="components/LocationList/LocationList.tsx">
+"use client";
+import LocationCard from "@/components/LocationCard/LocationCard";
+import SearchBox from "@/components/SearchBox/SearchBox";
+import Pagination from "@/components/Pagination/Pagination";
+import styles from "./LocationList.module.css";
+import { Location } from "@/types/location";
+
+type LocationListProps = {
+  locations: Location[];
+  regions: string[];
+  locationTypes: string[];
+};
+
+export default function LocationList({
+  locations,
+  regions,
+  locationTypes,
+}: LocationListProps) {
+  return (
+    <section className={styles.section}>
+      <h2 className={styles.title}>Усі місця відпочинку</h2>
+      <SearchBox regions={regions} locationTypes={locationTypes} />
+      <div className={styles.grid}>
+        {locations.length === 0 ? (
+          <p className={styles.empty}>Нічого не знайдено</p>
+        ) : (
+          locations.map((location) => (
+            <LocationCard
+              key={location._id}
+              _id={location._id}
+              image={location.image}
+              name={location.name}
+              locationType={location.locationType}
+              rate={location.rate}
+            />
+          ))
+        )}
+      </div>
+      <Pagination onLoadMore={() => {}} />
+    </section>
+  );
+}
+</file>
+
 <file path="components/FeedbackSection/FeedbackSection.tsx">
 "use client";
 
@@ -1556,13 +1552,31 @@ import { Feedback } from "../../types/feedBackCard";
 import style from "./FeedbackSection.module.css";
 export const FeedbackSection = ({ locationId }: { locationId: string }) => {
   const [reviews, setReviews] = useState<Feedback[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getFeedbacks(locationId).then((res) => {
-      console.log(res);
-      setReviews(res.data || res);
-    });
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const res = await getFeedbacks(locationId);
+
+        setReviews(res.data || res);
+      } catch (err) {
+        console.error(err);
+        setError("Не вдалося завантажити відгуки");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, [locationId]);
+
+  if (loading) return <p>Завантаження відгуків...</p>;
+  if (error) return <p>{error}</p>;
 
   return (
     <div>
@@ -1584,14 +1598,29 @@ export const FeedbackSection = ({ locationId }: { locationId: string }) => {
 export default FeedbackSection;
 </file>
 
-<file path="lib/api/clientApi.ts">
+<file path="lib/api/feedbacks.ts">
 import axios from "axios";
+import clientApi from "./clientApi";
 
-export const clientApi = axios.create({
-  baseURL: "/api", // Это заставит axios идти на localhost:3000/api/...
-});
+export const getFeedbacks = async (locationId: string, page = 1, retries = 2) => {
+  for (let i = 0; i <= retries; i++) {
+    try {
+      const { data } = await clientApi.get(`/locations/${locationId}/feedbacks`, {
+        params: { page, limit: 3 },
+      });
+      return data;
+    } catch (err: unknown) {
+      const isLast = i === retries;
+      const status = axios.isAxiosError(err) ? err.response?.status : undefined;
 
-export default clientApi;
+      if (isLast || (status !== undefined && status !== 404 && status !== 500)) {
+        throw err;
+      }
+
+      await new Promise((res) => setTimeout(res, 2000));
+    }
+  }
+};
 </file>
 
 <file path="package.json">
@@ -1625,6 +1654,17 @@ export default clientApi;
     "typescript": "^5.9.3"
   }
 }
+</file>
+
+<file path="lib/api/clientApi.ts">
+import axios from "axios";
+
+export const clientApi = axios.create({
+  baseURL: "/api",
+  timeout: 35000, // Render cold start can take ~30s
+});
+
+export default clientApi;
 </file>
 
 <file path="app/page.tsx">

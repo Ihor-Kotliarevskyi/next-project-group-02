@@ -1,0 +1,121 @@
+"use client";
+
+import { useState, useEffect, useRef, useCallback } from "react";
+import { FeedBackCard } from "@/components/FeedBackCard/FeedBackCard";
+import { Feedback } from "@/types/feedBackCard";
+import clientApi from "@/lib/api/clientApi";
+import styles from "./ReviewsBlock.module.css";
+
+// A well-known locationId to seed homepage reviews — adjust as needed
+const SEED_LOCATION_ID = "68d568270e6bcc357e9833ef";
+
+export default function ReviewsBlock() {
+  const [reviews, setReviews] = useState<Feedback[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [slidesPerView, setSlidesPerView] = useState(1);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  // Determine how many slides are visible based on screen width
+  useEffect(() => {
+    const update = () => {
+      const w = window.innerWidth;
+      if (w >= 1440) setSlidesPerView(3);
+      else if (w >= 768) setSlidesPerView(2);
+      else setSlidesPerView(1);
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const { data } = await clientApi.get(
+          `/locations/${SEED_LOCATION_ID}/feedbacks`,
+          { params: { page: 1, limit: 9 } },
+        );
+        setReviews(data.data || data);
+      } catch {
+        setError("Не вдалося завантажити відгуки");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchReviews();
+  }, []);
+
+  const maxIndex = Math.max(0, reviews.length - slidesPerView);
+
+  const prev = useCallback(() => {
+    setCurrentIndex((i) => Math.max(0, i - 1));
+  }, []);
+
+  const next = useCallback(() => {
+    setCurrentIndex((i) => Math.min(maxIndex, i + 1));
+  }, [maxIndex]);
+
+  // Calculate offset: each slide is (100% / slidesPerView) + gap
+  const slideWidthPercent = 100 / slidesPerView;
+  const gapPx = 16;
+  const translateX =
+    currentIndex *
+      (slideWidthPercent / 100) *
+      (wrapperRef.current?.offsetWidth ?? 0) +
+    currentIndex * gapPx;
+
+  return (
+    <section className={styles.section}>
+      <div className={styles.header}>
+        <h2 className={styles.title}>Останні відгуки</h2>
+        <div className={styles.controls}>
+          <button
+            className={styles.arrowBtn}
+            onClick={prev}
+            disabled={currentIndex === 0}
+            aria-label="Попередній відгук"
+          >
+            ‹
+          </button>
+          <button
+            className={styles.arrowBtn}
+            onClick={next}
+            disabled={currentIndex >= maxIndex}
+            aria-label="Наступний відгук"
+          >
+            ›
+          </button>
+        </div>
+      </div>
+
+      {loading && <p className={styles.loading}>Завантаження відгуків...</p>}
+      {error && <p className={styles.error}>{error}</p>}
+      {!loading && !error && reviews.length === 0 && (
+        <p className={styles.empty}>Відгуків поки немає</p>
+      )}
+
+      {!loading && !error && reviews.length > 0 && (
+        <div className={styles.sliderWrapper} ref={wrapperRef}>
+          <div
+            className={styles.sliderTrack}
+            style={{ transform: `translateX(-${translateX}px)` }}
+          >
+            {reviews.map((review) => (
+              <div key={review._id} className={styles.slide}>
+                <FeedBackCard
+                  userName={review.userName}
+                  description={review.description}
+                  rate={review.rate}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}

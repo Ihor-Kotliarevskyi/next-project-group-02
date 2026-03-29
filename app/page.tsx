@@ -1,4 +1,4 @@
-import FeedbackSection from "@/components/FeedbackSection/FeedbackSection";
+import FeedbackSection from "@/components/ReviewsSection/ReviewsSection";
 import LocationList from "@/components/LocationList/LocationList";
 
 export default function Page() {
