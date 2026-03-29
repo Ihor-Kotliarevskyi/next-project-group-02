@@ -10,7 +10,8 @@
 
 .stars {
     display: flex;
-    gap: 2px;
+    gap: 4px;
+    align-items: center;
 }
 
 .star {
@@ -48,7 +49,7 @@
 }
 
 /* Tablet */
-@media (min-width: 768px) {
+@media (min-width: 704px) {
     .card {
         padding: 20px;
     }

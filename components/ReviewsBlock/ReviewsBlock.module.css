@@ -62,13 +62,13 @@
     font-size: 15px;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 704px) {
     .section {
         padding: 56px 32px;
     }
 
     .title {
-        font-size: 32px;
+        font-size: 44px;
     }
 }
 
@@ -78,6 +78,6 @@
     }
 
     .title {
-        font-size: 40px;
+        font-size: 44px;
     }
 }
