@@ -1,23 +1,32 @@
-/* Mobile */
-
-.empty {
-  text-align: center;
-  font-size: 16px;
-  color: #888;
-  grid-column: 1 / -1;
-  padding: 40px 0;
+﻿.section {
+  background: #fff2ec;
+  padding: 32px 0 56px;
 }
 
-.section {
-  padding: 24px 16px;
+.container {
+  width: 100%;
+  min-width: 320px;
+  padding: 0 16px;
+  margin: 0 auto;
 }
 
 .title {
-  font-size: 28px;
+  margin: 0 0 24px;
+  color: #1f1f1f;
+  font-size: 36px;
+  line-height: 1.08;
   font-weight: 700;
-  color: #1a1a1a;
-  margin-bottom: 24px;
   text-align: center;
+}
+
+.loader,
+.empty {
+  width: 100%;
+  padding: 48px 0;
+  text-align: center;
+  color: #6b5d56;
+  font-size: 16px;
+  line-height: 1.5;
 }
 
 .grid {
@@ -26,36 +35,52 @@
   gap: 24px;
 }
 
-/* Tablet */
-@media (min-width: 768px) {
+@media (min-width: 375px) {
   .section {
-    padding: 40px 32px;
+    padding: 40px 0 64px;
   }
 
   .title {
-    font-size: 34px;
-    margin-bottom: 28px;
-  }
-
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
+    font-size: 42px;
   }
 }
 
-/* Desktop */
-@media (min-width: 1280px) {
+@media (min-width: 768px) {
   .section {
-    max-width: 1440px;
-    margin: 0 auto;
-    padding: 60px 120px;
+    padding: 48px 0 72px;
+  }
+
+  .container {
+    padding: 0 32px;
   }
 
   .title {
-    font-size: 40px;
-    margin-bottom: 32px;
+    margin-bottom: 40px;
+    font-size: 56px;
   }
 
   .grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1440px) {
+  .section {
+    padding: 48px 0 72px;
+  }
+
+  .container {
+    max-width: 1568px;
+    padding: 0 64px;
+  }
+
+  .title {
+    margin-bottom: 24px;
+    font-size: 64px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
   }
 }

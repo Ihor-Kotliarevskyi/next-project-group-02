@@ -1,18 +1,16 @@
-/* Mobile */
+﻿.card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 12px;
+  background-color: #ffe5d9;
+}
 
 .imageWrapper {
   position: relative;
   width: 100%;
-  height: 200px;
-}
-
-.card {
-  border-radius: 12px;
+  aspect-ratio: 1.16 / 1;
   overflow: hidden;
-  background-color: #fff;
-  display: flex;
-  flex-direction: column;
-  position: relative;
 }
 
 .image {
@@ -20,101 +18,86 @@
 }
 
 .content {
-  padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
+  padding: 16px;
 }
 
 .type {
-  font-size: 12px;
-  color: #888;
   margin: 0;
+  color: #5d4437;
+  font-size: 14px;
+  line-height: 1.2;
 }
 
 .rating {
   display: flex;
   align-items: center;
   gap: 2px;
+  min-height: 24px;
+  color: #1f1f1f;
+}
+
+.star {
+  font-size: 22px;
+  line-height: 1;
 }
 
 .title {
-  font-size: 16px;
+  margin: 0 0 8px;
+  color: #4b2d20;
+  font-size: 28px;
+  line-height: 1.15;
   font-weight: 700;
-  color: #1a1a1a;
-  margin: 0;
 }
 
 .button {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 12px 16px;
+  border: 1px solid #e7c7b5;
   border-radius: 8px;
-  background-color: #fff;
-  font-size: 13px;
+  background-color: #f7ddd0;
+  color: #4b2d20;
+  font-size: 16px;
+  line-height: 1.2;
+  text-decoration: none;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.button:hover,
+.button:focus-visible {
   cursor: pointer;
-  transition: background-color 0.2s;
-  margin-top: 4px;
+  background-color: #e8845a;
+  border-color: #e8845a;
+  color: #fff7f2;
+  outline: none;
 }
 
-.button:hover {
-  background-color: #f5f5f5;
+@media (min-width: 375px) {
+  .title {
+    font-size: 34px;
+  }
 }
 
-/* Tablet */
 @media (min-width: 768px) {
-  .imageWrapper {
-    height: 220px;
-  }
-
-  .image {
-    height: 220px;
-  }
-
   .content {
-    padding: 14px;
-    gap: 8px;
-  }
-
-  .type {
-    font-size: 13px;
+    gap: 10px;
   }
 
   .title {
-    font-size: 18px;
-  }
-
-  .button {
-    padding: 11px;
-    font-size: 14px;
+    font-size: 26px;
   }
 }
 
-/* Desktop */
-@media (min-width: 1280px) {
-  .imageWrapper {
-    height: 240px;
-  }
-
-  .image {
-    height: 240px;
-  }
-
-  .content {
-    padding: 16px;
-    gap: 8px;
-  }
-
-  .type {
-    font-size: 14px;
-  }
-
+@media (min-width: 1440px) {
   .title {
-    font-size: 20px;
-  }
-
-  .button {
-    padding: 12px;
-    font-size: 14px;
+    font-size: 24px;
   }
 }
