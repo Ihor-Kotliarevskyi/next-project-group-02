@@ -9,7 +9,7 @@ type RouteContext = {
 };
 
 export async function GET(_: Request, context: RouteContext) {
-  const { id } = await context.params;
+  const { id } = context.params;
 
   const res = await fetch(`${API_URL}/locations/${id}`, {
     cache: "no-store",
