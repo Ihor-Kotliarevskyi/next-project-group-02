@@ -56,7 +56,8 @@ export default async function LocationPage({ params }: PageProps) {
       ? location.ownerId.name
       : "Невідомий автор";
   const roundedRate = Math.round(location.rate);
-  const stars = `${"★".repeat(roundedRate)}${"☆".repeat(5 - roundedRate)}`;
+  const clampedRate = Math.max(0, Math.min(5, roundedRate));
+  const stars = '★'.repeat(clampedRate) + '☆'.repeat(5 - clampedRate);
 
   return (
     <main className={styles.page}>
