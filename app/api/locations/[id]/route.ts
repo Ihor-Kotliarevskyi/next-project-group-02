@@ -3,9 +3,9 @@ import { NextResponse } from "next/server";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 type RouteContext = {
-  params: Promise<{
+  params: {
     id: string;
-  }>;
+  }
 };
 
 export async function GET(_: Request, context: RouteContext) {
