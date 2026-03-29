@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 const API_URL = process.env.BACKEND_API_URL;
 
-export async function GET(req: NextRequest) {
+export async function POST(req: NextRequest) {
   const res = await fetch(`${API_URL}/auth/logout`, {
-    cache: "no-store",
+    method: "POST",
+    headers: {
+      Cookie: req.headers.get("cookie") ?? "",
+    },
   });
 
   const data = await res.text();
