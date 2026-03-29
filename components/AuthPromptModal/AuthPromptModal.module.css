@@ -1,0 +1,64 @@
+.content {
+    text-align: center;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #101828;
+    margin-bottom: 20px;
+}
+
+.text {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #475467;
+    margin-bottom: 24px;
+}
+
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.loginBtn,
+.registerBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 48px;
+    border-radius: 999px;
+    font-size: 16px;
+    font-weight: 600;
+    transition: 0.2s ease;
+}
+
+.loginBtn {
+    background: #101828;
+    color: #ffffff;
+}
+
+.registerBtn {
+    border: 1px solid #d0d5dd;
+    background: #ffffff;
+    color: #344054;
+}
+
+@media screen and (min-width: 768px) {
+    .title {
+        font-size: 28px;
+    }
+
+    .actions {
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .loginBtn,
+    .registerBtn {
+        max-width: 200px;
+    }
+}
