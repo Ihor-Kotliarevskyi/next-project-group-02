@@ -80,7 +80,7 @@ export default function LocationList() {
       <div className={styles.container}>
         <h2 className={styles.title}>Усі місця відпочинку</h2>
         <SearchBox
-          regions={regions.map((region: { slug: string; region: string }) => ({
+          regions={regions.map((region) => ({
             value: region.slug,
             label: region.region,
           }))}
