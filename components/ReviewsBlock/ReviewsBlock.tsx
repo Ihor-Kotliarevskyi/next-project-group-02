@@ -14,7 +14,6 @@ export default function ReviewsBlock() {
   const [slidesPerView, setSlidesPerView] = useState(1);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  // Responsive slides count
   useEffect(() => {
     const update = () => {
       const w = window.innerWidth;
@@ -33,13 +32,11 @@ export default function ReviewsBlock() {
         setLoading(true);
         setError(null);
 
-        // Get locations list first
         const locRes = await clientApi.get("/locations", {
           params: { page: 1, limit: 20 },
         });
         const locations: { _id: string }[] = locRes.data?.data ?? [];
 
-        // Collect feedbacks from each location until we have 9
         const collected: Feedback[] = [];
         for (const loc of locations) {
           if (collected.length >= 9) break;
@@ -51,7 +48,7 @@ export default function ReviewsBlock() {
             const feedbacks: Feedback[] = fbRes.data?.data ?? [];
             collected.push(...feedbacks);
           } catch {
-            // no feedbacks for this location, skip
+            // skip locations with no feedbacks
           }
         }
 
@@ -76,39 +73,18 @@ export default function ReviewsBlock() {
     setCurrentIndex((i) => Math.min(maxIndex, i + 1));
   }, [maxIndex]);
 
-  // Correct pixel-based translation
   const getTranslateX = (): number => {
     const wrapper = wrapperRef.current;
     if (!wrapper) return 0;
     const gap = 16;
-    const totalGaps = slidesPerView - 1;
-    const slideWidth = (wrapper.offsetWidth - gap * totalGaps) / slidesPerView;
+    const slideWidth =
+      (wrapper.offsetWidth - gap * (slidesPerView - 1)) / slidesPerView;
     return currentIndex * (slideWidth + gap);
   };
 
   return (
     <section className={styles.section}>
-      <div className={styles.header}>
-        <h2 className={styles.title}>Останні відгуки</h2>
-        <div className={styles.controls}>
-          <button
-            className={styles.arrowBtn}
-            onClick={prev}
-            disabled={currentIndex === 0}
-            aria-label="Попередній відгук"
-          >
-            ‹
-          </button>
-          <button
-            className={styles.arrowBtn}
-            onClick={next}
-            disabled={currentIndex >= maxIndex}
-            aria-label="Наступний відгук"
-          >
-            ›
-          </button>
-        </div>
-      </div>
+      <h2 className={styles.title}>Останні відгуки</h2>
 
       {loading && <p className={styles.loading}>Завантаження відгуків...</p>}
       {error && <p className={styles.error}>{error}</p>}
@@ -117,22 +93,43 @@ export default function ReviewsBlock() {
       )}
 
       {!loading && !error && reviews.length > 0 && (
-        <div className={styles.sliderWrapper} ref={wrapperRef}>
-          <div
-            className={styles.sliderTrack}
-            style={{ transform: `translateX(-${getTranslateX()}px)` }}
-          >
-            {reviews.map((review) => (
-              <div key={review._id} className={styles.slide}>
-                <FeedBackCard
-                  userName={review.userName}
-                  description={review.description}
-                  rate={review.rate}
-                />
-              </div>
-            ))}
+        <>
+          <div className={styles.sliderWrapper} ref={wrapperRef}>
+            <div
+              className={styles.sliderTrack}
+              style={{ transform: `translateX(-${getTranslateX()}px)` }}
+            >
+              {reviews.map((review) => (
+                <div key={review._id} className={styles.slide}>
+                  <FeedBackCard
+                    userName={review.userName}
+                    description={review.description}
+                    rate={review.rate}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+
+          <div className={styles.controls}>
+            <button
+              className={styles.arrowBtn}
+              onClick={prev}
+              disabled={currentIndex === 0}
+              aria-label="Попередній відгук"
+            >
+              ←
+            </button>
+            <button
+              className={styles.arrowBtn}
+              onClick={next}
+              disabled={currentIndex >= maxIndex}
+              aria-label="Наступний відгук"
+            >
+              →
+            </button>
+          </div>
+        </>
       )}
     </section>
   );

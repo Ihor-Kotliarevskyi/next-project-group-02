@@ -65,10 +65,8 @@ export default function ReviewsSection({
 
   const handleAddReview = () => {
     if (!isAuthenticated) {
-      // Opens the auth prompt modal via parallel route
       router.push(`/locations/${locationId}?modal=auth`);
     } else {
-      // Opens the add review modal via parallel route
       router.push(`/locations/${locationId}?modal=review`);
     }
   };
@@ -109,7 +107,7 @@ export default function ReviewsSection({
                 disabled={page <= 1}
                 aria-label="Попередня сторінка відгуків"
               >
-                ‹
+                ←
               </button>
               <button
                 className={styles.arrowBtn}
@@ -117,7 +115,7 @@ export default function ReviewsSection({
                 disabled={page >= totalPages}
                 aria-label="Наступна сторінка відгуків"
               >
-                ›
+                →
               </button>
             </div>
           )}

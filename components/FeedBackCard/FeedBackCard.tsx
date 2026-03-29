@@ -1,6 +1,5 @@
 import styles from "./FeedBackCard.module.css";
 
-// Simple star renderer — no external library, works with React 19
 function Stars({ rate }: { rate: number }) {
   return (
     <div className={styles.stars}>
