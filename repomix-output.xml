@@ -70,8 +70,6 @@ components/AdvantagesBlock/AdvantagesBlock.tsx
 components/AuthProvider/AuthProvider.tsx
 components/FeedBackCard/FeedBackCard.module.css
 components/FeedBackCard/FeedBackCard.tsx
-components/FeedbackSection/FeedbackSection.module.css
-components/FeedbackSection/FeedbackSection.tsx
 components/Footer/Footer.module.css
 components/Footer/Footer.tsx
 components/Header/Header.module.css
@@ -88,6 +86,10 @@ components/Modal/Modal.module.css
 components/Modal/Modal.tsx
 components/Pagination/Pagination.module.css
 components/Pagination/Pagination.tsx
+components/ReviewsBlock/ReviewsBlock.module.css
+components/ReviewsBlock/ReviewsBlock.tsx
+components/ReviewsSection/ReviewsSection.module.css
+components/ReviewsSection/ReviewsSection.tsx
 components/SearchBox/SearchBox.module.css
 components/SearchBox/SearchBox.tsx
 components/TanStackProvider/TanStackProvider.tsx
@@ -217,7 +219,35 @@ export function logErrorResponse(errorObj: unknown): void {
 </file>
 
 <file path="app/api/locations/route.ts">
-
+import { NextRequest, NextResponse } from "next/server";
+ 
+const BACKEND = "https://node-project-group-02.onrender.com";
+ 
+export async function GET(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const query = searchParams.toString();
+    const url = `${BACKEND}/locations${query ? `?${query}` : ""}`;
+ 
+    const res = await fetch(url, {
+      cache: "no-store",
+      headers: { "Content-Type": "application/json" },
+    });
+ 
+    if (!res.ok) {
+      return NextResponse.json(
+        { message: "Backend error" },
+        { status: res.status },
+      );
+    }
+ 
+    const data = await res.json();
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error("Locations proxy error:", error);
+    return NextResponse.json({ message: "Fetch failed" }, { status: 500 });
+  }
+}
 </file>
 
 <file path="app/api/users/me/route.ts">
@@ -434,10 +464,6 @@ export default function AdvantagesBlock() {
 </file>
 
 <file path="components/AuthProvider/AuthProvider.tsx">
-
-</file>
-
-<file path="components/FeedBackCard/FeedBackCard.module.css">
 
 </file>
 
@@ -662,6 +688,509 @@ export default function HeroBlock() {
 
 </file>
 
+<file path="components/ReviewsBlock/ReviewsBlock.module.css">
+/* Mobile */
+.section {
+    padding: 40px 16px;
+    background: #fdf4ee;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1b391b;
+}
+
+.controls {
+    display: flex;
+    gap: 8px;
+}
+
+.arrowBtn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid #cc6534;
+    background: transparent;
+    color: #cc6534;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.arrowBtn:hover:not(:disabled) {
+    background: #cc6534;
+    color: #fff;
+}
+
+.arrowBtn:disabled {
+    border-color: #ccc;
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+.sliderWrapper {
+    overflow: hidden;
+}
+
+.sliderTrack {
+    display: flex;
+    gap: 16px;
+    transition: transform 0.35s ease;
+}
+
+.slide {
+    flex: 0 0 100%;
+    min-width: 0;
+}
+
+.loading,
+.error,
+.empty {
+    text-align: center;
+    color: #888;
+    padding: 32px 0;
+    font-size: 15px;
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+    .section {
+        padding: 56px 32px;
+    }
+
+    .title {
+        font-size: 32px;
+    }
+
+    .slide {
+        flex: 0 0 calc((100% - 16px) / 2);
+    }
+
+    .arrowBtn {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* Desktop */
+@media (min-width: 1440px) {
+    .section {
+        padding: 80px 64px;
+    }
+
+    .title {
+        font-size: 40px;
+    }
+
+    .slide {
+        flex: 0 0 calc((100% - 32px) / 3);
+    }
+}
+</file>
+
+<file path="components/ReviewsBlock/ReviewsBlock.tsx">
+"use client";
+
+import { useState, useEffect, useRef, useCallback } from "react";
+import { FeedBackCard } from "@/components/FeedBackCard/FeedBackCard";
+import { Feedback } from "@/types/feedBackCard";
+import clientApi from "@/lib/api/clientApi";
+import styles from "./ReviewsBlock.module.css";
+
+export default function ReviewsBlock() {
+  const [reviews, setReviews] = useState<Feedback[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [slidesPerView, setSlidesPerView] = useState(1);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  // Responsive slides count
+  useEffect(() => {
+    const update = () => {
+      const w = window.innerWidth;
+      if (w >= 1440) setSlidesPerView(3);
+      else if (w >= 768) setSlidesPerView(2);
+      else setSlidesPerView(1);
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Get locations list first
+        const locRes = await clientApi.get("/locations", {
+          params: { page: 1, limit: 20 },
+        });
+        const locations: { _id: string }[] = locRes.data?.data ?? [];
+
+        // Collect feedbacks from each location until we have 9
+        const collected: Feedback[] = [];
+        for (const loc of locations) {
+          if (collected.length >= 9) break;
+          try {
+            const fbRes = await clientApi.get(
+              `/locations/${loc._id}/feedbacks`,
+              { params: { page: 1, limit: 9 - collected.length } },
+            );
+            const feedbacks: Feedback[] = fbRes.data?.data ?? [];
+            collected.push(...feedbacks);
+          } catch {
+            // no feedbacks for this location, skip
+          }
+        }
+
+        setReviews(collected);
+      } catch {
+        setError("Не вдалося завантажити відгуки");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, []);
+
+  const maxIndex = Math.max(0, reviews.length - slidesPerView);
+
+  const prev = useCallback(() => {
+    setCurrentIndex((i) => Math.max(0, i - 1));
+  }, []);
+
+  const next = useCallback(() => {
+    setCurrentIndex((i) => Math.min(maxIndex, i + 1));
+  }, [maxIndex]);
+
+  // Correct pixel-based translation
+  const getTranslateX = (): number => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return 0;
+    const gap = 16;
+    const totalGaps = slidesPerView - 1;
+    const slideWidth = (wrapper.offsetWidth - gap * totalGaps) / slidesPerView;
+    return currentIndex * (slideWidth + gap);
+  };
+
+  return (
+    <section className={styles.section}>
+      <div className={styles.header}>
+        <h2 className={styles.title}>Останні відгуки</h2>
+        <div className={styles.controls}>
+          <button
+            className={styles.arrowBtn}
+            onClick={prev}
+            disabled={currentIndex === 0}
+            aria-label="Попередній відгук"
+          >
+            ‹
+          </button>
+          <button
+            className={styles.arrowBtn}
+            onClick={next}
+            disabled={currentIndex >= maxIndex}
+            aria-label="Наступний відгук"
+          >
+            ›
+          </button>
+        </div>
+      </div>
+
+      {loading && <p className={styles.loading}>Завантаження відгуків...</p>}
+      {error && <p className={styles.error}>{error}</p>}
+      {!loading && !error && reviews.length === 0 && (
+        <p className={styles.empty}>Відгуків поки немає</p>
+      )}
+
+      {!loading && !error && reviews.length > 0 && (
+        <div className={styles.sliderWrapper} ref={wrapperRef}>
+          <div
+            className={styles.sliderTrack}
+            style={{ transform: `translateX(-${getTranslateX()}px)` }}
+          >
+            {reviews.map((review) => (
+              <div key={review._id} className={styles.slide}>
+                <FeedBackCard
+                  userName={review.userName}
+                  description={review.description}
+                  rate={review.rate}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+</file>
+
+<file path="components/ReviewsSection/ReviewsSection.module.css">
+/* Mobile */
+.section {
+    padding: 32px 16px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1b391b;
+}
+
+.addButton {
+    padding: 10px 20px;
+    background: #cc6534;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+    white-space: nowrap;
+}
+
+.addButton:hover {
+    background: #b5572c;
+    transform: translateY(-2px);
+}
+
+.controls {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.arrowBtn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid #cc6534;
+    background: transparent;
+    color: #cc6534;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.arrowBtn:hover:not(:disabled) {
+    background: #cc6534;
+    color: #fff;
+}
+
+.arrowBtn:disabled {
+    border-color: #ccc;
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+.grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 1fr;
+}
+
+.loading,
+.error,
+.empty {
+    text-align: center;
+    color: #888;
+    padding: 24px 0;
+    font-size: 15px;
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+    .section {
+        padding: 40px 32px;
+    }
+
+    .title {
+        font-size: 30px;
+    }
+
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Desktop */
+@media (min-width: 1440px) {
+    .section {
+        padding: 48px 64px;
+    }
+
+    .title {
+        font-size: 36px;
+    }
+
+    .grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+</file>
+
+<file path="components/ReviewsSection/ReviewsSection.tsx">
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { FeedBackCard } from "@/components/FeedBackCard/FeedBackCard";
+import { Feedback } from "@/types/feedBackCard";
+import clientApi from "@/lib/api/clientApi";
+import styles from "./ReviewsSection.module.css";
+
+const LIMIT = 3;
+
+type Props = {
+  locationId: string;
+  isAuthenticated?: boolean;
+};
+
+export default function ReviewsSection({
+  locationId,
+  isAuthenticated = false,
+}: Props) {
+  const [reviews, setReviews] = useState<Feedback[]>([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+
+  const fetchReviews = useCallback(
+    async (pageNum: number) => {
+      try {
+        setLoading(true);
+        setError(null);
+        const { data } = await clientApi.get(
+          `/locations/${locationId}/feedbacks`,
+          { params: { page: pageNum, limit: LIMIT } },
+        );
+        setReviews(data.data || data);
+        if (data.pagination) {
+          setTotalPages(data.pagination.totalPages ?? 1);
+        }
+      } catch {
+        setError("Не вдалося завантажити відгуки");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [locationId],
+  );
+
+  useEffect(() => {
+    fetchReviews(1);
+  }, [fetchReviews]);
+
+  const handlePrev = () => {
+    const newPage = Math.max(1, page - 1);
+    setPage(newPage);
+    fetchReviews(newPage);
+  };
+
+  const handleNext = () => {
+    const newPage = Math.min(totalPages, page + 1);
+    setPage(newPage);
+    fetchReviews(newPage);
+  };
+
+  const handleAddReview = () => {
+    if (!isAuthenticated) {
+      // Opens the auth prompt modal via parallel route
+      router.push(`/locations/${locationId}?modal=auth`);
+    } else {
+      // Opens the add review modal via parallel route
+      router.push(`/locations/${locationId}?modal=review`);
+    }
+  };
+
+  return (
+    <section className={styles.section}>
+      <div className={styles.header}>
+        <h2 className={styles.title}>Відгуки</h2>
+        <button className={styles.addButton} onClick={handleAddReview}>
+          Залишити відгук
+        </button>
+      </div>
+
+      {loading && <p className={styles.loading}>Завантаження відгуків...</p>}
+      {error && <p className={styles.error}>{error}</p>}
+      {!loading && !error && reviews.length === 0 && (
+        <p className={styles.empty}>Відгуків поки немає. Будьте першим!</p>
+      )}
+
+      {!loading && !error && reviews.length > 0 && (
+        <>
+          <div className={styles.grid}>
+            {reviews.map((review) => (
+              <FeedBackCard
+                key={review._id}
+                userName={review.userName}
+                description={review.description}
+                rate={review.rate}
+              />
+            ))}
+          </div>
+
+          {totalPages > 1 && (
+            <div className={styles.controls}>
+              <button
+                className={styles.arrowBtn}
+                onClick={handlePrev}
+                disabled={page <= 1}
+                aria-label="Попередня сторінка відгуків"
+              >
+                ‹
+              </button>
+              <button
+                className={styles.arrowBtn}
+                onClick={handleNext}
+                disabled={page >= totalPages}
+                aria-label="Наступна сторінка відгуків"
+              >
+                ›
+              </button>
+            </div>
+          )}
+        </>
+      )}
+    </section>
+  );
+}
+</file>
+
 <file path="components/TanStackProvider/TanStackProvider.tsx">
 
 </file>
@@ -847,15 +1376,6 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 }
 </file>
 
-<file path="types/feedBackCard.ts">
-export type Feedback = {
-  _id: string;
-  userName: string;
-  description: string;
-  rate: number;
-};
-</file>
-
 <file path="types/user.ts">
 
 </file>
@@ -926,39 +1446,62 @@ export default function Loading() {
 
 </file>
 
-<file path="components/FeedBackCard/FeedBackCard.tsx">
-import styles from "./FeedBackCard.module.css";
-type Props = {
-  userName: string;
-  description: string;
-  rate: number;
-};
-export const FeedBackCard = ({ userName, description, rate }: Props) => {
-  return (
-    <div className={styles.card}>
-      <div>⭐ {rate}</div>
-      <p>{description}</p>
-      <span>{userName}</span>
-    </div>
-  );
-};
-</file>
-
-<file path="components/FeedbackSection/FeedbackSection.module.css">
-.grid {
-    display: grid;
-    gap: 16px;
+<file path="components/FeedBackCard/FeedBackCard.module.css">
+.card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 140px;
 }
 
+.rating {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.description {
+    font-size: 14px;
+    color: #1b391b;
+    line-height: 1.5;
+    flex: 1;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+}
+
+.author {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1b391b;
+    margin-top: 4px;
+}
+
+.locationType {
+    font-size: 12px;
+    color: #888;
+}
+
+/* Tablet */
 @media (min-width: 768px) {
-    .grid {
-        grid-template-columns: repeat(2, 1fr);
+    .card {
+        padding: 20px;
     }
-}
 
-@media (min-width: 1280px) {
-    .grid {
-        grid-template-columns: repeat(3, 1fr);
+    .description {
+        font-size: 15px;
+    }
+
+    .author {
+        font-size: 14px;
+    }
+
+    .locationType {
+        font-size: 13px;
     }
 }
 </file>
@@ -1442,6 +1985,21 @@ export const useLocationStore = create<LocationStore>((set) => ({
 }));
 </file>
 
+<file path="types/feedBackCard.ts">
+export type Feedback = {
+  _id: string;
+  userName: string;
+  description: string;
+  rate: number;
+  locationType?: string;
+  author?: {
+    _id: string;
+    name: string;
+    avatar?: string;
+  };
+};
+</file>
+
 <file path="types/location.ts">
 export type Location = {
   _id: string;
@@ -1497,6 +2055,52 @@ export async function GET(
 }
 </file>
 
+<file path="components/FeedBackCard/FeedBackCard.tsx">
+"use client";
+
+import dynamic from "next/dynamic";
+import styles from "./FeedBackCard.module.css";
+
+const ReactStars = dynamic(() => import("react-rating-stars-component"), {
+  ssr: false,
+  loading: () => <span style={{ color: "#FFC107", fontSize: 18 }}>★★★★★</span>,
+});
+
+type Props = {
+  userName: string;
+  description: string;
+  rate: number;
+  locationType?: string;
+};
+
+export const FeedBackCard = ({
+  userName,
+  description,
+  rate,
+  locationType,
+}: Props) => {
+  return (
+    <div className={styles.card}>
+      <div className={styles.rating}>
+        <ReactStars
+          count={5}
+          value={rate}
+          isHalf={true}
+          edit={false}
+          size={18}
+          activeColor="#FFC107"
+        />
+      </div>
+      <p className={styles.description}>{description}</p>
+      <span className={styles.author}>{userName}</span>
+      {locationType && (
+        <span className={styles.locationType}>{locationType}</span>
+      )}
+    </div>
+  );
+};
+</file>
+
 <file path="components/LocationList/LocationList.tsx">
 "use client";
 import LocationCard from "@/components/LocationCard/LocationCard";
@@ -1540,62 +2144,6 @@ export default function LocationList({
     </section>
   );
 }
-</file>
-
-<file path="components/FeedbackSection/FeedbackSection.tsx">
-"use client";
-
-import React, { useState, useEffect } from "react";
-import { getFeedbacks } from "@/lib/api/feedbacks";
-import { FeedBackCard } from "../FeedBackCard/FeedBackCard";
-import { Feedback } from "../../types/feedBackCard";
-import style from "./FeedbackSection.module.css";
-export const FeedbackSection = ({ locationId }: { locationId: string }) => {
-  const [reviews, setReviews] = useState<Feedback[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const res = await getFeedbacks(locationId);
-
-        setReviews(res.data || res);
-      } catch (err) {
-        console.error(err);
-        setError("Не вдалося завантажити відгуки");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [locationId]);
-
-  if (loading) return <p>Завантаження відгуків...</p>;
-  if (error) return <p>{error}</p>;
-
-  return (
-    <div>
-      <h2>Відгуки</h2>
-
-      <div className={style.grid}>
-        {reviews.map((review) => (
-          <FeedBackCard
-            key={review._id}
-            userName={review.userName}
-            description={review.description}
-            rate={review.rate}
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
-export default FeedbackSection;
 </file>
 
 <file path="lib/api/feedbacks.ts">
@@ -1668,19 +2216,20 @@ export default clientApi;
 </file>
 
 <file path="app/page.tsx">
-import FeedbackSection from "@/components/FeedbackSection/FeedbackSection";
 import LocationList from "@/components/LocationList/LocationList";
+import ReviewsBlock from "@/components/ReviewsBlock/ReviewsBlock";
 
 export default function Page() {
   return (
     <main>
-      <h1>Главная страница</h1>
+      {/* HeroBlock — handled by another developer */}
+      {/* AdvantagesBlock — handled by another developer */}
 
-      {/* Код из main: список локаций */}
+      {/* Список локацій */}
       <LocationList locations={[]} regions={[]} locationTypes={[]} />
 
-      {/* Твой код: секция отзывов */}
-      <FeedbackSection locationId="68d568270e6bcc357e9833ef" />
+      {/* Останні відгуки — slider with reviews from all locations */}
+      <ReviewsBlock />
     </main>
   );
 }

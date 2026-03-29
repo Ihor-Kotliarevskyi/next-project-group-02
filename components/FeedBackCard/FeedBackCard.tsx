@@ -1,5 +1,21 @@
-import ReactStars from "react-rating-stars-component";
 import styles from "./FeedBackCard.module.css";
+
+// Simple star renderer — no external library, works with React 19
+function Stars({ rate }: { rate: number }) {
+  return (
+    <div className={styles.stars}>
+      {[1, 2, 3, 4, 5].map((star) => {
+        const filled = rate >= star;
+        const half = !filled && rate >= star - 0.5;
+        return (
+          <span key={star} className={styles.star}>
+            {filled ? "★" : half ? "⯨" : "☆"}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
 
 type Props = {
   userName: string;
@@ -16,16 +32,7 @@ export const FeedBackCard = ({
 }: Props) => {
   return (
     <div className={styles.card}>
-      <div className={styles.rating}>
-        <ReactStars
-          count={5}
-          value={rate}
-          isHalf={true}
-          edit={false}
-          size={18}
-          activeColor="#FFC107"
-        />
-      </div>
+      <Stars rate={rate} />
       <p className={styles.description}>{description}</p>
       <span className={styles.author}>{userName}</span>
       {locationType && (

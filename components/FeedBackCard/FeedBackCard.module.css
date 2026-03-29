@@ -8,6 +8,17 @@
     min-height: 140px;
 }
 
+.stars {
+    display: flex;
+    gap: 2px;
+}
+
+.star {
+    color: #FFC107;
+    font-size: 18px;
+    line-height: 1;
+}
+
 .rating {
     display: flex;
     align-items: center;
@@ -53,5 +64,9 @@
 
     .locationType {
         font-size: 13px;
+    }
+
+    .star {
+        font-size: 20px;
     }
 }

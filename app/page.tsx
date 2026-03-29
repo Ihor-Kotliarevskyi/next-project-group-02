@@ -1,16 +1,17 @@
-import FeedbackSection from "@/components/ReviewsSection/ReviewsSection";
 import LocationList from "@/components/LocationList/LocationList";
+import ReviewsBlock from "@/components/ReviewsBlock/ReviewsBlock";
 
 export default function Page() {
   return (
     <main>
-      <h1>Главная страница</h1>
+      {/* HeroBlock — handled by another developer */}
+      {/* AdvantagesBlock — handled by another developer */}
 
-      {/* Код из main: список локаций */}
+      {/* Список локацій */}
       <LocationList locations={[]} regions={[]} locationTypes={[]} />
 
-      {/* Твой код: секция отзывов */}
-      <FeedbackSection locationId="68d568270e6bcc357e9833ef" />
+      {/* Останні відгуки — slider with reviews from all locations */}
+      <ReviewsBlock />
     </main>
   );
 }

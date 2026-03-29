@@ -6,9 +6,6 @@ import { Feedback } from "@/types/feedBackCard";
 import clientApi from "@/lib/api/clientApi";
 import styles from "./ReviewsBlock.module.css";
 
-// A well-known locationId to seed homepage reviews — adjust as needed
-const SEED_LOCATION_ID = "68d568270e6bcc357e9833ef";
-
 export default function ReviewsBlock() {
   const [reviews, setReviews] = useState<Feedback[]>([]);
   const [loading, setLoading] = useState(true);
@@ -17,7 +14,7 @@ export default function ReviewsBlock() {
   const [slidesPerView, setSlidesPerView] = useState(1);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  // Determine how many slides are visible based on screen width
+  // Responsive slides count
   useEffect(() => {
     const update = () => {
       const w = window.innerWidth;
@@ -35,17 +32,37 @@ export default function ReviewsBlock() {
       try {
         setLoading(true);
         setError(null);
-        const { data } = await clientApi.get(
-          `/locations/${SEED_LOCATION_ID}/feedbacks`,
-          { params: { page: 1, limit: 9 } },
-        );
-        setReviews(data.data || data);
+
+        // Get locations list first
+        const locRes = await clientApi.get("/locations", {
+          params: { page: 1, limit: 20 },
+        });
+        const locations: { _id: string }[] = locRes.data?.data ?? [];
+
+        // Collect feedbacks from each location until we have 9
+        const collected: Feedback[] = [];
+        for (const loc of locations) {
+          if (collected.length >= 9) break;
+          try {
+            const fbRes = await clientApi.get(
+              `/locations/${loc._id}/feedbacks`,
+              { params: { page: 1, limit: 9 - collected.length } },
+            );
+            const feedbacks: Feedback[] = fbRes.data?.data ?? [];
+            collected.push(...feedbacks);
+          } catch {
+            // no feedbacks for this location, skip
+          }
+        }
+
+        setReviews(collected);
       } catch {
         setError("Не вдалося завантажити відгуки");
       } finally {
         setLoading(false);
       }
     };
+
     fetchReviews();
   }, []);
 
@@ -59,14 +76,15 @@ export default function ReviewsBlock() {
     setCurrentIndex((i) => Math.min(maxIndex, i + 1));
   }, [maxIndex]);
 
-  // Calculate offset: each slide is (100% / slidesPerView) + gap
-  const slideWidthPercent = 100 / slidesPerView;
-  const gapPx = 16;
-  const translateX =
-    currentIndex *
-      (slideWidthPercent / 100) *
-      (wrapperRef.current?.offsetWidth ?? 0) +
-    currentIndex * gapPx;
+  // Correct pixel-based translation
+  const getTranslateX = (): number => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return 0;
+    const gap = 16;
+    const totalGaps = slidesPerView - 1;
+    const slideWidth = (wrapper.offsetWidth - gap * totalGaps) / slidesPerView;
+    return currentIndex * (slideWidth + gap);
+  };
 
   return (
     <section className={styles.section}>
@@ -102,7 +120,7 @@ export default function ReviewsBlock() {
         <div className={styles.sliderWrapper} ref={wrapperRef}>
           <div
             className={styles.sliderTrack}
-            style={{ transform: `translateX(-${translateX}px)` }}
+            style={{ transform: `translateX(-${getTranslateX()}px)` }}
           >
             {reviews.map((review) => (
               <div key={review._id} className={styles.slide}>
