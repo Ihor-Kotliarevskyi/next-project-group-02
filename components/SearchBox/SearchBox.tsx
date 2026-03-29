@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useLocationStore } from "@/lib/store/locationStore";
 import styles from "./SearchBox.module.css";
