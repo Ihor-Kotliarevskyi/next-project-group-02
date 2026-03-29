@@ -73,7 +73,7 @@ export default function ReviewsBlock() {
             slidesPerView={1}
             spaceBetween={16}
             breakpoints={{
-              768: { slidesPerView: 2, spaceBetween: 16 },
+              704: { slidesPerView: 2, spaceBetween: 16 },
               1312: { slidesPerView: 3, spaceBetween: 16 },
             }}
             onSwiper={(swiper) => {

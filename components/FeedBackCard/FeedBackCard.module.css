@@ -40,7 +40,6 @@
     line-height: 1.5;
 }
 
-/* locationType below author — small grey label like in Figma */
 .locationType {
     font-size: 12px;
     color: #888;
@@ -51,7 +50,8 @@
 /* Tablet */
 @media (min-width: 704px) {
     .card {
-        padding: 20px;
+        padding: 16px;
+        width: 340px;
     }
 
     .description {

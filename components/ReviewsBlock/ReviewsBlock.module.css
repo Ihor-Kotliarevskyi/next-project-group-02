@@ -16,6 +16,7 @@
     position: relative;
 }
 
+
 .controls {
     display: flex;
     justify-content: flex-end;
@@ -64,7 +65,7 @@
 
 @media (min-width: 704px) {
     .section {
-        padding: 56px 32px;
+        padding: 64px 32px;
     }
 
     .title {
