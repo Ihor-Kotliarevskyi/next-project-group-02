@@ -1,101 +1,144 @@
 "use client";
- 
+
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+
+import { FeedBackCard } from "@/components/FeedBackCard/FeedBackCard";
+import { Feedback } from "@/types/feedBackCard";
+import clientApi from "@/lib/api/clientApi";
 import styles from "./ReviewsSection.module.css";
- 
-type Review = {
-  _id: string;
-  userId?: { name?: string };
-  rating: number;
-  comment: string;
-};
 
-export type { Review };
+const LIMIT = 3;
 
-function normalizeReviews(payload: unknown): Review[] {
-  if (Array.isArray(payload)) return payload as Review[];
-
-  if (payload && typeof payload === "object") {
-    const record = payload as Record<string, unknown>;
-
-    if (Array.isArray(record.data)) return record.data as Review[];
-    if (Array.isArray(record.feedbacks)) return record.feedbacks as Review[];
-    if (Array.isArray(record.items)) return record.items as Review[];
-  }
-
-  return [];
-}
-
-async function fetchReviews(locationId: string): Promise<Review[]> {
-  const res = await fetch(`/api/locations/${locationId}/feedbacks`, {
-    cache: "no-store",
-  });
-  if (!res.ok) return [];
-  const json = await res.json();
-  return normalizeReviews(json);
-}
- 
-function Stars({ rating }: { rating: number }) {
-  const filled = Math.max(0, Math.min(5, Math.round(rating)));
-  return (
-    <span className={styles.stars}>
-      {"★".repeat(filled)}
-      <span className={styles.starsEmpty}>{"★".repeat(5 - filled)}</span>
-    </span>
-  );
-}
- 
-interface Props {
+type Props = {
   locationId: string;
-  isAuthorized: boolean;
-  initialReviews?: Review[];
-}
+  isAuthenticated?: boolean;
+};
 
 export default function ReviewsSection({
   locationId,
-  isAuthorized,
-  initialReviews = [],
+  isAuthenticated = false,
 }: Props) {
+  const [reviews, setReviews] = useState<Feedback[]>([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const { data: reviews = [], isLoading } = useQuery<Review[]>({
-    queryKey: ["reviews", locationId],
-    queryFn: () => fetchReviews(locationId),
-    initialData: initialReviews,
-  });
- 
-  function handleLeaveReview() {
-    if (!isAuthorized) {
-      router.push("/login");
+  const fetchReviews = useCallback(
+    async (pageNum: number) => {
+      try {
+        setLoading(true);
+        setError(null);
+        const { data } = await clientApi.get(
+          `/locations/${locationId}/feedbacks`,
+          { params: { page: pageNum, limit: LIMIT } },
+        );
+        setReviews(data.data || data);
+        if (data.pagination) {
+          setTotalPages(data.pagination.totalPages ?? 1);
+        }
+      } catch {
+        setError("Не вдалося завантажити відгуки");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [locationId],
+  );
+
+  useEffect(() => {
+    fetchReviews(1);
+  }, [fetchReviews]);
+
+  const handlePrev = () => {
+    const newPage = Math.max(1, page - 1);
+    setPage(newPage);
+    fetchReviews(newPage);
+  };
+
+  const handleNext = () => {
+    const newPage = Math.min(totalPages, page + 1);
+    setPage(newPage);
+    fetchReviews(newPage);
+  };
+
+  const handleAddReview = () => {
+    if (!isAuthenticated) {
+      router.push(`/locations/${locationId}?modal=auth`);
     } else {
-      router.push(`/add-review?locationId=${locationId}`);
+      router.push(`/locations/${locationId}?modal=review`);
     }
-  }
- 
+  };
+
   return (
     <section className={styles.section}>
       <div className={styles.header}>
         <h2 className={styles.title}>Відгуки</h2>
-        <button className={styles.btn} onClick={handleLeaveReview}>
+        <button className={styles.addButton} onClick={handleAddReview}>
           Залишити відгук
         </button>
       </div>
- 
-      {isLoading ? (
-        <p className={styles.empty}>Завантаження…</p>
-      ) : reviews.length === 0 ? (
-        <p className={styles.empty}>Поки немає відгуків. Будьте першим!</p>
-      ) : (
-        <ul className={styles.list}>
-          {reviews.map((r) => (
-            <li key={r._id} className={styles.card}>
-              <Stars rating={r.rating} />
-              <p className={styles.comment}>{r.comment}</p>
-              <span className={styles.author}>{r.userId?.name ?? "Анонім"}</span>
-            </li>
-          ))}
-        </ul>
+
+      {loading && <p className={styles.loading}>Завантаження відгуків...</p>}
+      {error && <p className={styles.error}>{error}</p>}
+      {!loading && !error && reviews.length === 0 && (
+        <p className={styles.empty}>Відгуків поки немає. Будьте першим!</p>
+      )}
+
+      {!loading && !error && reviews.length > 0 && (
+        <div className={styles.swiperContainer}>
+          <Swiper
+            modules={[Navigation]}
+            navigation={{
+              prevEl: `.${styles.prevBtn}`,
+              nextEl: `.${styles.nextBtn}`,
+            }}
+            slidesPerView={1}
+            spaceBetween={16}
+            breakpoints={{
+              704: { slidesPerView: 2, spaceBetween: 24 },
+              1312: { slidesPerView: 3, spaceBetween: 24 },
+            }}
+          >
+            {reviews.map((review) => (
+              <SwiperSlide key={review._id}>
+                <FeedBackCard
+                  userName={review.userName}
+                  description={review.description}
+                  rate={review.rate}
+                  locationType={review.locationType}
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+
+          {totalPages > 1 && (
+            <div className={styles.controls}>
+              <button
+                className={`${styles.arrowBtn} ${styles.prevBtn}`}
+                onClick={handlePrev}
+                disabled={page <= 1}
+                aria-label="Попередня сторінка відгуків"
+              >
+                ←
+              </button>
+              <button
+                className={`${styles.arrowBtn} ${styles.nextBtn}`}
+                onClick={handleNext}
+                disabled={page >= totalPages}
+                aria-label="Наступна сторінка відгуків"
+              >
+                →
+              </button>
+            </div>
+          )}
+        </div>
       )}
     </section>
   );
