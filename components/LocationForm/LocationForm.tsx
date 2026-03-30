@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { LocationFormValues } from "@/types/location";
+import { createLocation, updateLocation } from "@/lib/api/clientApi";
 
 type Props = {
   id?: string;
@@ -100,36 +101,21 @@ const initialValues: LocationFormValues = {
   { setSubmitting }: FormikHelpers<LocationFormValues>
 ) => {
   try {
-    const res = await fetch(
-      isEdit
-        ? '/locations/${id}'
-        : '/locations',
-      {
-        method: isEdit ? "PATCH" : "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: values.name,
-          locationType: values.locationType,
-          region: values.region,
-          description: values.description,
-          image: placeholder,
-          coordinates: {
-            lat: 0,
-            lon: 0,
-          },
-        }),
-        credentials: "include",
-      }
-    );
+    const payload = {
+      name: values.name,
+      locationType: values.locationType,
+      region: values.region,
+      description: values.description,
+      image: placeholder,
+      coordinates: { lat: 0, lon: 0 },
+    };
 
-    if (!res.ok) throw new Error("Помилка");
+    const data = isEdit
+      ? await updateLocation(id!, payload)
+      : await createLocation(payload);
 
-    const data = await res.json();
-
-    router.push('/locations/${data._id}');
-  } catch (error) {
+    router.push(`/locations/${data._id}`);
+  } catch {
     toast.error("Не вдалося зберегти");
   } finally {
     setSubmitting(false);

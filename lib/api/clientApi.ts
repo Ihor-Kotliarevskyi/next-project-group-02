@@ -1,41 +1,71 @@
-export const getLocations = async (params?: {
+import axios from "axios";
+
+const clientApi = axios.create({
+  baseURL: "/api",
+  withCredentials: true,
+});
+
+export default clientApi;
+
+// --- Auth ---
+
+export const login = (data: { email: string; password: string }) =>
+  clientApi.post("/auth/login", data).then((r) => r.data);
+
+export const register = (data: {
+  name: string;
+  email: string;
+  password: string;
+}) => clientApi.post("/auth/register", data).then((r) => r.data);
+
+export const logout = () =>
+  clientApi.post("/auth/logout").then((r) => r.data);
+
+export const getMe = () => clientApi.get("/users/me").then((r) => r.data);
+
+// --- Locations ---
+
+export const getLocations = (params?: {
   page?: number;
   limit?: number;
   region?: string;
   locationType?: string;
   search?: string;
-}) => {
-  const query = new URLSearchParams();
+}) =>
+  clientApi
+    .get("/locations", { params })
+    .then((r) => ({ locations: r.data.data, pagination: r.data.pagination }));
 
-  if (params?.page) query.set("page", String(params.page));
-  if (params?.limit) query.set("limit", String(params.limit));
-  if (params?.region) query.set("region", params.region);
-  if (params?.locationType) query.set("locationType", params.locationType);
-  if (params?.search) query.set("search", params.search);
+// --- Categories ---
 
-  const res = await fetch(`/locations?${query}`);
-  if (!res.ok) throw new Error("Failed to fetch locations");
+export const getRegions = () =>
+  clientApi.get("/categories/regions").then((r) => r.data.data ?? r.data);
 
-  const json = await res.json();
+export const getLocationTypes = () =>
+  clientApi.get("/categories/types").then((r) => r.data.data ?? r.data);
 
-  return {
-    locations: json.data,
-    pagination: json.pagination,
-  };
-};
+// --- Feedbacks ---
 
-export const getRegions = async () => {
-  const res = await fetch("/categories/regions");
-  if (!res.ok) throw new Error("Failed to fetch regions");
+export const getFeedbacks = (
+  locationId: string,
+  params?: { page?: number; limit?: number }
+) =>
+  clientApi
+    .get(`/locations/${locationId}/feedbacks`, { params })
+    .then((r) => r.data);
 
-  const json = await res.json();
-  return json.data;
-};
+export const createFeedback = (
+  locationId: string,
+  data: { rating: number; comment: string }
+) =>
+  clientApi
+    .post(`/locations/${locationId}/feedbacks`, data)
+    .then((r) => r.data);
 
-export const getLocationTypes = async () => {
-  const res = await fetch("/categories/types");
-  if (!res.ok) throw new Error("Failed to fetch location types");
+// --- Location management ---
 
-  const json = await res.json();
-  return json.data;
-};
+export const createLocation = (data: unknown) =>
+  clientApi.post("/locations", data).then((r) => r.data);
+
+export const updateLocation = (id: string, data: unknown) =>
+  clientApi.patch(`/locations/${id}`, data).then((r) => r.data);

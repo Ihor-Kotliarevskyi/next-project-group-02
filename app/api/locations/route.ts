@@ -1,19 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const API_URL = process.env.BACKEND_API_URL;
+import { isAxiosError } from "axios";
+import { api } from "../api";
+import { logErrorResponse } from "../_utils/utils";
 
 export async function GET(req: NextRequest) {
-  const search = req.nextUrl.search;
-  const res = await fetch(`${API_URL}/locations${search}`, {
-    cache: "no-store",
-  });
-
-  const data = await res.text();
-
-  return new NextResponse(data, {
-    status: res.status,
-    headers: {
-      "Content-Type": res.headers.get("Content-Type") ?? "application/json",
-    },
-  });
+  try {
+    const params = Object.fromEntries(req.nextUrl.searchParams);
+    const { data } = await api.get("/locations", { params });
+    return NextResponse.json(data);
+  } catch (error) {
+    if (isAxiosError(error)) {
+      logErrorResponse(error.response?.data);
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.response?.status ?? 500 }
+      );
+    }
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
 }
