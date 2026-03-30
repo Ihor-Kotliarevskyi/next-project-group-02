@@ -3,13 +3,8 @@
 import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuthStore } from '@/lib/store/authStore';
+import { getMe } from '@/lib/api/clientApi';
 import type { User } from '@/types/user';
-
-async function fetchCurrentUser(): Promise<User> {
-  const res = await fetch('/api/users/me');
-  if (!res.ok) throw new Error('Not authenticated');
-  return res.json();
-}
 
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
   const setUser = useAuthStore((state) => state.setUser);
@@ -17,7 +12,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
   const { data, error } = useQuery<User>({
     queryKey: ['currentUser'],
-    queryFn: fetchCurrentUser,
+    queryFn: getMe,
     retry: false,
     staleTime: 5 * 60 * 1000,
   });

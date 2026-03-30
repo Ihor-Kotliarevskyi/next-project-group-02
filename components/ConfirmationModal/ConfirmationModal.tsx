@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/lib/store/authStore';
-import { api } from '@/lib/api/api';
+import { logout as logoutApi } from '@/lib/api/clientApi';
 import Modal from '@/components/Modal/Modal';
 import css from './ConfirmationModal.module.css';
 
@@ -22,7 +22,7 @@ const handleConfirm = async () => {
     setError('');
     setIsLoading(true);
 
-    await api.post('/auth/logout'); 
+    await logoutApi();
 
     logout(); 
 

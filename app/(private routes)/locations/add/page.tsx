@@ -1,10 +1,10 @@
 import LocationForm from "@/components/LocationForm/LocationForm";
-import { fetchRegions, fetchLocationTypes } from "@/lib/api/categories";
+import { getRegionsServer, getLocationTypesServer } from "@/lib/api/serverApi";
 
 export default async function Page() {
-    
-  const regions = await fetchRegions();
-  const locationTypes = await fetchLocationTypes();
+
+  const regions = await getRegionsServer();
+  const locationTypes = await getLocationTypesServer();
 
   return <LocationForm regions={regions} locationTypes={locationTypes}  />;
 }
