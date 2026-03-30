@@ -5,10 +5,11 @@ import TanStackProvider from "@/components/TanStackProvider/TanStackProvider";
 import "modern-normalize";
 import "./globals.css";
 
-const geist = Geist({
-  variable: "--font-geist",
+const geistSans = Geist({
+  variable: "--font-geist-sans",
   subsets: ["latin"],
 });
+
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
@@ -27,7 +28,7 @@ export default function RootLayout({
   modal: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geist.variable} ${geistMono.variable}`}>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
         <TanStackProvider>
           {children}
