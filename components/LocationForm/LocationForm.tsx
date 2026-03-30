@@ -128,7 +128,7 @@ const initialValues: LocationFormValues = {
 
     const data = await res.json();
 
-    router.push('/locations/${data._id}');
+    router.push(`/locations/${data._id}`);
   } catch (error) {
     toast.error("Не вдалося зберегти");
   } finally {
