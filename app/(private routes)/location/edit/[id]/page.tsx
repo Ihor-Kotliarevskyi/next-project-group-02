@@ -1,21 +1,33 @@
 import LocationForm from "@/components/LocationForm/LocationForm";
+import { LocationType } from "@/types/locationTypes";
+import { Region } from "@/types/region";
 
-export default async function Page({ params }: { params: { id: string } }) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/locations/${params.id}`,
-    { cache: "no-store" }
-  );
+type Props = {
+  params: { id: string };
+};
 
-  if (!res.ok) {
-    return <div>Локацію не знайдено</div>;
-  }
+export default async function Page({ params }: Props) {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
-  const location = await res.json();
+  const [regionsRes, typesRes, locationRes] = await Promise.all([
+    fetch(`${baseUrl}/api/categories/regions`, { cache: "no-store" }),
+    fetch(`${baseUrl}/api/categories/types`, { cache: "no-store" }),
+    fetch(`${baseUrl}/api/locations/${params.id}`, { cache: "no-store" }),
+  ]);
+
+  const regionsData = await regionsRes.json();
+  const typesData = await typesRes.json();
+  const location = await locationRes.json();
+
+  const regions = regionsData.data.map((item: Region) => item.region);
+  const locationTypes = typesData.data.map((item: LocationType) => item.type);
 
   return (
     <LocationForm
       id={params.id}
       initialData={location}
+      regions={regions}
+      locationTypes={locationTypes}
     />
   );
 }
