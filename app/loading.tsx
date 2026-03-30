@@ -10,16 +10,10 @@ const override: CSSProperties = {
 };
 
 export default function Loading() {
-    return (
-        <div>
-        <ScaleLoader
-            color="#E76F51"
-            loading={true}
-            cssOverride={override}
-            aria-label="Loading...."
-            data-testid="loader"
-        />
-        <span>Зачекайте, будь ласка. Завантаження даних...</span>
-        </div>
-    );
+  return (
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "12px", minHeight: "50vh" }}>
+      <ScaleLoader color="#E76F51" loading cssOverride={override} aria-label="Завантаження" data-testid="loader" />
+      <span>Зачекайте, будь ласка...</span>
+    </div>
+  );
 }

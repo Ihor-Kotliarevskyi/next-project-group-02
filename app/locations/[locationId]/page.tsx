@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import styles from "./page.module.css";
 import ReviewsSection from "@/components/ReviewsSection/ReviewsSection";
-import type { Review } from "@/components/ReviewsSection/ReviewsSection";
+import { Feedback } from "@/types/feedBackCard";
 
 const API_URL = process.env.BACKEND_API_URL ?? process.env.NEXT_PUBLIC_API_URL;
 
@@ -26,34 +26,34 @@ type LocationDetails = {
   feedbacksId?: string[];
 };
 type PageProps = {
-  params: Promise<{ id: string }>;
+  params: Promise<{ locationId: string }>;
 };
 
-function normalizeReviews(payload: unknown): Review[] {
-  if (Array.isArray(payload)) return payload as Review[];
+function normalizeFeedbacks(payload: unknown): Feedback[] {
+  if (Array.isArray(payload)) return payload as Feedback[];
 
   if (payload && typeof payload === "object") {
     const record = payload as Record<string, unknown>;
 
-    if (Array.isArray(record.data)) return record.data as Review[];
-    if (Array.isArray(record.feedbacks)) return record.feedbacks as Review[];
-    if (Array.isArray(record.items)) return record.items as Review[];
+    if (Array.isArray(record.data)) return record.data as Feedback[];
+    if (Array.isArray(record.feedbacks)) return record.feedbacks as Feedback[];
+    if (Array.isArray(record.items)) return record.items as Feedback[];
   }
 
   return [];
 }
 
-function normalizeReview(payload: unknown): Review | null {
+function normalizeFeedback(payload: unknown): Feedback | null {
   if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
     return null;
   }
 
   const record = payload as Record<string, unknown>;
   const candidate =
-    (record.data as Review | undefined) ??
-    (record.feedback as Review | undefined) ??
-    (record.item as Review | undefined) ??
-    (payload as Review);
+    (record.data as Feedback | undefined) ??
+    (record.feedback as Feedback | undefined) ??
+    (record.item as Feedback | undefined) ??
+    (payload as Feedback);
 
   return candidate && typeof candidate === "object" && "_id" in candidate
     ? candidate
@@ -72,7 +72,7 @@ async function getLocationById(id: string): Promise<LocationDetails | null> {
   return json.data ?? json;
 }
 
-async function getLocationReviews(id: string, feedbackIds: string[] = []): Promise<Review[]> {
+async function getLocationFeedbacks(id: string, feedbackIds: string[] = []): Promise<Feedback[]> {
   const res = await fetch(`${API_URL}/locations/${id}/feedbacks`, {
     cache: "no-store",
   });
@@ -80,13 +80,13 @@ async function getLocationReviews(id: string, feedbackIds: string[] = []): Promi
   if (!res.ok) return [];
 
   const json = await res.json();
-  const reviews = normalizeReviews(json);
+  const reviews = normalizeFeedbacks(json);
 
   if (reviews.length > 0 || feedbackIds.length === 0) {
     return reviews;
   }
 
-  const fallbackReviews = await Promise.all(
+  const fallbackFeedbacks = await Promise.all(
     feedbackIds.map(async (feedbackId) => {
       const reviewRes = await fetch(`${API_URL}/feedbacks/${feedbackId}`, {
         cache: "no-store",
@@ -95,11 +95,11 @@ async function getLocationReviews(id: string, feedbackIds: string[] = []): Promi
       if (!reviewRes.ok) return null;
 
       const reviewJson = await reviewRes.json();
-      return normalizeReview(reviewJson);
+      return normalizeFeedback(reviewJson);
     })
   );
 
-  return fallbackReviews.filter((review): review is Review => review !== null);
+  return fallbackFeedbacks.filter((review): review is Feedback => review !== null);
 }
 
 async function getIsAuthorized(): Promise<boolean> {
@@ -107,16 +107,16 @@ async function getIsAuthorized(): Promise<boolean> {
   return !!cookieStore.get("token")?.value;
 }
 export default async function LocationPage({ params }: PageProps) {
-  const { id } = await params;
+  const { locationId } = await params;
   const [location, isAuthorized] = await Promise.all([
-    getLocationById(id),
+    getLocationById(locationId),
     getIsAuthorized(),
   ]);
   if (!location) {
     notFound();
   }
 
-  const initialReviews = await getLocationReviews(id, location.feedbacksId ?? []);
+  const initialReviews = await getLocationFeedbacks(locationId, location.feedbacksId ?? []);
   const ownerName =
     typeof location.ownerId === "object" && location.ownerId?.name
       ? location.ownerId.name
@@ -176,8 +176,8 @@ export default async function LocationPage({ params }: PageProps) {
         </div>
       </article>
       <ReviewsSection
-        locationId={id}
-        isAuthorized={isAuthorized}
+        locationId={locationId}
+        isAuthenticated={isAuthorized}
         initialReviews={initialReviews}
       />
     </main>
