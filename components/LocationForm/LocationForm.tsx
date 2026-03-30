@@ -5,31 +5,27 @@ import * as Yup from "yup";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { LocationFormValues } from "@/types/location";
+import { createLocation, updateLocation } from "@/lib/api/clientApi";
 
 type Props = {
   id?: string;
   initialData?: {
     name: string;
-    placeType: string;
+    locationType: string;
     region: string;
     description: string;
     image?: string;
   };
+  regions: string[];
+  locationTypes: string[];
 };
 
-type FormValues = {
-  name: string;
-  placeType: string;
-  region: string;
-  description: string;
-  imageFile: File | null;
-};
-
-export default function LocationForm({ initialData, id }: Props) {
+export default function LocationForm({ initialData, id, regions, locationTypes }: Props) {
   
   const isEdit = !!initialData;
   const router = useRouter();
-  const placeholder = "/placeholder.png";
+  const placeholder = "/images/location-form-placeholder-image.jpg";
   
 
  const [imagePreview, setImagePreview] = useState<string>(
@@ -51,38 +47,13 @@ export default function LocationForm({ initialData, id }: Props) {
     };
   }, [imagePreview]);
 
-  const [regions, setRegions] = useState<string[]>([]);
-  const [types, setTypes] = useState<string[]>([]);
-
-  useEffect(() => {
-  const fetchCategories = async () => {
-    try {
-      const [regionsRes, typesRes] = await Promise.all([
-        fetch("/api/categories/regions"),
-        fetch("/api/categories/types"),
-      ]);
-
-      const regionsData = await regionsRes.json();
-      const typesData = await typesRes.json();
-
-      setRegions(regionsData);
-      setTypes(typesData);
-    } catch (error) {
-      console.error("Помилка завантаження категорій");
-      toast.error("Не вдалося завантажити категорії");
-    }
-  };
-
-  fetchCategories();
-}, []);
-
-  const initialValues: FormValues = {
-    name: initialData?.name || "",
-    placeType: initialData?.placeType || "",
-    region: initialData?.region || "",
-    description: initialData?.description || "",
-    imageFile: null as File | null,
-  };
+const initialValues: LocationFormValues = {
+  name: initialData?.name ?? "",
+  locationType: initialData?.locationType || "",
+  region: initialData?.region || "",
+  description: initialData?.description || "",
+  imageFile: null,
+};
 
   const validationSchema = Yup.object({
    imageFile: Yup.mixed<File>()
@@ -104,7 +75,7 @@ export default function LocationForm({ initialData, id }: Props) {
       .max(96, "Максимум 96 символів")
       .required("Введіть назву"),
 
-    placeType: Yup.string()
+    locationType: Yup.string()
       .max(64, "Максимум 64 символи")
       .required("Оберіть тип"),
 
@@ -113,8 +84,8 @@ export default function LocationForm({ initialData, id }: Props) {
       .required("Оберіть регіон"),
 
     description: Yup.string()
-      .min(10, "Мінімум 10 символів")
-      .max(600, "Максимум 600 символів")
+      .min(20, "Мінімум 20 символів")
+      .max(6000, "Максимум 6000символів")
       .required("Введіть опис"),
   });
   
@@ -125,42 +96,33 @@ export default function LocationForm({ initialData, id }: Props) {
     }
   }, [isEdit, id, router]);
 
-  const handleSubmit = async (
-  values: FormValues,
-  { setSubmitting }: FormikHelpers<FormValues>
+ const handleSubmit = async (
+  values: LocationFormValues,
+  { setSubmitting }: FormikHelpers<LocationFormValues>
 ) => {
-  const formData = new FormData();
-
-  formData.append("name", values.name);
-  formData.append("placeType", values.placeType);
-  formData.append("region", values.region);
-  formData.append("description", values.description);
-
-  if (values.imageFile) {
-    formData.append("image", values.imageFile);
-  }
-
   try {
-    const res = await fetch(
-      isEdit ? `/api/locations/${id}` : "/api/locations",
-      {
-        method: isEdit ? "PATCH" : "POST",
-        body: formData,
-        credentials: "include", 
-      }
-    );
+    const payload = {
+      name: values.name,
+      locationType: values.locationType,
+      region: values.region,
+      description: values.description,
+      image: placeholder,
+      coordinates: { lat: 0, lon: 0 },
+    };
 
-    if (!res.ok) throw new Error("Помилка");
+    const data = isEdit
+      ? await updateLocation(id!, payload)
+      : await createLocation(payload);
 
-    const data = await res.json();
-
-    router.push(`/locations/${data.id}`);
-  } catch (error) {
+    router.push(`/locations/${data._id}`);
+  } catch {
     toast.error("Не вдалося зберегти");
   } finally {
     setSubmitting(false);
   }
 };
+  
+  
   return (
     <main>
       <h1>
@@ -228,16 +190,16 @@ export default function LocationForm({ initialData, id }: Props) {
 
             {/* Тип */}
             <div>
-              <label htmlFor="placeType">Тип місця</label>
-              <Field as="select" id="placeType" name="placeType">
-                 <option value="">Оберіть тип місця</option>
-                  {types.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-              ))}
-               </Field>
-              <ErrorMessage name="placeType" component="div" />
+              <label htmlFor="locationType">Тип місця</label>
+              <Field as="select" id="locationType" name="locationType">
+                <option value="">Оберіть тип місця</option>
+                {locationTypes.map((location, index) => (
+                 <option key={index} value={location}>
+                  {location}
+                </option>
+     ))}
+              </Field>
+              <ErrorMessage name="locationType" component="div" />
             </div>
 
             {/* Регіон */}
@@ -245,11 +207,11 @@ export default function LocationForm({ initialData, id }: Props) {
               <label htmlFor="region">Регіон</label>
               <Field as="select" id="region" name="region">
                 <option value="">Оберіть регіон</option>
-                {regions.map((region) => (
-                 <option key={region} value={region}>
-                    {region}
-                 </option>
-                ))}
+                {regions.map((region, index) => (
+                  <option key={index} value={region}>
+                    {region} 
+                  </option>
+              ))}
               </Field>
               <ErrorMessage name="region" component="div" />
             </div>

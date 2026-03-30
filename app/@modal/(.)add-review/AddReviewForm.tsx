@@ -5,20 +5,8 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import { createFeedback } from "@/lib/api/clientApi";
 import styles from "./AddReviewForm.module.css";
-
-async function postReview(
-  locationId: string,
-  values: { rating: number; comment: string }
-) {
-  const res = await fetch(`/api/locations/${locationId}/feedbacks`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify(values),
-  });
-  if (!res.ok) throw new Error("Failed to post review");
-}
 
 const schema = Yup.object({
   rating: Yup.number().min(1, "Оберіть рейтинг").required(),
@@ -34,7 +22,7 @@ export default function AddReviewForm({ locationId }: { locationId: string }) {
 
   const mutation = useMutation({
     mutationFn: (values: { rating: number; comment: string }) =>
-      postReview(locationId, values),
+      createFeedback(locationId, values),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["reviews", locationId] });
       toast.success("Відгук додано!");

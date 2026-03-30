@@ -5,8 +5,7 @@ import { cookies } from "next/headers";
 import styles from "./page.module.css";
 import ReviewsSection from "@/components/ReviewsSection/ReviewsSection";
 import { Feedback } from "@/types/feedBackCard";
-
-const API_URL = process.env.BACKEND_API_URL ?? process.env.NEXT_PUBLIC_API_URL;
+import { api } from "@/lib/api/api";
 
 type Owner = {
   _id?: string;
@@ -61,45 +60,46 @@ function normalizeFeedback(payload: unknown): Feedback | null {
 }
 
 async function getLocationById(id: string): Promise<LocationDetails | null> {
-  const res = await fetch(`${API_URL}/locations/${id}`, {
-    cache: "no-store",
-  });
-  if (res.status === 404) return null;
-  if (!res.ok) {
-    throw new Error("Failed to fetch location");
+  try {
+    const { data } = await api.get<LocationDetails>(`/locations/${id}`);
+    return data;
+  } catch (error: unknown) {
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "response" in error &&
+      (error as { response?: { status?: number } }).response?.status === 404
+    ) {
+      return null;
+    }
+    throw error;
   }
-  const json = await res.json();
-  return json.data ?? json;
 }
 
 async function getLocationFeedbacks(id: string, feedbackIds: string[] = []): Promise<Feedback[]> {
-  const res = await fetch(`${API_URL}/locations/${id}/feedbacks`, {
-    cache: "no-store",
-  });
+  try {
+    const { data } = await api.get(`/feedbacks/${id}`);
+    const reviews = normalizeFeedbacks(data);
 
-  if (!res.ok) return [];
+    if (reviews.length > 0 || feedbackIds.length === 0) {
+      return reviews;
+    }
 
-  const json = await res.json();
-  const reviews = normalizeFeedbacks(json);
+    const fallbackFeedbacks = await Promise.all(
+      feedbackIds.map(async (feedbackId) => {
+        try {
+          const { data: feedbackData } = await api.get(`/feedbacks/${feedbackId}`);
+          return normalizeFeedback(feedbackData);
+        } catch {
+          return null;
+        }
+      })
+    );
 
-  if (reviews.length > 0 || feedbackIds.length === 0) {
-    return reviews;
+    return fallbackFeedbacks.filter((review): review is Feedback => review !== null);
+  } catch {
+    return [];
   }
-
-  const fallbackFeedbacks = await Promise.all(
-    feedbackIds.map(async (feedbackId) => {
-      const reviewRes = await fetch(`${API_URL}/feedbacks/${feedbackId}`, {
-        cache: "no-store",
-      });
-
-      if (!reviewRes.ok) return null;
-
-      const reviewJson = await reviewRes.json();
-      return normalizeFeedback(reviewJson);
-    })
-  );
-
-  return fallbackFeedbacks.filter((review): review is Feedback => review !== null);
 }
 
 async function getIsAuthorized(): Promise<boolean> {

@@ -1,44 +1,43 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const API_URL = process.env.BACKEND_API_URL;
+import { isAxiosError } from "axios";
+import { api } from "../../api";
+import { logErrorResponse } from "../../_utils/utils";
 
 export async function GET(req: NextRequest) {
-  const res = await fetch(`${API_URL}/users/me`, {
-    headers: {
-      Cookie: req.headers.get("cookie") ?? "",
-    },
-    cache: "no-store",
-  });
-
-  const data = await res.text();
-
-  return new NextResponse(data, {
-    status: res.status,
-    headers: {
-      "Content-Type": res.headers.get("Content-Type") ?? "application/json",
-    },
-  });
+  try {
+    const cookieHeader = req.headers.get("cookie") ?? "";
+    const { data } = await api.get("/users/me", {
+      headers: { Cookie: cookieHeader },
+    });
+    return NextResponse.json(data);
+  } catch (error) {
+    if (isAxiosError(error)) {
+      logErrorResponse(error.response?.data);
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.response?.status ?? 500 }
+      );
+    }
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
 }
 
 export async function PATCH(req: NextRequest) {
-  const body = await req.text();
-
-  const res = await fetch(`${API_URL}/users/me`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": req.headers.get("Content-Type") ?? "application/json",
-      Cookie: req.headers.get("cookie") ?? "",
-    },
-    body,
-    cache: "no-store",
-  });
-
-  const data = await res.text();
-
-  return new NextResponse(data, {
-    status: res.status,
-    headers: {
-      "Content-Type": res.headers.get("Content-Type") ?? "application/json",
-    },
-  });
+  try {
+    const cookieHeader = req.headers.get("cookie") ?? "";
+    const body = await req.json();
+    const { data } = await api.patch("/users/me", body, {
+      headers: { Cookie: cookieHeader },
+    });
+    return NextResponse.json(data);
+  } catch (error) {
+    if (isAxiosError(error)) {
+      logErrorResponse(error.response?.data);
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.response?.status ?? 500 }
+      );
+    }
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
 }
