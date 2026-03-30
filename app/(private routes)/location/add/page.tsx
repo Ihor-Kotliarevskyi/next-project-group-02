@@ -1,10 +1,28 @@
 import LocationForm from "@/components/LocationForm/LocationForm";
-import { fetchRegions, fetchLocationTypes } from "@/lib/api/categories";
+import { LocationType } from "@/types/locationTypes";
+import { Region } from "@/types/region";
 
 export default async function Page() {
-    
-  const regions = await fetchRegions();
-  const locationTypes = await fetchLocationTypes();
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
-  return <LocationForm regions={regions} locationTypes={locationTypes}  />;
+  const regionsRes = await fetch(`${baseUrl}/api/categories/regions`, {
+    cache: "no-store",
+  });
+
+  const typesRes = await fetch(`${baseUrl}/api/categories/types`, {
+    cache: "no-store",
+  });
+
+  const regionsData = await regionsRes.json();
+  const typesData = await typesRes.json();
+
+  const regions = regionsData.data.map((item: Region) => item.region);
+  const locationTypes = typesData.data.map((item: LocationType) => item.type);
+
+  return (
+    <LocationForm
+      regions={regions}
+      locationTypes={locationTypes}
+    />
+  );
 }
