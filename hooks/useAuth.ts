@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import type { FormikHelpers } from 'formik';
 import { useAuthStore } from '@/lib/store/authStore';
+import { Console, log } from 'console';
 
 type LoginValues = {
   email: string;
@@ -29,7 +30,7 @@ export function useAuth(redirectTo: string = '/') {
     const loading = toast.loading(isLogin ? 'Вхід...' : 'Реєстрація...');
 
     try {
-      const res = await fetch(isLogin ? '/api/login' : '/api/register', {
+      const res = await fetch(isLogin ? '/api/auth/login' : '/api/auth/register', {
         method: 'POST',
         body: JSON.stringify(values),
         headers: { 'Content-Type': 'application/json' },
@@ -45,7 +46,7 @@ export function useAuth(redirectTo: string = '/') {
           'Помилка';
         throw new Error(message);
       }
-
+      
       if (!data) throw new Error('Користувача не отримано');
 
       setUser(data);

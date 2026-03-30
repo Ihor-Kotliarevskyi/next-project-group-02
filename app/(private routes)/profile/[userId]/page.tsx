@@ -4,11 +4,15 @@ import LocationList from '@/components/LocationList/LocationList';
 
 import css from './ProfilePage.module.css';
 
-async function Profile() {
-  // Поки тільки тестово
+type Props = {
+  params: Promise<{ userId: string }>;
+};
+
+async function Profile({ params }: Props) {
+  const { userId } = await params;
   const [user, data] = await Promise.all([
-    getUserByIdServer('6881563901add19ee16fcff5'),
-    getUserLocationsServer('6881563901add19ee16fcff5'),
+    getUserByIdServer(userId),
+    getUserLocationsServer(userId),
   ]);
   const locations = data.data;
 
