@@ -19,7 +19,7 @@ export const AddReviewModal = () => {
   };
 
   useEffect(() => {
-    const handleEsc = (e) => {
+    const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") handleClose();
     };
 
