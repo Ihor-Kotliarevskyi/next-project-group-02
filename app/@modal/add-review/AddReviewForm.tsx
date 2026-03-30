@@ -7,13 +7,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import styles from "./AddReviewForm.module.css";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
 async function postReview(
   locationId: string,
   values: { rating: number; comment: string }
 ) {
-  const res = await fetch(`${API_URL}/locations/${locationId}/feedbacks`, {
+  const res = await fetch(`/api/locations/${locationId}/feedbacks`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",

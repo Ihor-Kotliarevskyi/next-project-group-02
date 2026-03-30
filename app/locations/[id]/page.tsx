@@ -4,8 +4,9 @@ import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import styles from "./page.module.css";
 import ReviewsSection from "@/components/ReviewsSection/ReviewsSection";
+import type { Review } from "@/components/ReviewsSection/ReviewsSection";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.BACKEND_API_URL ?? process.env.NEXT_PUBLIC_API_URL;
 
 type Owner = {
   _id?: string;
@@ -27,6 +28,38 @@ type LocationDetails = {
 type PageProps = {
   params: Promise<{ id: string }>;
 };
+
+function normalizeReviews(payload: unknown): Review[] {
+  if (Array.isArray(payload)) return payload as Review[];
+
+  if (payload && typeof payload === "object") {
+    const record = payload as Record<string, unknown>;
+
+    if (Array.isArray(record.data)) return record.data as Review[];
+    if (Array.isArray(record.feedbacks)) return record.feedbacks as Review[];
+    if (Array.isArray(record.items)) return record.items as Review[];
+  }
+
+  return [];
+}
+
+function normalizeReview(payload: unknown): Review | null {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return null;
+  }
+
+  const record = payload as Record<string, unknown>;
+  const candidate =
+    (record.data as Review | undefined) ??
+    (record.feedback as Review | undefined) ??
+    (record.item as Review | undefined) ??
+    (payload as Review);
+
+  return candidate && typeof candidate === "object" && "_id" in candidate
+    ? candidate
+    : null;
+}
+
 async function getLocationById(id: string): Promise<LocationDetails | null> {
   const res = await fetch(`${API_URL}/locations/${id}`, {
     cache: "no-store",
@@ -38,6 +71,37 @@ async function getLocationById(id: string): Promise<LocationDetails | null> {
   const json = await res.json();
   return json.data ?? json;
 }
+
+async function getLocationReviews(id: string, feedbackIds: string[] = []): Promise<Review[]> {
+  const res = await fetch(`${API_URL}/locations/${id}/feedbacks`, {
+    cache: "no-store",
+  });
+
+  if (!res.ok) return [];
+
+  const json = await res.json();
+  const reviews = normalizeReviews(json);
+
+  if (reviews.length > 0 || feedbackIds.length === 0) {
+    return reviews;
+  }
+
+  const fallbackReviews = await Promise.all(
+    feedbackIds.map(async (feedbackId) => {
+      const reviewRes = await fetch(`${API_URL}/feedbacks/${feedbackId}`, {
+        cache: "no-store",
+      });
+
+      if (!reviewRes.ok) return null;
+
+      const reviewJson = await reviewRes.json();
+      return normalizeReview(reviewJson);
+    })
+  );
+
+  return fallbackReviews.filter((review): review is Review => review !== null);
+}
+
 async function getIsAuthorized(): Promise<boolean> {
   const cookieStore = await cookies();
   return !!cookieStore.get("token")?.value;
@@ -51,6 +115,8 @@ export default async function LocationPage({ params }: PageProps) {
   if (!location) {
     notFound();
   }
+
+  const initialReviews = await getLocationReviews(id, location.feedbacksId ?? []);
   const ownerName =
     typeof location.ownerId === "object" && location.ownerId?.name
       ? location.ownerId.name
@@ -109,7 +175,11 @@ export default async function LocationPage({ params }: PageProps) {
           <p className={styles.description}>{location.description}</p>
         </div>
       </article>
-      <ReviewsSection locationId={id} isAuthorized={isAuthorized} />
+      <ReviewsSection
+        locationId={id}
+        isAuthorized={isAuthorized}
+        initialReviews={initialReviews}
+      />
     </main>
   );
 }

@@ -10,16 +10,30 @@ type Review = {
   rating: number;
   comment: string;
 };
- 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
- 
+
+export type { Review };
+
+function normalizeReviews(payload: unknown): Review[] {
+  if (Array.isArray(payload)) return payload as Review[];
+
+  if (payload && typeof payload === "object") {
+    const record = payload as Record<string, unknown>;
+
+    if (Array.isArray(record.data)) return record.data as Review[];
+    if (Array.isArray(record.feedbacks)) return record.feedbacks as Review[];
+    if (Array.isArray(record.items)) return record.items as Review[];
+  }
+
+  return [];
+}
+
 async function fetchReviews(locationId: string): Promise<Review[]> {
-  const res = await fetch(`${API_URL}/locations/${locationId}/feedbacks`, {
+  const res = await fetch(`/api/locations/${locationId}/feedbacks`, {
     cache: "no-store",
   });
   if (!res.ok) return [];
   const json = await res.json();
-  return json.data ?? json ?? [];
+  return normalizeReviews(json);
 }
  
 function Stars({ rating }: { rating: number }) {
@@ -35,21 +49,27 @@ function Stars({ rating }: { rating: number }) {
 interface Props {
   locationId: string;
   isAuthorized: boolean;
+  initialReviews?: Review[];
 }
- 
-export default function ReviewsSection({ locationId, isAuthorized }: Props) {
+
+export default function ReviewsSection({
+  locationId,
+  isAuthorized,
+  initialReviews = [],
+}: Props) {
   const router = useRouter();
- 
+
   const { data: reviews = [], isLoading } = useQuery<Review[]>({
     queryKey: ["reviews", locationId],
     queryFn: () => fetchReviews(locationId),
+    initialData: initialReviews,
   });
  
   function handleLeaveReview() {
     if (!isAuthorized) {
-      router.push("/@modal/auth-prompt");
+      router.push("/login");
     } else {
-      router.push(`/@modal/add-review?locationId=${locationId}`);
+      router.push(`/add-review?locationId=${locationId}`);
     }
   }
  
