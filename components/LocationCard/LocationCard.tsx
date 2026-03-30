@@ -5,6 +5,7 @@ import Image from "next/image";
 import styles from "./LocationCard.module.css";
 import { Location } from "@/types/location";
 
+
 type LocationCardProps = Pick<
   Location,
   "_id" | "image" | "name" | "locationType" | "rate"

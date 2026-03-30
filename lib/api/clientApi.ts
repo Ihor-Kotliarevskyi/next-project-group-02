@@ -13,7 +13,7 @@ export const getLocations = async (params?: {
   if (params?.locationType) query.set("locationType", params.locationType);
   if (params?.search) query.set("search", params.search);
 
-  const res = await fetch(`/api/locations?${query}`);
+  const res = await fetch(`/locations?${query}`);
   if (!res.ok) throw new Error("Failed to fetch locations");
 
   const json = await res.json();
@@ -25,7 +25,7 @@ export const getLocations = async (params?: {
 };
 
 export const getRegions = async () => {
-  const res = await fetch("/api/categories/regions");
+  const res = await fetch("/categories/regions");
   if (!res.ok) throw new Error("Failed to fetch regions");
 
   const json = await res.json();
@@ -33,7 +33,7 @@ export const getRegions = async () => {
 };
 
 export const getLocationTypes = async () => {
-  const res = await fetch("/api/categories/types");
+  const res = await fetch("/categories/types");
   if (!res.ok) throw new Error("Failed to fetch location types");
 
   const json = await res.json();
