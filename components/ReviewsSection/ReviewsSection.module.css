@@ -1,0 +1,83 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+ 
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+ 
+.title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #111;
+  margin: 0;
+}
+ 
+.btn {
+  padding: 10px 22px;
+  background: #c96a3a;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+ 
+.btn:hover {
+  background: #a0522d;
+}
+ 
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+ 
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 18px;
+}
+ 
+.stars {
+  color: #e8a87c;
+  font-size: 18px;
+  letter-spacing: 2px;
+}
+ 
+.starsEmpty {
+  color: #ddd;
+}
+ 
+.comment {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+  margin: 0;
+}
+ 
+.author {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111;
+}
+ 
+.empty {
+  font-size: 15px;
+  color: #888;
+}
