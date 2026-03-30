@@ -1,8 +1,8 @@
 import axios from "axios";
 
 export const clientApi = axios.create({
-  baseURL: "/api",
-  timeout: 35000,
+  baseURL: process.env.NEXT_PUBLIC_API_URL + "/api",
+  timeout: 3500,
 });
 
 export default clientApi;
@@ -21,21 +21,21 @@ export const getLocations = async (params?: {
   if (params?.locationType) query.set("locationType", params.locationType);
   if (params?.search) query.set("search", params.search);
 
-  const res = await fetch(`/api/locations?${query}`);
+  const res = await fetch(`/locations?${query}`);
   if (!res.ok) throw new Error("Failed to fetch locations");
   const json = await res.json();
   return { locations: json.data, pagination: json.pagination };
 };
 
 export const getRegions = async () => {
-  const res = await fetch("/api/categories/regions");
+  const res = await fetch("/categories/regions");
   if (!res.ok) throw new Error("Failed to fetch regions");
   const json = await res.json();
   return json.data;
 };
 
 export const getLocationTypes = async () => {
-  const res = await fetch("/api/categories/types");
+  const res = await fetch("/categories/types");
   if (!res.ok) throw new Error("Failed to fetch location types");
   const json = await res.json();
   return json.data;

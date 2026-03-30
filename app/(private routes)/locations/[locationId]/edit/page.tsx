@@ -3,19 +3,20 @@ import { fetchRegions, fetchLocationTypes } from "@/lib/api/categories";
 import { fetchLocationByID } from "@/lib/api/locationsApi";
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ locationId: string }>;
 };
 
 export default async function Page({ params }: Props) {
+  const { locationId } = await params;
   const [regions, types, location] = await Promise.all([
     fetchRegions(),
     fetchLocationTypes(),
-    fetchLocationByID(params.id),
+    fetchLocationByID(locationId),
   ]);
-    
+
   return (
     <LocationForm
-      id={params.id}
+      id={locationId}
       initialData={location}
       regions={regions}
       locationTypes={types}
