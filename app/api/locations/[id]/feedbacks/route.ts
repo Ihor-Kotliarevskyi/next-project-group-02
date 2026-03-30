@@ -24,8 +24,8 @@ export async function GET(
 
     if (!res.ok) {
       const text = await res.text();
-      console.log(">>> Backend response body:", text);
-      return NextResponse.json({ message: "Backend error" }, { status: res.status });
+      // console.log(">>> Backend response body:", text);
+      return NextResponse.json({ message: "Failed to fetch feedbacks from backend" }, { status: res.status });
     }
 
     const data = await res.json();
