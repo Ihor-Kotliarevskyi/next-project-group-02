@@ -64,8 +64,8 @@ export default function ReviewsBlock() {
               );
               const feedbacks: Feedback[] = fbRes.data?.data ?? [];
               collected.push(...feedbacks);
-            } catch {
-              // skip
+            } catch (e) {
+              console.warn("Failed to fetch feedbacks for location " + loc._id + ":", e);
             }
           }
         }
