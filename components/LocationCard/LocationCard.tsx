@@ -1,13 +1,9 @@
-<<<<<<< HEAD
-=======
 "use client";
 
->>>>>>> origin/main
 import Link from "next/link";
 import Image from "next/image";
 import styles from "./LocationCard.module.css";
 import { Location } from "@/types/location";
-
 
 type LocationCardProps = Pick<
   Location,

@@ -44,8 +44,13 @@ The content is organized as follows:
 app/(auth routes)/layout.tsx
 app/(auth routes)/login/page.tsx
 app/(auth routes)/register/page.tsx
+app/(private routes)/location/add/page.tsx
+app/(private routes)/location/edit/[id]/page.tsx
 app/(private routes)/profile/edit/page.tsx
 app/(private routes)/profile/page.tsx
+app/(private routes)/profile/ProfilePage.module.css
+app/@modal/(.)auth-prompt/page.tsx
+app/@modal/(.)logout-confirm/page.tsx
 app/@modal/default.tsx
 app/@modal/loading.tsx
 app/api/_utils/utils.ts
@@ -54,14 +59,20 @@ app/api/auth/login/route.ts
 app/api/auth/logout/route.ts
 app/api/auth/register/route.ts
 app/api/auth/session/route.ts
+app/api/categories/regions/route.ts
+app/api/categories/types/route.ts
 app/api/locations/[id]/feedbacks/route.ts
 app/api/locations/[id]/route.ts
 app/api/locations/route.ts
 app/api/users/me/route.ts
+app/auth-prompt/page.tsx
 app/favicon.ico
 app/globals.css
 app/layout.tsx
 app/loading.tsx
+app/locations/[id]/page.module.css
+app/locations/[id]/page.tsx
+app/logout-confirm/page.tsx
 app/not-found.tsx
 app/page.module.css
 app/page.tsx
@@ -71,7 +82,11 @@ components/AuthComponent/AuthNav/Auth.module.css
 components/AuthComponent/AuthNav/AuthNav.tsx
 components/AuthComponent/LoginForm/LoginForm.tsx
 components/AuthComponent/RegistrationForm/RegistrationForm.tsx
+components/AuthPromptModal/AuthPromptModal.module.css
+components/AuthPromptModal/AuthPromptModal.tsx
 components/AuthProvider/AuthProvider.tsx
+components/ConfirmationModal/ConfirmationModal.module.css
+components/ConfirmationModal/ConfirmationModal.tsx
 components/FeedBackCard/FeedBackCard.module.css
 components/FeedBackCard/FeedBackCard.tsx
 components/Footer/Footer.module.css
@@ -84,6 +99,8 @@ components/Home/Home.module.css
 components/Home/Home.tsx
 components/LocationCard/LocationCard.module.css
 components/LocationCard/LocationCard.tsx
+components/LocationForm/LocationForm.module.css
+components/LocationForm/LocationForm.tsx
 components/LocationList/LocationList.module.css
 components/LocationList/LocationList.tsx
 components/Modal/Modal.module.css
@@ -97,23 +114,28 @@ components/ReviewsSection/ReviewsSection.tsx
 components/SearchBox/SearchBox.module.css
 components/SearchBox/SearchBox.tsx
 components/TanStackProvider/TanStackProvider.tsx
+env.d.ts
 eslint.config.mjs
 hooks/useAuth.ts
 lib/api/api.ts
+lib/api/categories.ts
 lib/api/clientApi.ts
 lib/api/feedbacks.ts
+lib/api/locationsApi.ts
 lib/api/serverApi.ts
 lib/store/authStore.ts
 lib/store/feedbackStore.ts
 lib/store/locationStore.ts
-middleware.ts
 next.config.ts
 package.json
+proxy.ts
+public/exit.svg
 public/file.svg
 public/globe.svg
 public/iconsAdvantage/community.svg
 public/iconsAdvantage/filters.svg
 public/iconsAdvantage/reviews.svg
+public/images/location-form-placeholder-image.jpg
 public/imagesHero/hero-bg.png
 public/next.svg
 public/vercel.svg
@@ -202,6 +224,137 @@ export default function Page() {
 }
 </file>
 
+<file path="app/(private routes)/location/add/page.tsx">
+import LocationForm from "@/components/LocationForm/LocationForm";
+import { fetchRegions, fetchLocationTypes } from "@/lib/api/categories";
+
+export default async function Page() {
+    
+  const regions = await fetchRegions();
+  const locationTypes = await fetchLocationTypes();
+
+  return <LocationForm regions={regions} locationTypes={locationTypes}  />;
+}
+</file>
+
+<file path="app/(private routes)/location/edit/[id]/page.tsx">
+import LocationForm from "@/components/LocationForm/LocationForm";
+import { fetchRegions, fetchLocationTypes } from "@/lib/api/categories";
+import { fetchLocationByID } from "@/lib/api/locationsApi";
+
+type Props = {
+  params: { id: string };
+};
+
+export default async function Page({ params }: Props) {
+  const [regions, types, location] = await Promise.all([
+    fetchRegions(),
+    fetchLocationTypes(),
+    fetchLocationByID(params.id),
+  ]);
+    
+  return (
+    <LocationForm
+      id={params.id}
+      initialData={location}
+      regions={regions}
+      locationTypes={types}
+    />
+  );
+}
+</file>
+
+<file path="app/(private routes)/profile/ProfilePage.module.css">
+.mainContent {
+  background: var(--color-scheme-2-background);
+  display: flex;
+  justify-content: center;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 32px 32px 0px;
+}
+
+.avatar {
+  width: 145px;
+  height: 145px;
+  margin-bottom: 24px;
+  border-radius: 50%;
+}
+
+.profileInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.userName {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 130%;
+  letter-spacing: -0.01em;
+  color: var(--color-scheme-2-text);
+}
+
+.articles {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 150%;
+  color: var(--color-scheme-2-text);
+}
+
+@media (min-width: 768px) {
+  .header {
+    flex-direction: row;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .avatar {
+    margin: 0;
+  }
+
+  .profileInfo {
+    align-items: start;
+  }
+}
+
+@media (min-width: 1280px) {
+  .header {
+    padding: 48px 32px 0px;
+  }
+
+  .userName {
+    font-size: 32px;
+  }
+
+  .articles {
+    font-size: 20px;
+  }
+}
+</file>
+
+<file path="app/@modal/(.)auth-prompt/page.tsx">
+import AuthPromptModal from '@/components/AuthPromptModal/AuthPromptModal';
+
+export default function AuthPromptPage() {
+  return <AuthPromptModal />;
+}
+</file>
+
+<file path="app/@modal/(.)logout-confirm/page.tsx">
+import ConfirmationModal from '@/components/ConfirmationModal/ConfirmationModal';
+
+export default function LogoutConfirmPage() {
+  return <ConfirmationModal />;
+}
+</file>
+
 <file path="app/api/_utils/utils.ts">
 export function logErrorResponse(errorObj: unknown): void {
   const green = "\x1b[32m";
@@ -210,6 +363,14 @@ export function logErrorResponse(errorObj: unknown): void {
 
   console.log(`${green}> ${yellow}Error Response Data:${reset}`);
   console.dir(errorObj, { depth: null, colors: true });
+}
+</file>
+
+<file path="app/auth-prompt/page.tsx">
+import AuthPromptModal from '@/components/AuthPromptModal/AuthPromptModal';
+
+export default function AuthPromptPage() {
+  return <AuthPromptModal />;
 }
 </file>
 
@@ -262,6 +423,281 @@ a {
   html {
     color-scheme: dark;
   }
+}
+</file>
+
+<file path="app/locations/[id]/page.module.css">
+.page {
+  width: min(100%, 1440px);
+  margin: 0 auto;
+  padding: 24px 16px 56px;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  color: #8a5338;
+  font-size: 14px;
+  font-weight: 600;
+  transition: opacity 0.2s ease;
+}
+
+.backLink:hover {
+  opacity: 0.72;
+  cursor: pointer;
+}
+
+.card {
+  display: grid;
+  gap: 16px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #ffe5d9;
+}
+
+.imageWrap {
+  position: relative;
+  min-height: 240px;
+}
+
+.image {
+  object-fit: cover;
+}
+
+.content {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+}
+
+.ratingRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #4e2f21;
+}
+
+.meta {
+  display: grid;
+  gap: 8px;
+}
+
+.type {
+  color: #6d5147;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.title {
+  color: #4e2f21;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.05;
+}
+
+.details {
+  display: grid;
+  gap: 8px;
+  color: #6d5147;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.details strong {
+  color: #3d261c;
+}
+
+.description {
+  color: #4b352e;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.notFound {
+  padding: 40px 16px;
+  text-align: center;
+  color: #4e2f21;
+}
+
+@media (min-width: 375px) {
+  .imageWrap {
+    min-height: 280px;
+  }
+}
+
+@media (min-width: 768px) {
+  .page {
+    padding: 32px 32px 64px;
+  }
+
+  .card {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    align-items: stretch;
+  }
+
+  .imageWrap {
+    min-height: 100%;
+  }
+
+  .content {
+    gap: 20px;
+    padding: 24px;
+  }
+
+  .title {
+    font-size: 42px;
+  }
+
+  .details {
+    font-size: 15px;
+  }
+
+  .description {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .page {
+    padding: 48px 64px 72px;
+  }
+
+  .content {
+    padding: 32px;
+  }
+
+  .title {
+    font-size: 52px;
+  }
+
+  .type {
+    font-size: 16px;
+  }
+
+  .details {
+    font-size: 16px;
+  }
+}
+</file>
+
+<file path="app/locations/[id]/page.tsx">
+import Image from "next/image";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import styles from "./page.module.css";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+type Owner = {
+  _id?: string;
+  name?: string;
+  avatar?: string;
+};
+
+type LocationDetails = {
+  _id: string;
+  image: string;
+  name: string;
+  locationType: string;
+  region: string;
+  rate: number;
+  description: string;
+  ownerId?: string | Owner;
+  feedbacksId?: string[];
+};
+
+type PageProps = {
+  params: {
+    id: string;
+  }
+};
+
+async function getLocationById(id: string): Promise<LocationDetails | null> {
+  const res = await fetch(`${API_URL}/locations/${id}`, {
+    cache: "no-store",
+  });
+
+  if (res.status === 404) return null;
+  if (!res.ok) {
+    throw new Error("Failed to fetch location");
+  }
+
+  const json = await res.json();
+  return json.data ?? json;
+}
+
+export default async function LocationPage({ params }: PageProps) {
+  const { id } = await params;
+  const location = await getLocationById(id);
+
+  if (!location) {
+    notFound();
+  }
+
+  const ownerName =
+    typeof location.ownerId === "object" && location.ownerId?.name
+      ? location.ownerId.name
+      : "Невідомий автор";
+  const roundedRate = Math.round(location.rate);
+  const clampedRate = Math.max(0, Math.min(5, roundedRate));
+  const stars = '★'.repeat(clampedRate) + '☆'.repeat(5 - clampedRate);
+
+  return (
+    <main className={styles.page}>
+      <Link href="/" className={styles.backLink}>
+        Назад до всіх локацій
+      </Link>
+
+      <article className={styles.card}>
+        <div className={styles.imageWrap}>
+          <Image
+            src={location.image}
+            alt={location.name}
+            fill
+            priority
+            sizes="(max-width: 767px) 100vw, (max-width: 1439px) 50vw, 640px"
+            className={styles.image}
+          />
+        </div>
+
+        <div className={styles.content}>
+          <div className={styles.ratingRow}>
+            <span>{stars}</span>
+            <span>{location.rate}</span>
+          </div>
+
+          <div className={styles.meta}>
+            <p className={styles.type}>{location.locationType}</p>
+            <h1 className={styles.title}>{location.name}</h1>
+          </div>
+
+          <div className={styles.details}>
+            <p>
+              <strong>Регіон:</strong> {location.region}
+            </p>
+            <p>
+              <strong>Тип локації:</strong> {location.locationType}
+            </p>
+            <p>
+              <strong>Автор статті:</strong> {ownerName}
+            </p>
+          </div>
+
+          <p className={styles.description}>{location.description}</p>
+        </div>
+      </article>
+    </main>
+  );
+}
+</file>
+
+<file path="app/logout-confirm/page.tsx">
+import ConfirmationModal from '@/components/ConfirmationModal/ConfirmationModal';
+
+export default function LogoutConfirmPage() {
+  return <ConfirmationModal />;
 }
 </file>
 
@@ -422,202 +858,6 @@ export default function AdvantagesBlock() {
 }
 </file>
 
-<file path="components/AuthComponent/AuthNav/Auth.module.css">
-.wrapper {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background-color: #FFF2EC;
-}
-
-.content {
-    flex: 1;
-    width: 100%;
-    padding: 0 20px;
-    margin: 0 auto;
-}
-
-.form {
-    max-width: 335px;
-    margin: 0 auto;
-}
-
-/* HEADER */
-
-.header {
-    padding: 20px;
-}
-
-.logo {
-    font-size: 16px;
-    color: #333;
-}
-
-/* CONTENT */
-
-.formGroup {
-    gap: 8px;
-    margin-bottom: 16px;
-}
-@media (min-width: 375px) {
-    .content {
-        padding: 0 24px;
-    }
-}
-
-
-.title {
-    font-family: var(--font-family);
-    font-weight: 700;
-    font-size: 28px;
-    line-height: 120%;
-    letter-spacing: -0.01em;
-    text-align: center;
-    color: var(--color-scheme-1-text);
-}
-
-
-
-.form {
-    text-align: left;
-}
-
-
-
-.formGroup {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-bottom: 18px;
-    position: relative;
-    
-}
-
-
-
-.formGroup label {
-    font-size: 14px;
-    color: #333;
-}
-
-
-
-.input {
-    width: 100%;
-    border: 1px solid #FFE5D9;
-    padding: 14px 16px;
-    border-radius: 8px;
-    background-color: #FFE5D9; 
-    font-size: 14px;
-    transition: 0.2s;
-}
-
-.input::placeholder {
-    color: #9a8f88;
-}
-
-.input:focus {
-    outline: none;
-    border-color: #FFE5D9;
-    background-color: #FFE5D9;
-}
-
-
-
-.input.inputError {
-    border-color: red;
-}
-
-.error {
-    font-size: 12px;
-    color: red;
-}
-
-
-
-.submitBtn {
-    width: 100%;
-    margin-top: 16px;
-
-    padding: 14px 0;
-    border-radius: 6px;
-
-    font-size: 14px;
-    font-weight: 500;
-
-    background-color: #c7642f; 
-    border: none;
-    color: white;
-
-    transition: 0.2s;
-}
-
-.submitBtn:hover {
-    background-color: #a95325;
-}
-
-.submitBtn:active {
-    background-color: #8e471f;
-}
-
-.submitBtn:disabled {
-    opacity: 0.5;
-}
-
-
-.footer {
-    padding: 20px 0;
-    text-align: center;
-}
-
-.footer p {
-    font-size: 12px;
-    color: #555;
-}
-
-
-.buttonsBlock {
-    display: flex;
-    justify-content: center;
-    gap: 32px;
-    margin-bottom: 24px;
-    position: relative;
-}
-
-.authBtn {
-    cursor: pointer;
-    position: relative;
-    padding-bottom: 6px;
-}
-
-.authBtn.active {
-    color: #000;
-}
-
-/* общая линия */
-.buttonsBlock::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-
-    height: 1px;
-    background-color: #e5d6cc;
-}
-
-/* линия под активной вкладкой */
-.authBtn.active::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: 0;
-
-    width: 100%;
-    height: 1px;
-    background-color: #c5b5aa;
-}
-</file>
-
 <file path="components/AuthComponent/AuthNav/AuthNav.tsx">
 'use client';
 
@@ -747,112 +987,288 @@ export default function LoginForm() {
 }
 </file>
 
-<file path="components/AuthComponent/RegistrationForm/RegistrationForm.tsx">
-"use client";
-
-import { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import { signUpSchema } from "@/utils/validationSchemas";
-import { useAuth } from "@/hooks/useAuth";
-import css from "../../AuthComponent/AuthNav/Auth.module.css";
-
-function RegistrationFormInner() {
-    const searchParams = useSearchParams();
-    const redirectTo = searchParams.get("redirect") || "/";
-    const { submitAuth } = useAuth(redirectTo);
-
-    return (
-        <div className={css.wrapper}>
-        <div className={css.content}>
-            <Formik
-            initialValues={{ name: "", email: "", password: "" }}
-            validationSchema={signUpSchema}
-            onSubmit={(values, helpers) => submitAuth(false, values, helpers)}
-            >
-            {({ isSubmitting, errors, touched }) => (
-                <Form className={css.form}>
-                <h2 className={css.title}>Реєстрація</h2>
-
-                <div className={css.formGroup}>
-                    <label htmlFor="name">Імʼя*</label>
-                    <Field
-                    id="name"
-                    name="name"
-                    type="text"
-                    autoComplete="name"
-                    placeholder="Ваше імʼя"
-                    className={`${css.input} ${
-                        errors.name && touched.name ? css.inputError : ""
-                    }`}
-                    />
-                    <ErrorMessage name="name" component="p" className={css.error} />
-                </div>
-
-                <div className={css.formGroup}>
-                    <label htmlFor="email">Пошта*</label>
-                    <Field
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    placeholder="hello@relaxmap.ua"
-                    className={`${css.input} ${
-                        errors.email && touched.email ? css.inputError : ""
-                    }`}
-                    />
-                    <ErrorMessage
-                    name="email"
-                    component="p"
-                    className={css.error}
-                    />
-                </div>
-
-                <div className={css.formGroup}>
-                    <label htmlFor="password">Пароль*</label>
-                    <Field
-                    id="password"
-                    name="password"
-                    type="password"
-                    autoComplete="new-password"
-                    placeholder="********"
-                    className={`${css.input} ${
-                        errors.password && touched.password ? css.inputError : ""
-                    }`}
-                    />
-                    <ErrorMessage
-                    name="password"
-                    component="p"
-                    className={css.error}
-                    />
-                </div>
-
-                <button
-                    className={css.submitBtn}
-                    type="submit"
-                    disabled={isSubmitting}
-                >
-                    {isSubmitting ? "..." : "Зареєструватись"}
-                </button>
-                </Form>
-            )}
-            </Formik>
-        </div>
-        </div>
-    );
+<file path="components/AuthPromptModal/AuthPromptModal.module.css">
+.content {
+  text-align: center;
 }
 
-export default function RegistrationForm() {
-    return (
-        <Suspense fallback={null}>
-            <RegistrationFormInner />
-        </Suspense>
-    );
+.title {
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: #000;
+  margin-bottom: 16px;
+}
+
+.text {
+  font-size: 16px;
+  line-height: 1.5;
+  color: #475467;
+  margin-bottom: 24px;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.loginBtn,
+.registerBtn {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  padding: 12px;
+  max-width: 294px;
+  transition: background-color 250ms ease;
+}
+
+.loginBtn {
+  border: 1px solid #d0d5dd;
+  background: #ffffff;
+  color: #4c2613;
+}
+
+.registerBtn {
+  border: none;
+  background-color: #cc6534;
+  color: #ffffff;
+}
+
+.loginBtn:hover {
+  background-color: #cc6534;
+  color: #ffffff;
+}
+.registerBtn:hover {
+  background-color: #ffe5d9;
+  color: #1b391b;
+}
+
+@media screen and (min-width: 768px) {
+  .title {
+    font-size: 32px;
+  }
+
+  .actions {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .loginBtn,
+  .registerBtn {
+    min-width: 230px;
+  }
+}
+
+@media screen and (min-width: 1440px) {
+  .title {
+    font-size: 48px;
+  }
+
+  .text {
+    font-size: 20px;
+  }
+}
+</file>
+
+<file path="components/AuthPromptModal/AuthPromptModal.tsx">
+'use client';
+
+import Link from 'next/link';
+import Modal from '@/components/Modal/Modal';
+import css from './AuthPromptModal.module.css';
+
+export default function AuthPromptModal() {
+  return (
+    <Modal>
+      <div className={css.content}>
+        <h2 className={css.title}>Щоб продовжити, увійдіть або зареєструйтеся</h2>
+        <p className={css.text}>
+          Залишати відгуки можуть лише авторизовані користувачі.
+        </p>
+
+        <div className={css.actions}>
+          <Link href="/login" className={css.loginBtn}>
+            Увійти
+          </Link>
+
+          <Link href="/register" className={css.registerBtn}>
+            Зареєструватися
+          </Link>
+        </div>
+      </div>
+    </Modal>
+  );
 }
 </file>
 
 <file path="components/AuthProvider/AuthProvider.tsx">
 
+</file>
+
+<file path="components/ConfirmationModal/ConfirmationModal.module.css">
+.content {
+    text-align: center;
+}
+
+.title {
+    font-weight: 700;
+    font-size: 26px;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    color: #000;
+    margin-bottom: 16px;
+}
+
+.text {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #475467;
+    margin-bottom: 32px;
+}
+
+.error {
+    color: #d92d20;
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.cancelBtn,
+.confirmBtn {
+    background-color: rgba(0, 0, 0, 0.15);
+    border-radius: 6px;
+    padding: 12px;
+    max-width: 294px;
+    transition: background-color 250ms ease;
+}
+
+.cancelBtn {
+    border: 1px solid #d0d5dd;
+    background: #ffffff;
+    color: #4C2613;
+}
+
+.confirmBtn {
+    border: none;
+    background-color: #CC6534;
+    color: #ffffff;
+}
+
+.cancelBtn:hover{
+    background-color: #CC6534;
+    color: #ffffff;
+}
+.confirmBtn:hover {
+    background-color: #FFE5D9;
+    color: #1B391B;
+}
+
+.cancelBtn:disabled,
+.confirmBtn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+@media screen and (min-width: 768px) {
+    .title {
+        font-size: 32px;
+    }
+
+    .actions {
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .cancelBtn,
+    .confirmBtn {
+        min-width: 230px;
+    }
+}
+
+@media screen and (min-width: 1440px) {
+    .title {
+        font-size: 48px;
+    }
+    .text {
+        font-size: 20px;
+ }
+}
+</file>
+
+<file path="components/ConfirmationModal/ConfirmationModal.tsx">
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/lib/store/authStore';
+import { api } from '@/lib/api/api';
+import Modal from '@/components/Modal/Modal';
+import css from './ConfirmationModal.module.css';
+
+export default function ConfirmationModal() {
+  const router = useRouter();
+  const logout = useAuthStore((state) => state.logout);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleCancel = () => {
+    router.back();
+  };
+
+const handleConfirm = async () => {
+  try {
+    setError('');
+    setIsLoading(true);
+
+    await api.post('/auth/logout'); 
+
+    logout(); 
+
+    router.back(); 
+  } catch {
+    setError('Не вдалося виконати вихід. Спробуйте ще раз.');
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+  return (
+    <Modal>
+      <div className={css.content}>
+        <h2 className={css.title}>Ви точно хочете вийти?</h2>
+        <p className={css.text}>Ми будемо сумувати за вами!</p>
+
+        {error ? <p className={css.error}>{error}</p> : null}
+
+        <div className={css.actions}>
+          <button
+            type="button"
+            className={css.cancelBtn}
+            onClick={handleCancel}
+            disabled={isLoading}
+          >
+            Скасувати
+          </button>
+
+          <button
+            type="button"
+            className={css.confirmBtn}
+            onClick={handleConfirm}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Завантаження...' : 'Вийти'}
+          </button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
 </file>
 
 <file path="components/Footer/Footer.module.css">
@@ -1068,16 +1484,294 @@ export default function HeroBlock() {
 
 </file>
 
-<file path="components/Modal/Modal.module.css">
+<file path="components/LocationForm/LocationForm.module.css">
 
 </file>
 
-<file path="components/Modal/Modal.tsx">
+<file path="components/LocationForm/LocationForm.tsx">
+"use client";
 
+import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
+import * as Yup from "yup";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { LocationFormValues } from "@/types/location";
+
+type Props = {
+  id?: string;
+  initialData?: {
+    name: string;
+    locationType: string;
+    region: string;
+    description: string;
+    image?: string;
+  };
+  regions: string[];
+  locationTypes: string[];
+};
+
+export default function LocationForm({ initialData, id, regions, locationTypes }: Props) {
+  
+  const isEdit = !!initialData;
+  const router = useRouter();
+  const placeholder = "/images/location-form-placeholder-image.jpg";
+  
+
+ const [imagePreview, setImagePreview] = useState<string>(
+  initialData?.image || placeholder
+  );
+  
+  useEffect(() => {
+    setImagePreview(initialData?.image || placeholder);
+  }, [initialData]);
+ 
+
+  useEffect(() => {
+    const currentPreview = imagePreview;
+
+    return () => {
+      if (currentPreview.startsWith("blob:")) {
+        URL.revokeObjectURL(currentPreview);
+      }
+    };
+  }, [imagePreview]);
+
+const initialValues: LocationFormValues = {
+  name: initialData?.name ?? "",
+  locationType: initialData?.locationType || "",
+  region: initialData?.region || "",
+  description: initialData?.description || "",
+  imageFile: null,
+};
+
+  const validationSchema = Yup.object({
+   imageFile: Yup.mixed<File>()
+  .test("required", "Додайте фото", (value) => {
+    if (isEdit) return true; 
+    return !!value;
+  })
+  .test("fileType", "Тільки JPG або PNG", (value) => {
+    if (!value) return true;
+    return ["image/jpeg", "image/png"].includes(value.type);
+  })
+  .test("fileSize", "Максимум 1MB", (value) => {
+    if (!value) return true;
+    return value.size <= 1024 * 1024;
+  }),
+
+    name: Yup.string()
+      .min(3, "Мінімум 3 символи")
+      .max(96, "Максимум 96 символів")
+      .required("Введіть назву"),
+
+    locationType: Yup.string()
+      .max(64, "Максимум 64 символи")
+      .required("Оберіть тип"),
+
+    region: Yup.string()
+      .max(64, "Максимум 64 символи")
+      .required("Оберіть регіон"),
+
+    description: Yup.string()
+      .min(20, "Мінімум 20 символів")
+      .max(6000, "Максимум 6000символів")
+      .required("Введіть опис"),
+  });
+  
+
+  useEffect(() => {
+    if (isEdit && !id) {
+      router.push("/");
+    }
+  }, [isEdit, id, router]);
+
+ const handleSubmit = async (
+  values: LocationFormValues,
+  { setSubmitting }: FormikHelpers<LocationFormValues>
+) => {
+  try {
+    const res = await fetch(
+      isEdit
+        ? `/api/locations/${id}`
+        : '/api/locations',
+      {
+        method: isEdit ? "PATCH" : "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: values.name,
+          locationType: values.locationType,
+          region: values.region,
+          description: values.description,
+          image: placeholder,
+          coordinates: {
+            lat: 0,
+            lon: 0,
+          },
+        }),
+        credentials: "include",
+      }
+    );
+
+    if (!res.ok) throw new Error("Помилка");
+
+    const data = await res.json();
+
+    router.push(`/locations/${data._id}`);
+  } catch (error) {
+    toast.error("Не вдалося зберегти");
+  } finally {
+    setSubmitting(false);
+  }
+};
+  
+  
+  return (
+    <main>
+      <h1>
+        {isEdit ? "Редагування місця" : "Додавання нового місця"}
+      </h1>
+
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+          enableReinitialize
+
+      >
+        {({ resetForm, setFieldValue, isSubmitting }) => (
+          <Form>
+            {/* Фото */}
+            <div>
+              <p>Обкладинка</p>
+
+              <input
+                id="fileInput"
+                type="file"
+                accept="image/jpeg, image/png"
+                hidden
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    setFieldValue("imageFile", file);
+                    setImagePreview(URL.createObjectURL(file));
+                  }
+                }}
+              />
+
+              <button
+               type="button"
+                onClick={() =>
+                  document.getElementById("fileInput")?.click()
+                }
+              >           
+               Завантажте фото
+              </button>
+
+              {imagePreview && (
+                <img
+                  src={imagePreview}
+                  alt="preview"
+                  width={120}
+                  style={{ display: "block", marginTop: 10 }}
+                />
+              )}
+
+              <ErrorMessage name="imageFile" component="div" />
+            </div>
+
+            {/* Назва */}
+            <div>
+              <label htmlFor="name">Назва місця</label>
+              <Field
+                id="name"
+                name="name"
+                placeholder="Введіть назву місця"
+              />
+              <ErrorMessage name="name" component="div" />
+            </div>
+
+            {/* Тип */}
+            <div>
+              <label htmlFor="locationType">Тип місця</label>
+              <Field as="select" id="locationType" name="locationType">
+                <option value="">Оберіть тип місця</option>
+                {locationTypes.map((location, index) => (
+                 <option key={index} value={location}>
+                  {location}
+                </option>
+     ))}
+              </Field>
+              <ErrorMessage name="locationType" component="div" />
+            </div>
+
+            {/* Регіон */}
+            <div>
+              <label htmlFor="region">Регіон</label>
+              <Field as="select" id="region" name="region">
+                <option value="">Оберіть регіон</option>
+                {regions.map((region, index) => (
+                  <option key={index} value={region}>
+                    {region} 
+                  </option>
+              ))}
+              </Field>
+              <ErrorMessage name="region" component="div" />
+            </div>
+
+            {/* Опис */}
+            <div>
+              <label htmlFor="description">Опис</label>
+              <Field
+                as="textarea"
+                id="description"
+                name="description"
+                placeholder="Детальний опис локації"
+                maxLength={600}
+              />
+              <ErrorMessage name="description" component="div" />
+            </div>
+
+            {/* Кнопки */}
+            <div style={{ marginTop: 20 }}>
+              <button type="submit" disabled={isSubmitting}>
+                {isSubmitting
+                  ? "Завантаження..."
+                  : isEdit
+                  ? "Зберегти"
+                  : "Опублікувати"}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  resetForm();
+                  setImagePreview(initialData?.image || placeholder);
+
+                  const input = document.getElementById("fileInput") as HTMLInputElement;
+                  if (input) input.value = "";
+                }}
+              >
+                {isEdit ? "Відмінити зміни" : "Відмінити"}
+              </button>
+            </div>
+          </Form>
+        )}
+      </Formik>
+    </main>
+  );
+}
 </file>
 
-<file path="components/TanStackProvider/TanStackProvider.tsx">
+<file path="env.d.ts">
+/// <reference types="next" />
+/// <reference types="next/image-types/global" />
+import "./.next/dev/types/routes.d.ts";
 
+// NOTE: This file should not be edited
+// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.
 </file>
 
 <file path="eslint.config.mjs">
@@ -1101,59 +1795,187 @@ const eslintConfig = defineConfig([
 export default eslintConfig;
 </file>
 
-<file path="lib/api/api.ts">
+<file path="lib/api/categories.ts">
+export interface LocationType {
+  _id: string;
+  type: string;
+  slug: string;
+  shortDescription: string;
+}
 
+
+type Region = {
+  _id: string;
+  region: string; 
+  slug: string;
+  level: string;
+  note: string;
+};
+
+export const fetchRegions = async (): Promise<string[]> => {
+  const res = await fetch(
+    "https://node-project-group-02.onrender.com/categories/regions"
+  );
+
+  const data = await res.json();
+
+  console.log("Fetched regions:", data.data.map((item: Region) => item.region)); 
+
+  return data.data.map((item: Region) => item.region);
+};
+
+export const fetchLocationTypes = async (): Promise<string[]> => {
+  const res = await fetch(
+    "https://node-project-group-02.onrender.com/categories/types"
+  );
+
+  const data = await res.json();
+
+  return data.data.map((item: LocationType) => item.type);
+};
 </file>
 
-<file path="lib/api/serverApi.ts">
+<file path="lib/api/locationsApi.ts">
+import {api} from "./api";
+import { Location, NewLocation} from "../../types/location";
 
+
+export const fetchLocationByID = async (id: string): Promise<Location> => {
+    const endPoint = `/locations/${id}`;
+
+    const response = await api.get<Location>(endPoint);
+        
+    return response.data;
+}
+
+
+export const createLocation = async (location: NewLocation): Promise<Location> => {
+    const endPoint = `/locations`;
+
+    const response = await api.post<Location>(endPoint, location);
+
+    return response.data;
+}
 </file>
 
 <file path="lib/store/feedbackStore.ts">
 
 </file>
 
-<file path="middleware.ts">
-import { NextRequest, NextResponse } from 'next/server';
+<file path="proxy.ts">
+import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { parse } from "cookie";
 
-// Routes that require authentication
-const PROTECTED_ROUTES = ['/profile', '/favorites', '/settings']; 
+const authRoutes = ["/login", "/register"];
 
-export function middleware(req: NextRequest) {
-    const { pathname, searchParams } = req.nextUrl;
+const privateRoutes = ["/profile", "/locations/new", "/locations/edit"];
 
-    const isProtected = PROTECTED_ROUTES.some(route =>
-        pathname.startsWith(route)
-    );
+const API_BASE_URL = process.env.BACKEND_API_URL ?? "https://node-project-group-02.onrender.com";
 
-    if (!isProtected) return NextResponse.next();
+async function refreshSession(refreshToken: string): Promise<Response | null> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+      method: "POST",
+      headers: {
+        Cookie: `refreshToken=${refreshToken}`,
+      },
+    });
 
-    // Check for your auth cookie (use your real cookie name)
-    const isAuthenticated = req.cookies.has('accessToken');
+    return response.ok ? response : null;
+  } catch {
+    return null;
+  }
+}
 
-    if (!isAuthenticated) {
-        const loginUrl = new URL('/login', req.url);
-        loginUrl.searchParams.set('redirect', pathname); 
-        return NextResponse.redirect(loginUrl);
+export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const cookieStore = await cookies();
+
+  const accessToken = cookieStore.get("accessToken")?.value;
+  const refreshToken = cookieStore.get("refreshToken")?.value;
+
+  const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
+  const isPrivateRoute = privateRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
+
+  if (!accessToken) {
+    if (refreshToken) {
+      const refreshResponse = await refreshSession(refreshToken);
+
+      if (refreshResponse) {
+        const setCookieHeader = refreshResponse.headers.get("set-cookie");
+
+        if (setCookieHeader) {
+          const cookieStrings = setCookieHeader.split(/,(?=[^ ])/);
+
+          for (const cookieStr of cookieStrings) {
+            const parsed = parse(cookieStr);
+            const options = {
+              path: parsed.Path ?? "/",
+              expires: parsed.Expires ? new Date(parsed.Expires) : undefined,
+              maxAge: parsed["Max-Age"]
+                ? Number(parsed["Max-Age"])
+                : undefined,
+              httpOnly: /httponly/i.test(cookieStr),
+              secure: /secure/i.test(cookieStr),
+              sameSite: (
+                cookieStr.match(/samesite=(\w+)/i)?.[1] ?? "lax"
+              ).toLowerCase() as "lax" | "strict" | "none",
+            };
+
+            if (parsed.accessToken)
+              cookieStore.set("accessToken", parsed.accessToken, options);
+            if (parsed.refreshToken)
+              cookieStore.set("refreshToken", parsed.refreshToken, options);
+            if (parsed.sessionId)
+              cookieStore.set("sessionId", parsed.sessionId, options);
+          }
+
+          const updatedCookies = cookieStore.toString();
+
+          if (isAuthRoute) {
+            return NextResponse.redirect(new URL("/", request.url), {
+              headers: { Cookie: updatedCookies },
+            });
+          }
+
+          if (isPrivateRoute) {
+            return NextResponse.next({
+              headers: { Cookie: updatedCookies },
+            });
+          }
+        }
+      }
     }
 
-    return NextResponse.next();
+    if (isAuthRoute) return NextResponse.next();
+    if (isPrivateRoute)
+      return NextResponse.redirect(new URL("/login", request.url));
+  }
+  if (isAuthRoute) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
-    matcher: ['/profile/:path*', '/favorites/:path*', '/settings/:path*'],
+  matcher: [
+    "/login",
+    "/register",
+    "/profile/:path*",
+    "/locations/new",
+    "/locations/edit/:path*",
+  ],
 };
 </file>
 
-<file path="next.config.ts">
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
-  reactCompiler: true,
-};
-
-export default nextConfig;
+<file path="public/exit.svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none">
+  <path fill="#fff" stroke="#000" d="M12.175.5c.164 0 .266.049.346.129a.45.45 0 0 1 .13.346.45.45 0 0 1-.13.346L7.268 6.575l.353.354 4.9 4.9c.08.08.13.182.13.346a.45.45 0 0 1-.13.346.45.45 0 0 1-.346.13.45.45 0 0 1-.347-.13l-4.9-4.9-.353-.353-5.254 5.254a.45.45 0 0 1-.346.128.45.45 0 0 1-.346-.129.45.45 0 0 1-.129-.346c0-.164.049-.267.129-.347l5.253-5.253-.354-.353-4.9-4.9A.45.45 0 0 1 .5.974.45.45 0 0 1 .629.629.45.45 0 0 1 .975.5c.164 0 .266.049.346.129l4.9 4.9.354.353L11.828.629A.45.45 0 0 1 12.175.5Z"/>
+</svg>
 </file>
 
 <file path="public/file.svg">
@@ -1192,25 +2014,6 @@ export default nextConfig;
 
 <file path="public/window.svg">
 <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 2.5h13v10a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1zM0 1h16v11.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 0 12.5zm3.75 4.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5M7 4.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0m1.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5" fill="#666"/></svg>
-</file>
-
-<file path="react-rating-stars-component.d.ts">
-declare module "react-rating-stars-component" {
-  import React from "react";
-
-  export interface ReactStarsProps {
-    count?: number;
-    value?: number;
-    isHalf?: boolean;
-    edit?: boolean;
-    size?: number;
-    activeColor?: string;
-    // Add other props as needed
-  }
-
-  const ReactStars: React.FC<ReactStarsProps>;
-  export default ReactStars;
-}
 </file>
 
 <file path="README.md">
@@ -1289,10 +2092,6 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 }
 </file>
 
-<file path="types/user.ts">
-
-</file>
-
 <file path="utils/validationSchemas.ts">
 import * as Yup from 'yup';
 
@@ -1322,12 +2121,6 @@ export const signInSchema = Yup.object({
 </file>
 
 <file path="app/(private routes)/profile/edit/page.tsx">
-export default function Page() {
-    return <div>Profile Page</div>;
-}
-</file>
-
-<file path="app/(private routes)/profile/page.tsx">
 export default function Page() {
     return <div>Profile Page</div>;
 }
@@ -1392,10 +2185,6 @@ export async function POST(req: NextRequest) {
 }
 </file>
 
-<file path="app/api/auth/logout/route.ts">
-export async function GET() { return Response.json({ message: "Not implemented" }); }
-</file>
-
 <file path="app/api/auth/register/route.ts">
 import { NextRequest, NextResponse } from "next/server";
 import { api } from "../../api";
@@ -1444,49 +2233,45 @@ export async function POST(req: NextRequest) {
 }
 </file>
 
-<file path="app/api/auth/session/route.ts">
-export async function GET() { return Response.json({ message: "Not implemented" }); }
+<file path="app/api/categories/regions/route.ts">
+import { NextResponse } from "next/server";
+
+const API_URL = process.env.BACKEND_API_URL;
+
+export async function GET() {
+  const res = await fetch(`${API_URL}/categories/regions`, {
+    cache: "no-store",
+  });
+
+  const data = await res.text();  
+
+  return new NextResponse(data, {
+    status: res.status,
+    headers: {
+      "Content-Type": res.headers.get("Content-Type") ?? "application/json",
+    },
+  });
+}
 </file>
 
-<file path="app/api/locations/[id]/route.ts">
-export async function GET() { return Response.json({ message: "Not implemented" }); }
-</file>
+<file path="app/api/categories/types/route.ts">
+import { NextResponse } from "next/server";
 
-<file path="app/api/users/me/route.ts">
-export async function GET() { return Response.json({ message: "Not implemented" }); }
-</file>
+const API_URL = process.env.BACKEND_API_URL;
 
-<file path="app/layout.tsx">
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "modern-normalize";
-import "./globals.css";
+export async function GET() {
+  const res = await fetch(`${API_URL}/categories/types`, {
+    cache: "no-store",
+  });
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+  const data = await res.text();
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-export const metadata: Metadata = {
-  title: "Create Next App",
-  description: "Generated by create next app",
-};
-
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body>{children}</body>
-    </html>
-  );
+  return new NextResponse(data, {
+    status: res.status,
+    headers: {
+      "Content-Type": res.headers.get("Content-Type") ?? "application/json",
+    },
+  });
 }
 </file>
 
@@ -1494,396 +2279,464 @@ export default function RootLayout({
 
 </file>
 
-<file path="components/LocationCard/LocationCard.module.css">
-/* Mobile */
-
-.imageWrapper {
-  position: relative;
-  width: 100%;
-  height: 200px;
-}
-
-.card {
-  border-radius: 12px;
-  overflow: hidden;
-  background-color: #fff;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-.image {
-  object-fit: cover;
+<file path="components/AuthComponent/AuthNav/Auth.module.css">
+.wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #FFF2EC;
 }
 
 .content {
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.type {
-  font-size: 12px;
-  color: #888;
-  margin: 0;
-}
-
-.rating {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-
-.title {
-  font-size: 16px;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin: 0;
-}
-
-.button {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #fff;
-  font-size: 13px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  margin-top: 4px;
-}
-
-.button:hover {
-  background-color: #f5f5f5;
-}
-
-/* Tablet */
-@media (min-width: 768px) {
-  .imageWrapper {
-    height: 220px;
-  }
-
-  .image {
-    height: 220px;
-  }
-
-  .content {
-    padding: 14px;
-    gap: 8px;
-  }
-
-  .type {
-    font-size: 13px;
-  }
-
-  .title {
-    font-size: 18px;
-  }
-
-  .button {
-    padding: 11px;
-    font-size: 14px;
-  }
-}
-
-/* Desktop */
-@media (min-width: 1280px) {
-  .imageWrapper {
-    height: 240px;
-  }
-
-  .image {
-    height: 240px;
-  }
-
-  .content {
-    padding: 16px;
-    gap: 8px;
-  }
-
-  .type {
-    font-size: 14px;
-  }
-
-  .title {
-    font-size: 20px;
-  }
-
-  .button {
-    padding: 12px;
-    font-size: 14px;
-  }
-}
-</file>
-
-<file path="components/LocationList/LocationList.module.css">
-/* Mobile */
-
-.empty {
-  text-align: center;
-  font-size: 16px;
-  color: #888;
-  grid-column: 1 / -1;
-  padding: 40px 0;
-}
-
-.section {
-  padding: 24px 16px;
-}
-
-.title {
-  font-size: 28px;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin-bottom: 24px;
-  text-align: center;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
-}
-
-/* Tablet */
-@media (min-width: 768px) {
-  .section {
-    padding: 40px 32px;
-  }
-
-  .title {
-    font-size: 34px;
-    margin-bottom: 28px;
-  }
-
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* Desktop */
-@media (min-width: 1280px) {
-  .section {
-    max-width: 1440px;
+    width: 100%;
+    padding: 0 20px;
     margin: 0 auto;
-    padding: 60px 120px;
-  }
+    display: flex;
+    flex-direction: column;
+    flex: 1; 
+}
 
-  .title {
-    font-size: 40px;
+@media (min-width: 375px) {
+    .content {
+        padding: 0 24px;
+    }
+}
+
+.form {
+    max-width: 335px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.header {
+    height: 72px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.buttonsBlock {
+    display: flex;
+    width: 100%;
+    max-width: 335px;
+    margin: 64px auto 32px;
+}
+
+.authBtn {
+    width: 50%;
+    text-align: center;
+    padding: 12px 0 8px;
+    cursor: pointer;
+    position: relative;
+    color: #8f8178;
+    transition: 0.2s;
+}
+
+.authBtn:hover,
+.authBtn.active {
+    color: #000;
+}
+
+.title {
+    text-align: center;
     margin-bottom: 32px;
-  }
-
-  .grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-</file>
-
-<file path="components/Pagination/Pagination.module.css">
-/* Mobile */
-.wrapper {
-  display: flex;
-  justify-content: center;
-  margin-top: 32px;
 }
 
-.button {
-  padding: 12px 32px;
-  background-color: #e8845a;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s;
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 24px;
 }
 
-.button:hover {
-  background-color: #d4724a;
+.formGroup label {
+    font-size: 14px;
+    font-weight: 500;
 }
 
-/* Tablet */
+.input {
+    width: 100%;
+    height: 40px;
+    padding: 0 16px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background-color: #ffe5d9;
+    font-size: 14px;
+}
+
+.input::placeholder {
+    color: #9a8f88;
+}
+
+.input:hover {
+    background-color: #fdd9c9;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #c7642f;
+    background-color: #fff;
+}
+
+.input.inputError {
+    border-color: red;
+}
+
+.error {
+    font-size: 12px;
+    color: red;
+}
+
+.submitBtn {
+    width: 100%;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    background-color: #c7642f;
+    border: none;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.submitBtn:hover {
+    background-color: #a95325;
+}
+
+.submitBtn:active {
+    background-color: #8e471f;
+}
+
+.submitBtn:disabled {
+    opacity: 0.5;
+}
+
+.footer {
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-top: auto; 
+}
+.footer p {
+    font-size: 12px;
+    color: #555;
+}
+
+.authBtn.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 1px;
+    background-color: #c5b5aa;
+    width: 70%;
+}
+
 @media (min-width: 768px) {
-  .wrapper {
-    margin-top: 40px;
-  }
+    .header,
+    .content,
+    .footer {
+        max-width: 704px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 0 32px;
+    }
 
-  .button {
-    padding: 14px 40px;
-    font-size: 15px;
-  }
+    .form {
+        max-width: 644px;
+    }
+
+    .buttonsBlock {
+        max-width: 704px;
+        align-items: center;
+    }
+
+    .input {
+        max-width: 644px;
+    }
+
+    .title {
+        font-size: 32px;
+    }
+
+    .authBtn.active::after {
+        width: 80%;
+    }
 }
 
-/* Desktop */
-@media (min-width: 1280px) {
-  .wrapper {
-    margin-top: 48px;
-  }
+@media (min-width: 1440px) {
+    .header,
+    .content,
+    .footer {
+        max-width: 1312px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 0 64px;
+    }
 
-  .button {
-    padding: 16px 48px;
-    font-size: 16px;
-  }
+    .form,
+    .buttonsBlock {
+        max-width: 644px;
+    }
+
+    .title {
+        font-size: 36px;
+        margin-bottom: 40px;
+    }
+
+    .input {
+        height: 44px;
+    }
+
+    .authBtn.active::after {
+        width: 100%;
+    }
 }
 </file>
 
-<file path="components/Pagination/Pagination.tsx">
-import styles from "./Pagination.module.css";
+<file path="components/AuthComponent/RegistrationForm/RegistrationForm.tsx">
+"use client";
 
-type PaginationProps = {
-  onLoadMore: () => void;
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import { signUpSchema } from "@/utils/validationSchemas";
+import { useAuth } from "@/hooks/useAuth";
+import css from "../../AuthComponent/AuthNav/Auth.module.css";
+
+function RegistrationFormInner() {
+    const searchParams = useSearchParams();
+    const redirectTo = searchParams.get("redirect") || "/";
+    const { submitAuth } = useAuth(redirectTo);
+
+    return (
+        <div className={css.wrapper}>
+            <div className={css.content}>
+                <Formik
+                    initialValues={{ name: "", email: "", password: "" }}
+                    validationSchema={signUpSchema}
+                    onSubmit={(values, helpers) => submitAuth(false, values, helpers)}
+                >
+                    {({ isSubmitting, errors, touched }) => (
+                        <Form className={css.form}>
+                            <h2 className={css.title}>Реєстрація</h2>
+
+                            <div className={css.formGroup}>
+                                <label htmlFor="name">Імʼя*</label>
+                                <Field
+                                    id="name"
+                                    name="name"
+                                    type="text"
+                                    autoComplete="name"
+                                    placeholder="Ваше імʼя"
+                                    className={`${css.input} ${errors.name && touched.name ? css.inputError : ""
+                                        }`}
+                                />
+                                <ErrorMessage name="name" component="p" className={css.error} />
+                            </div>
+
+                            <div className={css.formGroup}>
+                                <label htmlFor="email">Пошта*</label>
+                                <Field
+                                    id="email"
+                                    name="email"
+                                    type="email"
+                                    autoComplete="email"
+                                    placeholder="hello@relaxmap.ua"
+                                    className={`${css.input} ${errors.email && touched.email ? css.inputError : ""
+                                        }`}
+                                />
+                                <ErrorMessage
+                                    name="email"
+                                    component="p"
+                                    className={css.error}
+                                />
+                            </div>
+
+                            <div className={css.formGroup}>
+                                <label htmlFor="password">Пароль*</label>
+                                <Field
+                                    id="password"
+                                    name="password"
+                                    type="password"
+                                    autoComplete="new-password"
+                                    placeholder="********"
+                                    className={`${css.input} ${errors.password && touched.password ? css.inputError : ""
+                                        }`}
+                                />
+                                <ErrorMessage
+                                    name="password"
+                                    component="p"
+                                    className={css.error}
+                                />
+                            </div>
+
+                            <button
+                                className={css.submitBtn}
+                                type="submit"
+                                disabled={isSubmitting}
+                            >
+                                {isSubmitting ? "..." : "Зареєструватись"}
+                            </button>
+                        </Form>
+                    )}
+                </Formik>
+            </div>
+        </div>
+    );
+}
+
+export default function RegistrationForm() {
+    return (
+        <Suspense fallback={null}>
+            <RegistrationFormInner />
+        </Suspense>
+    );
+}
+</file>
+
+<file path="components/Modal/Modal.module.css">
+.backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(17, 17, 17, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.modal {
+    position: relative;
+    width: 100%;
+    max-width: 334px;
+    background: #FFF2EC;
+    border-radius: 24px;
+    padding: 64px 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+}
+
+.closeBtn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    color: #101828;
+}
+
+@media screen and (min-width: 768px) {
+    .modal {
+        min-width: 704px;
+        padding: 64px 137px;
+    }
+}
+
+@media screen and (min-width: 1440px) {
+    .modal {
+        max-width: 768px;
+    }
+}
+</file>
+
+<file path="components/Modal/Modal.tsx">
+'use client';
+
+import {
+  useEffect,
+  useRef,
+  useCallback,
+  type ReactNode,
+  type MouseEvent,
+} from 'react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import css from './Modal.module.css';
+
+type ModalProps = {
+  children: ReactNode;
 };
 
-export default function Pagination({ onLoadMore }: PaginationProps) {
+export default function Modal({ children }: ModalProps) {
+  const router = useRouter();
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const closeModal = useCallback(() => {
+    router.back();
+  }, [router]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        closeModal();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+    };
+  }, [closeModal]);
+
+  const handleBackdropClick = (event: MouseEvent<HTMLDivElement>) => {
+    if (
+      contentRef.current &&
+      !contentRef.current.contains(event.target as Node)
+    ) {
+      closeModal();
+    }
+  };
+
   return (
-    <div className={styles.wrapper}>
-      <button className={styles.button} onClick={onLoadMore}>
-        Показати ще
-      </button>
+    <div className={css.backdrop} onClick={handleBackdropClick}>
+      <div className={css.modal} ref={contentRef}>
+        <button
+          type="button"
+          className={css.closeBtn}
+          onClick={closeModal}
+          aria-label="Закрити модальне вікно"
+        >
+          <Image src="/exit.svg" alt="close" width={13.5} height={13.5} />
+        </button>
+        {children}
+      </div>
     </div>
   );
 }
 </file>
 
-<file path="components/SearchBox/SearchBox.module.css">
-/* Mobile */
-.wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.search {
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 14px;
-  outline: none;
-  box-sizing: border-box;
-}
-
-.search::placeholder {
-  color: #aaa;
-}
-
-.select {
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 14px;
-  background-color: #fff;
-  cursor: pointer;
-  outline: none;
-  appearance: none;
-  padding-right: 32px;
-  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  box-sizing: border-box;
-}
-
-/* Tablet */
-@media (min-width: 768px) {
-  .wrapper {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-bottom: 28px;
-  }
-
-  .search {
-    flex: 1;
-    min-width: 200px;
-  }
-
-  .select {
-    flex: 1;
-    min-width: 140px;
-    width: auto;
-  }
-}
-
-/* Desktop */
-@media (min-width: 1280px) {
-  .wrapper {
-    flex-wrap: nowrap;
-    margin-bottom: 32px;
-  }
-
-  .search {
-    flex: 2;
-  }
-
-  .select {
-    flex: 1;
-  }
-}
-</file>
-
-<file path="components/SearchBox/SearchBox.tsx">
+<file path="components/TanStackProvider/TanStackProvider.tsx">
 "use client";
 
-import { useLocationStore } from "@/lib/store/locationStore";
-import styles from "./SearchBox.module.css";
+import React from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useState } from "react";
 
-type SearchBoxProps = {
-  regions: string[];
-  locationTypes: string[];
-};
-
-export default function SearchBox({ regions, locationTypes }: SearchBoxProps) {
-  const { filters, setSearch, setRegion, setLocationType, setSort } =
-    useLocationStore();
+export default function TanStackProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [queryClient] = useState(() => new QueryClient());
 
   return (
-    <div className={styles.wrapper}>
-      <input
-        className={styles.search}
-        type="text"
-        placeholder="Пошук"
-        value={filters.search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
-      <select
-        className={styles.select}
-        value={filters.region}
-        onChange={(e) => setRegion(e.target.value)}
-      >
-        <option value="">Регіон</option>
-        {regions.map((region) => (
-          <option key={region} value={region}>
-            {region}
-          </option>
-        ))}
-      </select>
-      <select
-        className={styles.select}
-        value={filters.locationType}
-        onChange={(e) => setLocationType(e.target.value)}
-      >
-        <option value="">Тип локації</option>
-        {locationTypes.map((type) => (
-          <option key={type} value={type}>
-            {type}
-          </option>
-        ))}
-      </select>
-      <select
-        className={styles.select}
-        value={filters.sort}
-        onChange={(e) => setSort(e.target.value)}
-      >
-        <option value="">Сортування</option>
-        <option value="name">За назвою</option>
-        <option value="rate">За рейтингом</option>
-      </select>
-    </div>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 }
 </file>
@@ -1965,34 +2818,48 @@ export function useAuth(redirectTo: string = '/') {
 }
 </file>
 
-<file path="lib/store/authStore.ts">
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+<file path="lib/api/serverApi.ts">
+import { cookies } from 'next/headers';
+import { api } from './api';
+import { User } from '@/types/user';
+import { Location } from '@/types/location';
 
-type User = {
-    id?: string;
-    name: string;
-    email: string;
+export const getMeServer = async (): Promise<User> => {
+  const cookieStore = await cookies();
+  const { data } = await api.get('/users/me', {
+    headers: {
+      Cookie: cookieStore.toString(),
+    },
+  });
+  return data;
 };
 
-type AuthState = {
-    user: User | null;
-    setUser: (user: User) => void;
-    logout: () => void;
+export const getUserByIdServer = async (id: string): Promise<User> => {
+  const cookieStore = await cookies();
+  const { data } = await api.get<User>(`/users/${id}`, {
+    headers: {
+      Cookie: cookieStore.toString(),
+    },
+  });
+  return data;
 };
 
-export const useAuthStore = create<AuthState>()(
-    persist(
-        (set) => ({
-        user: null,
-        setUser: (user) => set({ user }),
-        logout: () => set({ user: null }),
-        }),
-        {
-        name: 'auth-storage', 
-        }
-    )
-);
+interface UserLocationsResponse {
+  data: Location[];
+  pagination: { total: number; page: number; limit: number; totalPages: number };
+}
+
+export const getUserLocationsServer = async (id: string): Promise<UserLocationsResponse> => {
+  const cookieStore = await cookies();
+  const { data } = await api.get<UserLocationsResponse>(`/users/${id}/locations`, {
+    headers: {
+      Cookie: cookieStore.toString(),
+    },
+  });
+  console.log(data);
+
+  return data;
+};
 </file>
 
 <file path="lib/store/locationStore.ts">
@@ -2035,6 +2902,28 @@ export const useLocationStore = create<LocationStore>((set) => ({
 }));
 </file>
 
+<file path="next.config.ts">
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  reactCompiler: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "ftp.goit.study",
+      },
+    ],
+  },
+};
+
+export default nextConfig;
+</file>
+
+<file path="react-rating-stars-component.d.ts">
+declare module "react-rating-stars-component";
+</file>
+
 <file path="types/feedBackCard.ts">
 export type Feedback = {
   _id: string;
@@ -2050,18 +2939,15 @@ export type Feedback = {
 };
 </file>
 
-<file path="types/location.ts">
-export type Location = {
+<file path="types/user.ts">
+export interface User {
   _id: string;
-  image: string;
   name: string;
-  locationType: string;
-  region: string;
-  rate: number;
-  description: string;
-  ownerId: string;
-  feedbacksId: string[];
-};
+  email: string;
+  avatar: string;
+  avatarUrl?: string;
+  articlesAmount: number;
+}
 </file>
 
 <file path="app/(auth routes)/layout.tsx">
@@ -2091,6 +2977,52 @@ export default function AuthLayout({
     </div>
   );
 }
+</file>
+
+<file path="app/(private routes)/profile/page.tsx">
+import Image from 'next/image';
+import { getUserByIdServer, getUserLocationsServer } from '@/lib/api/serverApi';
+import LocationList from '@/components/LocationList/LocationList';
+
+import css from './ProfilePage.module.css';
+
+async function Profile() {
+  // Поки тільки тестово
+  const [user, data] = await Promise.all([
+    getUserByIdServer('6881563901add19ee16fcff5'),
+    getUserLocationsServer('6881563901add19ee16fcff5'),
+  ]);
+  const locations = data.data;
+
+  // Пізніше видалити
+  const regions = ['Київська', 'Львівська', 'Одеська'];
+  const locationTypes = ['Готель', 'База відпочинку'];
+
+  return (
+    <main className={css.mainContent}>
+      <div>
+        <div className={css.header}>
+          <Image
+            src={user.avatarUrl ?? user.avatar}
+            alt="User Avatar"
+            width={120}
+            height={120}
+            className={css.avatar}
+          />
+          <div className={css.profileInfo}>
+            <h2 className={css.userName}>{user.name}</h2>
+            <p className={css.articles}>Статей: {user.articlesAmount}</p>
+          </div>
+        </div>
+        <div>
+          {/* <LocationList locations={locations} regions={regions} locationTypes={locationTypes} /> */}
+        </div>
+      </div>
+    </main>
+  );
+}
+
+export default Profile;
 </file>
 
 <file path="app/@modal/default.tsx">
@@ -2146,35 +3078,50 @@ export async function GET(
 }
 </file>
 
-<file path="app/api/locations/route.ts">
+<file path="app/api/users/me/route.ts">
 import { NextRequest, NextResponse } from "next/server";
- 
-const BACKEND = "https://node-project-group-02.onrender.com";
- 
+
+const API_URL = process.env.BACKEND_API_URL;
+
 export async function GET(req: NextRequest) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const query = searchParams.toString();
-    const url = `${BACKEND}/locations${query ? `?${query}` : ""}`;
- 
-    const res = await fetch(url, {
-      cache: "no-store",
-      headers: { "Content-Type": "application/json" },
-    });
- 
-    if (!res.ok) {
-      return NextResponse.json(
-        { message: "Backend error" },
-        { status: res.status },
-      );
-    }
- 
-    const data = await res.json();
-    return NextResponse.json(data);
-  } catch (error) {
-    console.error("Locations proxy error:", error);
-    return NextResponse.json({ message: "Fetch failed" }, { status: 500 });
-  }
+  const res = await fetch(`${API_URL}/users/me`, {
+    headers: {
+      Cookie: req.headers.get("cookie") ?? "",
+    },
+    cache: "no-store",
+  });
+
+  const data = await res.text();
+
+  return new NextResponse(data, {
+    status: res.status,
+    headers: {
+      "Content-Type": res.headers.get("Content-Type") ?? "application/json",
+    },
+  });
+}
+
+export async function PATCH(req: NextRequest) {
+  const body = await req.text();
+
+  const res = await fetch(`${API_URL}/users/me`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": req.headers.get("Content-Type") ?? "application/json",
+      Cookie: req.headers.get("cookie") ?? "",
+    },
+    body,
+    cache: "no-store",
+  });
+
+  const data = await res.text();
+
+  return new NextResponse(data, {
+    status: res.status,
+    headers: {
+      "Content-Type": res.headers.get("Content-Type") ?? "application/json",
+    },
+  });
 }
 </file>
 
@@ -2206,92 +3153,692 @@ export default function Loading() {
 }
 </file>
 
-<file path="components/LocationCard/LocationCard.tsx">
-import Link from "next/link";
-import Image from "next/image";
-import ReactStars from "react-rating-stars-component";
-import styles from "./LocationCard.module.css";
-import { Location } from "@/types/location";
+<file path="components/LocationCard/LocationCard.module.css">
+.card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 12px;
+  background-color: #ffe5d9;
+}
 
-type LocationCardProps = Pick<
-  Location,
-  "_id" | "image" | "name" | "locationType" | "rate"
->;
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1.16 / 1;
+  overflow: hidden;
+}
 
-export default function LocationCard({
-  _id,
-  image,
-  name,
-  locationType,
-  rate,
-}: LocationCardProps) {
+.image {
+  object-fit: cover;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+}
+
+.type {
+  margin: 0;
+  color: #5d4437;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-height: 24px;
+  color: #1f1f1f;
+}
+
+.star {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.title {
+  margin: 0 0 8px;
+  color: #4b2d20;
+  font-size: 28px;
+  line-height: 1.15;
+  font-weight: 700;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 12px 16px;
+  border: 1px solid #e7c7b5;
+  border-radius: 8px;
+  background-color: #f7ddd0;
+  color: #4b2d20;
+  font-size: 16px;
+  line-height: 1.2;
+  text-decoration: none;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.button:hover,
+.button:focus-visible {
+  cursor: pointer;
+  background-color: #e8845a;
+  border-color: #e8845a;
+  color: #fff7f2;
+  outline: none;
+}
+
+@media (min-width: 375px) {
+  .title {
+    font-size: 34px;
+  }
+}
+
+@media (min-width: 768px) {
+  .content {
+    gap: 10px;
+  }
+
+  .title {
+    font-size: 26px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .title {
+    font-size: 24px;
+  }
+}
+</file>
+
+<file path="components/Pagination/Pagination.module.css">
+.wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 32px;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 160px;
+  min-height: 48px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  border: 1px solid #e8845a;
+  border-radius: 10px;
+  background-color: #e8845a;
+  color: #fff7f2;
+  font-size: 16px;
+  line-height: 1.2;
+  font-weight: 600;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.button:hover,
+.button:focus-visible {
+  cursor: pointer;
+  background-color: #cf6f47;
+  border-color: #cf6f47;
+  outline: none;
+}
+
+.button:disabled {
+  cursor: wait;
+  opacity: 0.8;
+}
+
+@media (min-width: 768px) {
+  .wrapper {
+    margin-top: 40px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .wrapper {
+    margin-top: 48px;
+  }
+}
+</file>
+
+<file path="components/Pagination/Pagination.tsx">
+"use client";
+
+import styles from "./Pagination.module.css";
+
+type PaginationProps = {
+  onLoadMore: () => void;
+  isLoading?: boolean;
+};
+
+export default function Pagination({
+  onLoadMore,
+  isLoading = false,
+}: PaginationProps) {
   return (
-    <div className={styles.card}>
-      <div className={styles.imageWrapper}>
-        <Image src={image} alt={name} fill className={styles.image} />
-      </div>
-      <div className={styles.content}>
-        <p className={styles.type}>{locationType}</p>
-        <div className={styles.rating}>
-          <ReactStars
-            count={5}
-            value={rate}
-            isHalf={true}
-            edit={false}
-            size={20}
-            activeColor="#FFC107"
-          />
-        </div>
-        <h3 className={styles.title}>{name}</h3>
-        <Link href={`/locations/${_id}`} className={styles.button}>
-          Переглянути локацію
-        </Link>
-      </div>
+    <div className={styles.wrapper}>
+      <button
+        className={styles.button}
+        onClick={onLoadMore}
+        disabled={isLoading}
+        type="button"
+      >
+        {isLoading ? "Завантаження..." : "Показати ще"}
+      </button>
     </div>
   );
 }
 </file>
 
+<file path="components/SearchBox/SearchBox.module.css">
+.wrapper {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.control {
+  width: 100%;
+  height: 43px;
+  border: 1px solid #e5cfc2;
+  border-radius: 8px;
+  background-color: #ffece3;
+  color: #6b5d56;
+  font-size: 14px;
+  line-height: 1.4;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.control:hover {
+  cursor: pointer;
+  border-color: #d79f83;
+}
+
+.control:focus {
+  outline: none;
+  border-color: #d79f83;
+  box-shadow: 0 0 0 3px rgba(215, 159, 131, 0.16);
+  background-color: #fff2ec;
+}
+
+.search {
+  padding: 0 14px;
+}
+
+.search:hover {
+  cursor: text;
+}
+
+.search::placeholder {
+  color: #9f8b81;
+}
+
+.select {
+  appearance: none;
+  padding: 0 38px 0 14px;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23846A5D' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+}
+
+@media (min-width: 375px) {
+  .wrapper {
+    gap: 14px;
+  }
+}
+
+@media (min-width: 768px) {
+  .wrapper {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr));
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .wrapper {
+    grid-template-columns: minmax(0, 1.16fr) repeat(3, minmax(180px, 0.68fr));
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+}
+</file>
+
+<file path="lib/api/api.ts">
+import axios from "axios";
+
+export const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_API_URL + "/api",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+</file>
+
+<file path="lib/store/authStore.ts">
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+
+type User = {
+    id?: string;
+    name: string;
+    email: string;
+};
+
+type AuthState = {
+    user: User | null;
+    setUser: (user: User) => void;
+    logout: () => void;
+};
+
+export const useAuthStore = create<AuthState>()(
+    persist(
+        (set) => ({
+            user: null,
+            setUser: (user) => set({ user }),
+            logout: () => set({ user: null }),
+        }),
+        {
+            name: 'auth-storage',
+        }
+    )
+);
+</file>
+
+<file path="types/location.ts">
+export type Location = {
+  _id: string;
+  image: string;
+  name: string;
+  locationType: string;
+  region: string;
+  rate: number;
+  description: string;
+  ownerId: string;
+  feedbacksId: string[];
+};
+
+
+export type NewLocation = {
+  name: string;
+  locationType: string;
+  region: string;
+  description: string;
+  image?: string;
+};
+
+export type LocationFormValues = {
+  name: string;
+  locationType: string;
+  region: string;
+  description: string;
+  imageFile: File | null;
+};
+</file>
+
+<file path="app/api/auth/logout/route.ts">
+import { NextRequest, NextResponse } from "next/server";
+
+const API_URL = process.env.BACKEND_API_URL;
+
+export async function POST(req: NextRequest) {
+  const res = await fetch(`${API_URL}/auth/logout`, {
+    method: "POST",
+    headers: {
+      Cookie: req.headers.get("cookie") ?? "",
+    },
+  });
+
+  const data = await res.text();
+
+  return new NextResponse(data, {
+    status: res.status,
+    headers: {
+      "Content-Type": res.headers.get("Content-Type") ?? "application/json",
+    },
+  });
+}
+</file>
+
+<file path="app/api/auth/session/route.ts">
+import { NextRequest, NextResponse } from "next/server";
+
+const API_URL = process.env.BACKEND_API_URL;
+
+export async function POST(req: NextRequest) {
+  const res = await fetch(`${API_URL}/auth/refresh`, {
+    method: "POST",
+    headers: {
+      Cookie: req.headers.get("cookie") ?? "",
+    },
+    cache: "no-store",
+  });
+
+  const data = await res.text();
+
+  const response = new NextResponse(data, {
+    status: res.status,
+    headers: {
+      "Content-Type": res.headers.get("Content-Type") ?? "application/json",
+    },
+  });
+
+  const setCookie = res.headers.get("set-cookie");
+  if (setCookie) {
+    response.headers.set("set-cookie", setCookie);
+  }
+
+  return response;
+}
+</file>
+
+<file path="app/api/locations/[id]/route.ts">
+import { NextResponse } from "next/server";
+
+const API_URL = process.env.BACKEND_API_URL;
+
+type RouteContext = {
+  params: Promise<{ id: string }>;
+};
+
+export async function GET(_: Request, context: RouteContext) {
+  const { id } = await context.params;
+
+  const res = await fetch(`${API_URL}/locations/${id}`, {
+    cache: "no-store",
+  });
+
+  const data = await res.text();
+
+  return new NextResponse(data, {
+    status: res.status,
+    headers: {
+      "Content-Type": res.headers.get("Content-Type") ?? "application/json",
+    },
+  });
+}
+</file>
+
+<file path="app/layout.tsx">
+import React from "react";
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import TanStackProvider from "@/components/TanStackProvider/TanStackProvider";
+import "modern-normalize";
+import "./globals.css";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "Create Next App",
+  description: "Generated by create next app",
+};
+
+export default function RootLayout({
+  children,
+  modal,
+}: Readonly<{
+  children: React.ReactNode;
+  modal: React.ReactNode;
+}>) {
+  return (
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body>
+        <TanStackProvider>
+          {children}
+        </TanStackProvider>
+
+        {modal}
+      </body>
+    </html>
+  );
+}
+</file>
+
+<file path="components/LocationList/LocationList.module.css">
+.section {
+  background: #fff2ec;
+  padding: 32px 0 56px;
+}
+
+.container {
+  width: 100%;
+  min-width: 320px;
+  padding: 0 16px;
+  margin: 0 auto;
+}
+
+.title {
+  margin: 0 0 24px;
+  color: #1f1f1f;
+  font-size: 36px;
+  line-height: 1.08;
+  font-weight: 700;
+  text-align: center;
+}
+
+.loader,
+.empty {
+  width: 100%;
+  padding: 48px 0;
+  text-align: center;
+  color: #6b5d56;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 375px) {
+  .section {
+    padding: 40px 0 64px;
+  }
+
+  .title {
+    font-size: 42px;
+  }
+}
+
+@media (min-width: 768px) {
+  .section {
+    padding: 48px 0 72px;
+  }
+
+  .container {
+    padding: 0 32px;
+  }
+
+  .title {
+    margin-bottom: 40px;
+    font-size: 56px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1440px) {
+  .section {
+    padding: 48px 0 72px;
+  }
+
+  .container {
+    max-width: 1568px;
+    padding: 0 64px;
+  }
+
+  .title {
+    margin-bottom: 24px;
+    font-size: 64px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+}
+</file>
+
 <file path="components/LocationList/LocationList.tsx">
 "use client";
+
+import { useMemo } from "react";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useLocationStore } from "@/lib/store/locationStore";
+import {
+  getLocations,
+  getRegions,
+  getLocationTypes,
+} from "@/lib/api/clientApi";
 import LocationCard from "@/components/LocationCard/LocationCard";
 import SearchBox from "@/components/SearchBox/SearchBox";
 import Pagination from "@/components/Pagination/Pagination";
 import styles from "./LocationList.module.css";
 import { Location } from "@/types/location";
 
-type LocationListProps = {
-  locations: Location[];
-  regions: string[];
-  locationTypes: string[];
-};
+export default function LocationList() {
+  const { filters } = useLocationStore();
 
-export default function LocationList({
-  locations,
-  regions,
-  locationTypes,
-}: LocationListProps) {
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: ["locations", filters],
+      initialPageParam: 1,
+      queryFn: ({ pageParam }) =>
+        getLocations({
+          page: pageParam,
+          limit: 9,
+          region: filters.region,
+          locationType: filters.locationType,
+          search: filters.search,
+        }),
+      getNextPageParam: (lastPage) =>
+        lastPage.pagination.page < lastPage.pagination.totalPages
+          ? lastPage.pagination.page + 1
+          : undefined,
+    });
+
+  const { data: regions = [] } = useQuery<{ slug: string; region: string }[]>({
+    queryKey: ["regions"],
+    queryFn: getRegions,
+  });
+
+  const { data: locationTypes = [] } = useQuery<
+    { slug: string; type: string }[]
+  >({
+    queryKey: ["locationTypes"],
+    queryFn: getLocationTypes,
+  });
+
+  const locations = useMemo(() => {
+    const allLocations =
+      data?.pages.flatMap((page) => page.locations as Location[]) ?? [];
+
+    if (filters.sort === "name") {
+      return [...allLocations].sort((a, b) =>
+        a.name.localeCompare(b.name, "uk"),
+      );
+    }
+
+    if (filters.sort === "rate") {
+      return [...allLocations].sort((a, b) => b.rate - a.rate);
+    }
+
+    return allLocations;
+  }, [data?.pages, filters.sort]);
+
+  const locationTypeLabels = useMemo(
+    () =>
+      new Map(
+        locationTypes.map((locationType: { slug: string; type: string }) => [
+          locationType.slug,
+          locationType.type,
+        ]),
+      ),
+    [locationTypes],
+  );
+
   return (
     <section className={styles.section}>
-      <h2 className={styles.title}>Усі місця відпочинку</h2>
-      <SearchBox regions={regions} locationTypes={locationTypes} />
-      <div className={styles.grid}>
-        {locations.length === 0 ? (
-          <p className={styles.empty}>Нічого не знайдено</p>
+      <div className={styles.container}>
+        <h2 className={styles.title}>Усі місця відпочинку</h2>
+        <SearchBox
+          regions={regions.map((region) => ({
+            value: region.slug,
+            label: region.region,
+          }))}
+          locationTypes={locationTypes.map(
+            (locationType: { slug: string; type: string }) => ({
+              value: locationType.slug,
+              label: locationType.type,
+            }),
+          )}
+        />
+
+        {isLoading ? (
+          <p className={styles.loader}>Завантаження...</p>
         ) : (
-          locations.map((location) => (
-            <LocationCard
-              key={location._id}
-              _id={location._id}
-              image={location.image}
-              name={location.name}
-              locationType={location.locationType}
-              rate={location.rate}
-            />
-          ))
+          <div className={styles.grid}>
+            {locations.length === 0 ? (
+              <p className={styles.empty}>Нічого не знайдено</p>
+            ) : (
+              locations.map((location: Location) => (
+                <LocationCard
+                  key={location._id}
+                  _id={location._id}
+                  image={location.image}
+                  name={location.name}
+                  locationType={
+                    locationTypeLabels.get(location.locationType) ??
+                    "Тип не вказано"
+                  }
+                  rate={location.rate}
+                />
+              ))
+            )}
+          </div>
         )}
+
+        {hasNextPage ? (
+          <Pagination
+            onLoadMore={() => {
+              void fetchNextPage();
+            }}
+            isLoading={isFetchingNextPage}
+          />
+        ) : null}
       </div>
-      <Pagination onLoadMore={() => {}} />
     </section>
   );
 }
@@ -2425,6 +3972,68 @@ export default function LocationList({
 }
 </file>
 
+<file path="components/SearchBox/SearchBox.tsx">
+"use client";
+
+import { useLocationStore } from "@/lib/store/locationStore";
+import styles from "./SearchBox.module.css";
+
+type SearchBoxProps = {
+  regions: { value: string; label: string }[];
+  locationTypes: { value: string; label: string }[];
+};
+
+export default function SearchBox({ regions, locationTypes }: SearchBoxProps) {
+  const { filters, setSearch, setRegion, setLocationType, setSort } =
+    useLocationStore();
+
+  return (
+    <div className={styles.wrapper}>
+      <input
+        className={`${styles.control} ${styles.search}`}
+        type="text"
+        placeholder="Пошук"
+        value={filters.search}
+        onChange={(event) => setSearch(event.target.value)}
+      />
+      <select
+        className={`${styles.control} ${styles.select}`}
+        value={filters.region}
+        onChange={(event) => setRegion(event.target.value)}
+      >
+        <option value="">Регіон</option>
+        {regions.map((region) => (
+          <option key={region.value} value={region.value}>
+            {region.label}
+          </option>
+        ))}
+      </select>
+      <select
+        className={`${styles.control} ${styles.select}`}
+        value={filters.locationType}
+        onChange={(event) => setLocationType(event.target.value)}
+      >
+        <option value="">Тип локації</option>
+        {locationTypes.map((type) => (
+          <option key={type.value} value={type.value}>
+            {type.label}
+          </option>
+        ))}
+      </select>
+      <select
+        className={`${styles.control} ${styles.select}`}
+        value={filters.sort}
+        onChange={(event) => setSort(event.target.value)}
+      >
+        <option value="">Сортування</option>
+        <option value="name">За назвою</option>
+        <option value="rate">За рейтингом</option>
+      </select>
+    </div>
+  );
+}
+</file>
+
 <file path="lib/api/feedbacks.ts">
 import axios from "axios";
 import clientApi from "./clientApi";
@@ -2448,6 +4057,58 @@ export const getFeedbacks = async (locationId: string, page = 1, retries = 2) =>
     }
   }
 };
+</file>
+
+<file path="components/LocationCard/LocationCard.tsx">
+"use client";
+
+import Link from "next/link";
+import Image from "next/image";
+import styles from "./LocationCard.module.css";
+import { Location } from "@/types/location";
+
+type LocationCardProps = Pick<
+  Location,
+  "_id" | "image" | "name" | "locationType" | "rate"
+>;
+
+export default function LocationCard({
+  _id,
+  image,
+  name,
+  locationType,
+  rate,
+}: LocationCardProps) {
+  const roundedRate = Math.round(rate);
+
+  return (
+    <article className={styles.card}>
+      <div className={styles.imageWrapper}>
+        <Image
+          src={image}
+          alt={name}
+          fill
+          sizes="(min-width: 1440px) 389px, (min-width: 768px) calc((100vw - 88px) / 2), 100vw"
+          className={styles.image}
+        />
+      </div>
+      <div className={styles.content}>
+        <p className={styles.type}>{locationType}</p>
+        <div className={styles.rating} aria-label={`Рейтинг: ${rate} з 5`}>
+          {Array.from({ length: 5 }, (_, index) => (
+            <span key={index} className={styles.star}>
+              {index < roundedRate ? "★" : "☆"}
+            </span>
+          ))}
+        </div>
+        <h3 className={styles.title}>{name}</h3>
+        <Link href={`/locations/${_id}`} className={styles.button}>
+          Переглянути локацію
+        </Link>
+      </div>
+    </article>
+  );
+}
 </file>
 
 <file path="components/ReviewsSection/ReviewsSection.tsx">
@@ -2598,15 +4259,26 @@ export default function ReviewsSection({
 }
 </file>
 
-<file path="lib/api/clientApi.ts">
-import axios from "axios";
+<file path="app/api/locations/route.ts">
+import { NextRequest, NextResponse } from "next/server";
 
-export const clientApi = axios.create({
-  baseURL: "/api",
-  timeout: 35000, // Render cold start can take ~30s
-});
+const API_URL = process.env.API_URL;
 
-export default clientApi;
+export async function GET(req: NextRequest) {
+  const search = req.nextUrl.search;
+  const res = await fetch(`${API_URL}/locations${search}`, {
+    cache: "no-store",
+  });
+
+  const data = await res.text();
+
+  return new NextResponse(data, {
+    status: res.status,
+    headers: {
+      "Content-Type": res.headers.get("Content-Type") ?? "application/json",
+    },
+  });
+}
 </file>
 
 <file path="components/FeedBackCard/FeedBackCard.tsx">
@@ -2936,62 +4608,6 @@ export default function ReviewsBlock() {
 }
 </file>
 
-<file path="package.json">
-{
-  "name": "next-project-group-02",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
-  },
-  "dependencies": {
-    "axios": "^1.14.0",
-    "formik": "^2.4.9",
-    "modern-normalize": "^3.0.1",
-    "next": "16.2.1",
-    "react": "19.2.4",
-    "react-dom": "19.2.4",
-    "react-hot-toast": "^2.6.0",
-    "react-rating-stars-component": "^2.2.0",
-    "react-spinners": "^0.17.0",
-    "swiper": "^12.1.3",
-    "zustand": "^5.0.12"
-  },
-  "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
-    "babel-plugin-react-compiler": "1.0.0",
-    "eslint": "^9",
-    "eslint-config-next": "16.2.1",
-    "typescript": "^5.9.3"
-  }
-}
-</file>
-
-<file path="app/page.tsx">
-import LocationList from "@/components/LocationList/LocationList";
-import ReviewsBlock from "@/components/ReviewsBlock/ReviewsBlock";
-
-export default function Page() {
-  return (
-    <main>
-      {/* HeroBlock — handled by another developer */}
-      {/* AdvantagesBlock — handled by another developer */}
-
-      {/* Список локацій */}
-      <LocationList locations={[]} regions={[]} locationTypes={[]} />
-
-      {/* Останні відгуки — slider with reviews from all locations */}
-      <ReviewsBlock />
-    </main>
-  );
-}
-</file>
-
 <file path="components/FeedBackCard/FeedBackCard.module.css">
 .card {
     background: #ffe5d9;
@@ -3067,6 +4683,115 @@ export default function Page() {
     .author {
         font-size: 18px;
     }
+}
+</file>
+
+<file path="lib/api/clientApi.ts">
+import axios from "axios";
+
+export const clientApi = axios.create({
+  baseURL: "/api",
+  timeout: 35000,
+});
+
+export default clientApi;
+
+export const getLocations = async (params?: {
+  page?: number;
+  limit?: number;
+  region?: string;
+  locationType?: string;
+  search?: string;
+}) => {
+  const query = new URLSearchParams();
+  if (params?.page) query.set("page", String(params.page));
+  if (params?.limit) query.set("limit", String(params.limit));
+  if (params?.region) query.set("region", params.region);
+  if (params?.locationType) query.set("locationType", params.locationType);
+  if (params?.search) query.set("search", params.search);
+
+  const res = await fetch(`/api/locations?${query}`);
+  if (!res.ok) throw new Error("Failed to fetch locations");
+  const json = await res.json();
+  return { locations: json.data, pagination: json.pagination };
+};
+
+export const getRegions = async () => {
+  const res = await fetch("/api/categories/regions");
+  if (!res.ok) throw new Error("Failed to fetch regions");
+  const json = await res.json();
+  return json.data;
+};
+
+export const getLocationTypes = async () => {
+  const res = await fetch("/api/categories/types");
+  if (!res.ok) throw new Error("Failed to fetch location types");
+  const json = await res.json();
+  return json.data;
+};
+</file>
+
+<file path="app/page.tsx">
+import LocationList from "@/components/LocationList/LocationList";
+import ReviewsBlock from "@/components/ReviewsBlock/ReviewsBlock";
+
+export default function Page() {
+  return (
+    <main>
+      <LocationList />
+      <ReviewsBlock />
+    </main>
+  );
+}
+</file>
+
+<file path="package.json">
+{
+  "name": "next-project-group-02",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "axios": "^1.14.0",
+    "formik": "^2.4.9",
+    "modern-normalize": "^3.0.1",
+    "next": "16.2.1",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-hot-toast": "^2.6.0",
+    "react-rating-stars-component": "^2.2.0",
+    "react-spinners": "^0.17.0",
+    "swiper": "^12.1.3",
+    "@tanstack/react-query": "^5.95.2",
+    "axios": "^1.14.0",
+    "cookie": "^1.1.1",
+    "formik": "^2.4.9",
+    "modern-normalize": "^3.0.1",
+    "next": "16.2.1",
+    "prop-types": "^15.8.1",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-hot-toast": "^2.6.0",
+    "react-rating-stars-component": "^2.2.0",
+    "react-spinners": "^0.17.0",
+    "yup": "^1.7.1",
+    "zustand": "^5.0.12"
+  },
+  "devDependencies": {
+    "@types/cookie": "^0.6.0",
+    "@types/node": "^20",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "babel-plugin-react-compiler": "1.0.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.1",
+    "typescript": "^5.9.3"
+  }
 }
 </file>
 
