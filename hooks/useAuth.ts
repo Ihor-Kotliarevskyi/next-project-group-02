@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import type { FormikHelpers } from 'formik';
 import { useAuthStore } from '@/lib/store/authStore';
+import { Console, log } from 'console';
 
 type LoginValues = {
   email: string;
@@ -45,7 +46,7 @@ export function useAuth(redirectTo: string = '/') {
           'Помилка';
         throw new Error(message);
       }
-
+      
       if (!data) throw new Error('Користувача не отримано');
 
       setUser(data);
