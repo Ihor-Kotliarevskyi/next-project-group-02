@@ -37,8 +37,8 @@ const handleConfirm = async () => {
   return (
     <Modal>
       <div className={css.content}>
-        <h2 className={css.title}>Підтвердження виходу</h2>
-        <p className={css.text}>Ви дійсно хочете вийти з акаунта?</p>
+        <h2 className={css.title}>Ви точно хочете вийти?</h2>
+        <p className={css.text}>Ми будемо сумувати за вами!</p>
 
         {error ? <p className={css.error}>{error}</p> : null}
 
@@ -58,7 +58,7 @@ const handleConfirm = async () => {
             onClick={handleConfirm}
             disabled={isLoading}
           >
-            {isLoading ? 'Завантаження...' : 'Так'}
+            {isLoading ? 'Завантаження...' : 'Вийти'}
           </button>
         </div>
       </div>

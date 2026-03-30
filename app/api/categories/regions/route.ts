@@ -1,14 +1,13 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 const API_URL = process.env.BACKEND_API_URL;
 
-export async function GET(req: NextRequest) {
-  const search = req.nextUrl.search;
-  const res = await fetch(`${API_URL}/locations${search}`, {
+export async function GET() {
+  const res = await fetch(`${API_URL}/categories/regions`, {
     cache: "no-store",
   });
 
-  const data = await res.text();
+  const data = await res.text();  
 
   return new NextResponse(data, {
     status: res.status,

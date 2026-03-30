@@ -57,7 +57,7 @@ export default function Modal({ children }: ModalProps) {
           onClick={closeModal}
           aria-label="Закрити модальне вікно"
         >
-          <Image src="/exit.svg" alt="close" width={24} height={24} />
+          <Image src="/exit.svg" alt="close" width={13.5} height={13.5} />
         </button>
         {children}
       </div>
