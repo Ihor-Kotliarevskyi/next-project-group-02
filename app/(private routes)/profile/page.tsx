@@ -6,8 +6,10 @@ import css from './ProfilePage.module.css';
 
 async function Profile() {
   // Поки тільки тестово
-  const user = await getUserByIdServer('6881563901add19ee16fcff5');
-  const data = await getUserLocationsServer('6881563901add19ee16fcff5');
+  const [user, data] = await Promise.all([
+    getUserByIdServer('6881563901add19ee16fcff5'),
+    getUserLocationsServer('6881563901add19ee16fcff5'),
+  ]);
   const locations = data.data;
 
   // Пізніше видалити
