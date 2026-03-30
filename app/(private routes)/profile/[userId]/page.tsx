@@ -1,47 +1,53 @@
+import { redirect } from 'next/navigation';
 import Image from 'next/image';
 import { getUserByIdServer, getUserLocationsServer } from '@/lib/api/serverApi';
-import LocationList from '@/components/LocationList/LocationList';
-
 import css from './ProfilePage.module.css';
 
 type Props = {
   params: Promise<{ userId: string }>;
 };
 
-async function Profile({ params }: Props) {
+export default async function Profile({ params }: Props) {
   const { userId } = await params;
-  const [user, data] = await Promise.all([
-    getUserByIdServer(userId),
-    getUserLocationsServer(userId),
-  ]);
-  const locations = data.data;
 
-  // Пізніше видалити
-  const regions = ['Київська', 'Львівська', 'Одеська'];
-  const locationTypes = ['Готель', 'База відпочинку'];
+  let user;
+  let locations: unknown[] = [];
+
+  try {
+    const [userData, locationsData] = await Promise.all([
+      getUserByIdServer(userId),
+      getUserLocationsServer(userId),
+    ]);
+    user = userData;
+    locations = locationsData.data;
+  } catch {
+    redirect('/login');
+  }
+
+  const avatarSrc = user.avatarUrl || user.avatar || null;
 
   return (
     <main className={css.mainContent}>
-      <div>
-        <div className={css.header}>
+      <div className={css.header}>
+        {avatarSrc ? (
           <Image
-            src={user.avatarUrl ?? user.avatar}
-            alt="User Avatar"
-            width={120}
-            height={120}
+            src={avatarSrc}
+            alt={user.name}
+            width={145}
+            height={145}
             className={css.avatar}
           />
-          <div className={css.profileInfo}>
-            <h2 className={css.userName}>{user.name}</h2>
-            <p className={css.articles}>Статей: {user.articlesAmount}</p>
+        ) : (
+          <div className={css.avatarFallback}>
+            {user.name.charAt(0).toUpperCase()}
           </div>
-        </div>
-        <div>
-          {/* <LocationList locations={locations} regions={regions} locationTypes={locationTypes} /> */}
+        )}
+        <div className={css.profileInfo}>
+          <h2 className={css.userName}>{user.name}</h2>
+          <p className={css.articles}>Статей: {user.articlesAmount}</p>
         </div>
       </div>
+      <p className={css.locationsCount}>Локацій: {locations.length}</p>
     </main>
   );
 }
-
-export default Profile;
