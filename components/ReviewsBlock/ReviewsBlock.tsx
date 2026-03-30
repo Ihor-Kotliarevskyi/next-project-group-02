@@ -70,7 +70,10 @@ export default function ReviewsBlock() {
           }
         }
 
-        setReviews(collected);
+        const unique = Array.from(
+          new Map(collected.map((r) => [r._id, r])).values()
+        );
+        setReviews(unique);
       } catch {
         setError("Не вдалося завантажити відгуки");
       } finally {

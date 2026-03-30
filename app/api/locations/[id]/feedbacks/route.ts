@@ -1,38 +1,48 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isAxiosError } from "axios";
+import { api } from "../../../api";
+import { logErrorResponse } from "../../../_utils/utils";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+type RouteContext = { params: Promise<{ id: string }> };
+
+export async function GET(req: NextRequest, { params }: RouteContext) {
   try {
     const { id } = await params;
-    const { searchParams } = new URL(req.url);
-    const page = searchParams.get("page") ?? "1";
-    const limit = searchParams.get("limit") ?? "3";
-
-    const targetUrl = process.env.BACKEND_API_URL + "/feedbacks/" + id + "?page=" + page + "&limit=" + limit;
-
-    // ADD THIS to see exactly what URL is being called
-    console.log(">>> Fetching:", targetUrl);
-
-    const res = await fetch(targetUrl, {
-      cache: "no-store",
-      headers: { "Content-Type": "application/json" },
+    const page = req.nextUrl.searchParams.get("page") ?? "1";
+    const limit = req.nextUrl.searchParams.get("limit") ?? "3";
+    const { data } = await api.get(`/feedbacks/${id}`, {
+      params: { page, limit },
     });
-
-    console.log(">>> Backend status:", res.status);
-
-    if (!res.ok) {
-      const text = await res.text();
-      // console.log(">>> Backend response body:", text);
-      return NextResponse.json({ message: "Failed to fetch feedbacks from backend" }, { status: res.status });
-    }
-
-    const data = await res.json();
     return NextResponse.json(data);
-
   } catch (error) {
-    console.error("Proxy Error:", error);
-    return NextResponse.json({ message: "Fetch failed" }, { status: 500 });
+    if (isAxiosError(error)) {
+      logErrorResponse(error.response?.data);
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.response?.status ?? 500 }
+      );
+    }
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}
+
+export async function POST(req: NextRequest, { params }: RouteContext) {
+  try {
+    const { id } = await params;
+    const body = await req.json();
+    const cookieHeader = req.headers.get("cookie") ?? "";
+    const { data } = await api.post(`/feedbacks/${id}`, body, {
+      headers: { Cookie: cookieHeader },
+    });
+    return NextResponse.json(data);
+  } catch (error) {
+    if (isAxiosError(error)) {
+      logErrorResponse(error.response?.data);
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.response?.status ?? 500 }
+      );
+    }
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
