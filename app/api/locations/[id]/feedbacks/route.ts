@@ -10,7 +10,7 @@ export async function GET(
     const page = searchParams.get("page") ?? "1";
     const limit = searchParams.get("limit") ?? "3";
 
-    const targetUrl = `https://node-project-group-02.onrender.com/feedbacks/${id}?page=${page}&limit=${limit}`;
+    const targetUrl = process.env.BACKEND_API_URL + "/feedbacks/" + id + "?page=" + page + "&limit=" + limit;
 
     // ADD THIS to see exactly what URL is being called
     console.log(">>> Fetching:", targetUrl);
