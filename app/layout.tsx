@@ -2,6 +2,8 @@ import React from "react";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import TanStackProvider from "@/components/TanStackProvider/TanStackProvider";
+import AuthProvider from "@/components/AuthProvider/AuthProvider";
+import { Toaster } from "react-hot-toast";
 import "modern-normalize";
 import "./globals.css";
 
@@ -28,11 +30,14 @@ export default function RootLayout({
   modal: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="uk" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
         <TanStackProvider>
-          {children}
-          {modal}
+          <AuthProvider>
+            {children}
+            {modal}
+          </AuthProvider>
+          <Toaster position="top-right" />
         </TanStackProvider>
       </body>
     </html>

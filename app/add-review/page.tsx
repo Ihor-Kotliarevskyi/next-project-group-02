@@ -1,5 +1,5 @@
 import Modal from "@/components/Modal/Modal";
-import AddReviewForm from "@/app/@modal/add-review/AddReviewForm";
+import AddReviewForm from "@/app/@modal/(.)add-review/AddReviewForm";
 
 interface Props {
   searchParams: Promise<{ locationId?: string }>;
