@@ -1,5 +1,10 @@
+import React from "react";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import TanStackProvider from "@/components/TanStackProvider/TanStackProvider";
+import AuthProvider from "@/components/AuthProvider/AuthProvider";
+import { Toaster } from "react-hot-toast";
+import "modern-normalize";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -19,12 +24,22 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  modal,
 }: Readonly<{
   children: React.ReactNode;
+  modal: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body>{children}</body>
+    <html lang="uk" className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body>
+        <TanStackProvider>
+          <AuthProvider>
+            {children}
+            {modal}
+          </AuthProvider>
+          <Toaster position="top-right" />
+        </TanStackProvider>
+      </body>
     </html>
   );
 }
