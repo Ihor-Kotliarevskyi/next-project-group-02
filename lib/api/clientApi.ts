@@ -7,8 +7,6 @@ const clientApi = axios.create({
 
 export default clientApi;
 
-// --- Auth ---
-
 export const login = (data: { email: string; password: string }) =>
   clientApi.post("/auth/login", data).then((r) => r.data);
 
@@ -23,8 +21,6 @@ export const logout = () =>
 
 export const getMe = () => clientApi.get("/users/me").then((r) => r.data);
 
-// --- Locations ---
-
 export const getLocations = (params?: {
   page?: number;
   limit?: number;
@@ -36,15 +32,11 @@ export const getLocations = (params?: {
     .get("/locations", { params })
     .then((r) => ({ locations: r.data.data, pagination: r.data.pagination }));
 
-// --- Categories ---
-
 export const getRegions = () =>
   clientApi.get("/categories/regions").then((r) => r.data.data ?? r.data);
 
 export const getLocationTypes = () =>
   clientApi.get("/categories/types").then((r) => r.data.data ?? r.data);
-
-// --- Feedbacks ---
 
 export const getFeedbacks = (
   locationId: string,
@@ -61,8 +53,6 @@ export const createFeedback = (
   clientApi
     .post(`/locations/${locationId}/feedbacks`, data)
     .then((r) => r.data);
-
-// --- Location management ---
 
 export const createLocation = (data: unknown) =>
   clientApi.post("/locations", data).then((r) => r.data);

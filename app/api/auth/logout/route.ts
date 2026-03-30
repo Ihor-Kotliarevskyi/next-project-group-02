@@ -1,33 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isAxiosError } from "axios";
 import { api } from "../../api";
-import { logErrorResponse } from "../../_utils/utils";
 
 export async function POST(req: NextRequest) {
+  const cookieHeader = req.headers.get("cookie") ?? "";
+
+  // Try to invalidate session on backend (best-effort)
   try {
-    const cookieHeader = req.headers.get("cookie") ?? "";
-    const { data, headers, status } = await api.post("/auth/logout", null, {
+    await api.post("/auth/logout", null, {
       headers: { Cookie: cookieHeader },
     });
-
-    const response = NextResponse.json(data, { status });
-
-    const setCookie = headers["set-cookie"];
-    if (setCookie) {
-      (Array.isArray(setCookie) ? setCookie : [setCookie]).forEach((c) =>
-        response.headers.append("set-cookie", c)
-      );
-    }
-
-    return response;
-  } catch (error) {
-    if (isAxiosError(error)) {
-      logErrorResponse(error.response?.data);
-      return NextResponse.json(
-        { error: error.message },
-        { status: error.response?.status ?? 500 }
-      );
-    }
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  } catch {
+    // Backend unreachable or session already expired — proceed to clear client cookies
   }
+
+  // Explicitly delete every cookie the browser sent with this request
+  const response = NextResponse.json({ ok: true }, { status: 200 });
+  req.cookies.getAll().forEach(({ name }) => {
+    response.cookies.delete(name);
+  });
+
+  return response;
 }

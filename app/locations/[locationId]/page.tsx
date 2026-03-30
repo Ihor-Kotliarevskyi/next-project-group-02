@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { cookies } from "next/headers";
+import { getMeServer } from "@/lib/api/serverApi";
 import styles from "./page.module.css";
 import ReviewsSection from "@/components/ReviewsSection/ReviewsSection";
 import { Feedback } from "@/types/feedBackCard";
@@ -103,8 +103,12 @@ async function getLocationFeedbacks(id: string, feedbackIds: string[] = []): Pro
 }
 
 async function getIsAuthorized(): Promise<boolean> {
-  const cookieStore = await cookies();
-  return !!cookieStore.get("token")?.value;
+  try {
+    await getMeServer();
+    return true;
+  } catch {
+    return false;
+  }
 }
 export default async function LocationPage({ params }: PageProps) {
   const { locationId } = await params;

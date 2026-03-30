@@ -76,9 +76,9 @@ export default function ReviewsSection({
 
   const handleAddReview = () => {
     if (!isAuthenticated) {
-      router.push(`/locations/${locationId}?modal=auth`);
+      router.push('/auth-prompt');
     } else {
-      router.push(`/locations/${locationId}?modal=review`);
+      router.push(`/add-review?locationId=${locationId}`);
     }
   };
 

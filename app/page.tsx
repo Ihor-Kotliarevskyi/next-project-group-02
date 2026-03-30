@@ -1,15 +1,15 @@
 import HeroBlock from "@/components/HeroBlock/HeroBlock";
-import LocationList from "@/components/LocationList/LocationList";
-import ReviewsBlock from "@/components/ReviewsBlock/ReviewsBlock";
 import AdvantagesBlock from "@/components/AdvantagesBlock/AdvantagesBlock";
+import PopularLocationsBlock from "@/components/PopularLocationsBlock/PopularLocationsBlock";
+import ReviewsBlock from "@/components/ReviewsBlock/ReviewsBlock";
 
 export default function HomePage() {
   return (
     <main>
       <HeroBlock />
-      <LocationList />
-      <ReviewsBlock />
       <AdvantagesBlock />
+      <PopularLocationsBlock />
+      <ReviewsBlock />
     </main>
   );
 }
