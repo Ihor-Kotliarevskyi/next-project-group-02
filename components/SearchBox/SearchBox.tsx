@@ -4,8 +4,8 @@ import { useLocationStore } from "@/lib/store/locationStore";
 import styles from "./SearchBox.module.css";
 
 type SearchBoxProps = {
-  regions: string[];
-  locationTypes: string[];
+  regions: { value: string; label: string }[];
+  locationTypes: { value: string; label: string }[];
 };
 
 export default function SearchBox({ regions, locationTypes }: SearchBoxProps) {
@@ -15,40 +15,40 @@ export default function SearchBox({ regions, locationTypes }: SearchBoxProps) {
   return (
     <div className={styles.wrapper}>
       <input
-        className={styles.search}
+        className={`${styles.control} ${styles.search}`}
         type="text"
         placeholder="Пошук"
         value={filters.search}
-        onChange={(e) => setSearch(e.target.value)}
+        onChange={(event) => setSearch(event.target.value)}
       />
       <select
-        className={styles.select}
+        className={`${styles.control} ${styles.select}`}
         value={filters.region}
-        onChange={(e) => setRegion(e.target.value)}
+        onChange={(event) => setRegion(event.target.value)}
       >
         <option value="">Регіон</option>
         {regions.map((region) => (
-          <option key={region} value={region}>
-            {region}
+          <option key={region.value} value={region.value}>
+            {region.label}
           </option>
         ))}
       </select>
       <select
-        className={styles.select}
+        className={`${styles.control} ${styles.select}`}
         value={filters.locationType}
-        onChange={(e) => setLocationType(e.target.value)}
+        onChange={(event) => setLocationType(event.target.value)}
       >
         <option value="">Тип локації</option>
         {locationTypes.map((type) => (
-          <option key={type} value={type}>
-            {type}
+          <option key={type.value} value={type.value}>
+            {type.label}
           </option>
         ))}
       </select>
       <select
-        className={styles.select}
+        className={`${styles.control} ${styles.select}`}
         value={filters.sort}
-        onChange={(e) => setSort(e.target.value)}
+        onChange={(event) => setSort(event.target.value)}
       >
         <option value="">Сортування</option>
         <option value="name">За назвою</option>
