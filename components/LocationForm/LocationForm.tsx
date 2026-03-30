@@ -102,8 +102,8 @@ const initialValues: LocationFormValues = {
   try {
     const res = await fetch(
       isEdit
-        ? '/locations/${id}'
-        : '/locations',
+        ? `/api/locations/${id}`
+        : '/api/locations',
       {
         method: isEdit ? "PATCH" : "POST",
         headers: {
