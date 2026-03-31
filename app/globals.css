@@ -1,80 +1,59 @@
 :root {
-  /* ─── Brand / Primary ─── */
-  --color-primary:         #CC6534;
-  --color-primary-hover:   #A95325;
-  --color-primary-active:  #8E471F;
-  --color-primary-light:   #FFE5D9;
-  --color-primary-lighter: #FFF2EC;
-  --color-primary-peach:   #FDD9C9;
+  /* ─── Buttons ─── */
+  --color-button-primary: #CC6534;
+  --color-button-secondary: rgba(0, 0, 0, 0.05);
+  --color-button-primary-hover: #FFE5D9;
+  --color-button-secondary-hover: #A95325;
+  --color-button-secondary-active: #254c24;
+
+  /* ─── Slider ─── */
+  --color-slider-normal: #ffe5d9;
+  --color-slider-hover: #f2f2f2;
+  --color-slider-active: #ffa57a;
+  --color-slider-disabled: rgba(242, 242, 242, 0.4);
 
   /* ─── Text ─── */
-  --color-text-primary:    #1F1F1F;
-  --color-text-secondary:  #4B2D20;
-  --color-text-muted:      #8F8178;
-  --color-text-placeholder:#9A8F88;
-  --color-text-white:      #FFFFFF;
+  --color-text-main: #4c2613;
+  --color-text-input: #1b391b;
+  --color-text-input-error: #b00101;
+  --color-text-input-placeholder: rgba(0, 0, 0, 0.6);
 
   /* ─── Backgrounds ─── */
-  --color-bg-page:         #FFF2EC;
-  --color-bg-white:        #FFFFFF;
-  --color-bg-input:        #FFE5D9;
-  --color-bg-disabled:     #F2F2F2;
-
-  /* ─── Borders ─── */
-  --color-border:          #E5CFC2;
-  --color-border-light:    #DDD;
-  --color-border-focus:    #C7642F;
-
-  /* ─── Semantic ─── */
-  --color-error:           #E74C3C;
-  --color-star:            #FFC107;
-  --color-green:           #1B391B;
+  --color-bg-page: #FFF2EC;
+  --color-bg-white: #FFFFFF;
+  --color-bg-input: #FFE5D9;
+  --color-bg-footer: #FFE5D9;
+  --color-bg-disabled: #F2F2F2;
 
   /* ─── Overlays ─── */
-  --color-overlay:         rgba(0, 0, 0, 0.6);
-  --color-overlay-light:   rgba(0, 0, 0, 0.25);
+  --color-overlay: rgba(0, 0, 0, 0.6);
+  --color-overlay-light: rgba(0, 0, 0, 0.25);
 
-  /* ─── Typography ─── */
-  --font-family:           var(--font-manrope), Arial, sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-md: 18px;
+  --font-size-lg: 24px;
+  --font-size-xl: 32px;
+  --font-size-2xl: 48px;
 
-  --font-size-xs:          12px;
-  --font-size-sm:          14px;
-  --font-size-base:        16px;
-  --font-size-md:          18px;
-  --font-size-lg:          24px;
-  --font-size-xl:          32px;
-  --font-size-2xl:         48px;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
 
-  --font-weight-regular:   400;
-  --font-weight-medium:    500;
-  --font-weight-semibold:  600;
-  --font-weight-bold:      700;
-
-  --line-height-tight:     1.2;
-  --line-height-normal:    1.5;
-  --line-height-loose:     1.7;
-
-  /* ─── Border Radius ─── */
-  --radius-sm:             6px;
-  --radius-md:             8px;
-  --radius-lg:             12px;
-  --radius-xl:             16px;
-  --radius-modal:          24px;
-  --radius-full:           50%;
-
-  /* ─── Shadows ─── */
-  --shadow-card:           0 2px 12px rgba(0, 0, 0, 0.08);
-  --shadow-modal:          0 20px 60px rgba(0, 0, 0, 0.18);
-  --shadow-focus:          0 0 0 3px rgba(204, 101, 52, 0.2);
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-loose: 1.7;
 
   /* ─── Layout ─── */
-  --container-max:             1440px;
-  --container-padding-mobile:  20px;
-  --container-padding-tablet:  32px;
+  --container-max: 1440px;
+  --container-padding-mobile: 20px;
+  --container-padding-tablet: 32px;
   --container-padding-desktop: 64px;
 
   /* ─── Transitions ─── */
-  --transition-base:       0.2s ease;
+  --transition-base: 0.2s ease;
 }
 
 /* ─── Reset & Base ───────────────────────────── */
@@ -110,7 +89,7 @@ body {
 }
 
 a {
-  color: inherit;
+  cursor: pointer;
   text-decoration: none;
 }
 
@@ -121,7 +100,6 @@ svg {
 }
 
 button {
-  font-family: inherit;
   cursor: pointer;
 }
 
