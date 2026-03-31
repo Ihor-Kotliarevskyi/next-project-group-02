@@ -32,7 +32,7 @@
 //                 <Link href="/login" className={css.loginBtn}>
 //                   Вхід
 //                 </Link>
-//                 <Link href="/signup" className={css.singupBtn}>
+//                 <Link href="/signup" className={css.signupBtn}>
 //                   Реєстрація
 //                 </Link>
 //               </>
