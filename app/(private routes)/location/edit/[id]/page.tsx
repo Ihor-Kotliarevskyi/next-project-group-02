@@ -1,21 +1,24 @@
 import LocationForm from "@/components/LocationForm/LocationForm";
+import { getRegionsServer, getLocationTypesServer, getLocationByIdServer } from "@/lib/api/serverApi";
 
-export default async function Page({ params }: { params: { id: string } }) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/locations/${params.id}`,
-    { cache: "no-store" }
-  );
+type Props = {
+  params: Promise<{ locationId: string }>;
+};
 
-  if (!res.ok) {
-    return <div>Локацію не знайдено</div>;
-  }
-
-  const location = await res.json();
+export default async function Page({ params }: Props) {
+  const { locationId } = await params;
+  const [regions, types, location] = await Promise.all([
+    getRegionsServer(),
+    getLocationTypesServer(),
+    getLocationByIdServer(locationId),
+  ]);
 
   return (
     <LocationForm
-      id={params.id}
+      id={locationId}
       initialData={location}
+      regions={regions}
+      locationTypes={types}
     />
   );
 }
