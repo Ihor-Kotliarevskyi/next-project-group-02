@@ -127,10 +127,10 @@ const initialValues: LocationFormValues = {
   { setSubmitting }: FormikHelpers<LocationFormValues>
 ) => {
    try {
-    let imageUrl = "https://picsum.photos/300";
+    let imageUrl = initialData?.image || "https://picsum.photos/300";
     if (values.imageFile) {
-  imageUrl = await uploadImage(values.imageFile);
-}
+      imageUrl = await uploadImage(values.imageFile);
+    }
 
 const payload = {
   name: values.name,
