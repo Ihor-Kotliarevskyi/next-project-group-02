@@ -2,9 +2,9 @@
 // import Link from "next/link";
 
 // export default function Header() {
+//   const isAuth = false;
 //   return (
 //     <header>
-//       const isAuth = false;
 //       <div className={css.header}>
 //         <Link href="/" className={css.logo}>
 //           Relax Map
