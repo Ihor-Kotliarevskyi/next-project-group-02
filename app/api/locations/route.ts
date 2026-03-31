@@ -19,3 +19,26 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
+
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+
+    const { data } = await api.post("/locations", body);
+
+    return NextResponse.json(data);
+  } catch (error) {
+    if (isAxiosError(error)) {
+      logErrorResponse(error.response?.data);
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.response?.status ?? 500 }
+      );
+    }
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}
