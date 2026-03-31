@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Relax Map
 
-## Getting Started
+Веб-застосунок для пошуку та обміну місцями відпочинку в Україні. Користувачі можуть переглядати локації, додавати власні місця, залишати відгуки та оцінки.
 
-First, run the development server:
+## Технології
+
+- **Next.js 16** — фреймворк з App Router
+- **React 19** — UI-бібліотека
+- **TypeScript** — типізація
+- **TanStack Query** — серверний стан та кешування
+- **Zustand** — клієнтський стан
+- **Formik + Yup** — форми та валідація
+- **Axios** — HTTP-клієнт
+- **Cloudinary** — завантаження та зберігання зображень
+- **Swiper** — карусель/слайдер
+- **react-hot-toast** — сповіщення
+
+## Як запустити
+
+1. Клонувати репозиторій:
+
+```bash
+git clone <repo-url>
+cd next-project-group-02
+```
+
+2. Встановити залежності:
+
+```bash
+npm install
+```
+
+3. Створити файл `.env` в корені проєкту:
+
+```
+NEXT_PUBLIC_API_URL=https://node-project-group-02.onrender.com
+```
+
+4. Запустити dev-сервер:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Відкрити [http://localhost:3000](http://localhost:3000) у браузері.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Структура проєкту
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+app/          — сторінки та роутинг (App Router)
+components/   — React-компоненти
+lib/          — API-клієнти та Zustand-стори
+hooks/        — кастомні React-хуки
+types/        — TypeScript-типи
+utils/        — утиліти (схеми валідації)
+public/       — статичні файли (зображення, іконки)
+```
 
-## Learn More
+## Деплой
 
-To learn more about Next.js, take a look at the following resources:
+Проєкт розгортається на [Vercel](https://vercel.com). Кожен push у гілку `main` автоматично запускає деплой.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run build
+```
