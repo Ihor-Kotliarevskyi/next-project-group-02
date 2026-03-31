@@ -2,11 +2,8 @@
 
 import { useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-
 import { AddReviewForm } from "../AddReviewModal/AddReviewForm";
-
 import { IoIosClose } from "react-icons/io";
-
 import styles from "./AddReviewModal.module.css";
 
 export const AddReviewModal = () => {
@@ -19,7 +16,7 @@ export const AddReviewModal = () => {
   };
 
   useEffect(() => {
-    const handleEsc = (e) => {
+    const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") handleClose();
     };
 

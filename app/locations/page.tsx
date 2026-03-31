@@ -1,3 +1,13 @@
+import LocationList from "@/components/LocationList/LocationList";
+
+export const metadata = {
+  title: "Усі локації | RelaxMap",
+};
+
 export default function LocationsPage() {
-  return <div>Locations Page</div>;
+  return (
+    <main>
+      <LocationList />
+    </main>
+  );
 }
