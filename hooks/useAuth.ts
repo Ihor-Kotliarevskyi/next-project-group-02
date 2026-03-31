@@ -2,8 +2,10 @@
 
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { isAxiosError } from 'axios';
 import type { FormikHelpers } from 'formik';
 import { useAuthStore } from '@/lib/store/authStore';
+import { login, register } from '@/lib/api/clientApi';
 
 type LoginValues = {
   email: string;
@@ -29,22 +31,9 @@ export function useAuth(redirectTo: string = '/') {
     const loading = toast.loading(isLogin ? 'Вхід...' : 'Реєстрація...');
 
     try {
-      const res = await fetch(isLogin ? '/api/auth/login' : '/api/auth/register', {
-        method: 'POST',
-        body: JSON.stringify(values),
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        const message =
-          data?.response?.message ||
-          data?.response?.error ||
-          data?.error ||
-          'Помилка';
-        throw new Error(message);
-      }
+      const data = isLogin
+        ? await login(values as LoginValues)
+        : await register(values as RegisterValues);
 
       if (!data) throw new Error('Користувача не отримано');
 
@@ -52,10 +41,16 @@ export function useAuth(redirectTo: string = '/') {
       resetForm();
       toast.success(isLogin ? 'Успішний вхід' : 'Реєстрація успішна');
       router.push(redirectTo);
-      router.refresh()
-
+      router.refresh();
     } catch (e: unknown) {
-      const message = e instanceof Error ? e.message : 'Щось пішло не так';
+      const message = isAxiosError(e)
+        ? e.response?.data?.response?.message ||
+          e.response?.data?.response?.error ||
+          e.response?.data?.error ||
+          e.message
+        : e instanceof Error
+        ? e.message
+        : 'Щось пішло не так';
 
       if (message.toLowerCase().includes('email')) {
         setFieldError('email', message);

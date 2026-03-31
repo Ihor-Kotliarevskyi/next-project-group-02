@@ -64,13 +64,19 @@ export default function ReviewsBlock() {
               );
               const feedbacks: Feedback[] = fbRes.data?.data ?? [];
               collected.push(...feedbacks);
-            } catch {
-              // skip
+            } catch (e) {
+              console.warn(
+                "Failed to fetch feedbacks for location " + loc._id + ":",
+                e,
+              );
             }
           }
         }
 
-        setReviews(collected);
+        const unique = Array.from(
+          new Map(collected.map((r) => [r._id, r])).values(),
+        );
+        setReviews(unique);
       } catch {
         setError("Не вдалося завантажити відгуки");
       } finally {

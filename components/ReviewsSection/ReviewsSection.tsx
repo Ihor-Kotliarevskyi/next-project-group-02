@@ -17,13 +17,15 @@ const LIMIT = 3;
 type Props = {
   locationId: string;
   isAuthenticated?: boolean;
+  initialReviews?: Feedback[];
 };
 
 export default function ReviewsSection({
   locationId,
   isAuthenticated = false,
+  initialReviews = [],
 }: Props) {
-  const [reviews, setReviews] = useState<Feedback[]>([]);
+  const [reviews, setReviews] = useState<Feedback[]>(initialReviews);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -53,8 +55,12 @@ export default function ReviewsSection({
   );
 
   useEffect(() => {
-    fetchReviews(1);
-  }, [fetchReviews]);
+    // Only fetch if initialReviews were not provided (length 0)
+    // or if we need to ensure we have the pagination info on first mount
+    if (initialReviews.length === 0) {
+      fetchReviews(1);
+    }
+  }, [fetchReviews, initialReviews.length]);
 
   const handlePrev = () => {
     const newPage = Math.max(1, page - 1);
@@ -70,9 +76,9 @@ export default function ReviewsSection({
 
   const handleAddReview = () => {
     if (!isAuthenticated) {
-      router.push(`/locations/${locationId}?modal=auth`);
+      router.push('/auth-prompt');
     } else {
-      router.push(`/locations/${locationId}?modal=review`);
+      router.push(`/add-review?locationId=${locationId}`);
     }
   };
 

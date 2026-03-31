@@ -1,46 +1,38 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@/lib/store/authStore';
-import { api } from '@/lib/api/api';
+import { logout as logoutApi } from '@/lib/api/clientApi';
 import Modal from '@/components/Modal/Modal';
 import css from './ConfirmationModal.module.css';
 
 export default function ConfirmationModal() {
-  const router = useRouter();
+  const queryClient = useQueryClient();
   const logout = useAuthStore((state) => state.logout);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
 
   const handleCancel = () => {
-    router.back();
+    window.history.back();
   };
 
-const handleConfirm = async () => {
-  try {
-    setError('');
+  const handleConfirm = async () => {
     setIsLoading(true);
-
-    await api.post('/auth/logout'); 
-
-    logout(); 
-
-    router.back(); 
-  } catch {
-    setError('Не вдалося виконати вихід. Спробуйте ще раз.');
-  } finally {
-    setIsLoading(false);
-  }
-};
+    try {
+      await logoutApi();
+    } finally {
+      logout();
+      queryClient.removeQueries({ queryKey: ['currentUser'] });
+      setIsLoading(false);
+      window.location.href = '/';
+    }
+  };
 
   return (
     <Modal>
       <div className={css.content}>
         <h2 className={css.title}>Ви точно хочете вийти?</h2>
         <p className={css.text}>Ми будемо сумувати за вами!</p>
-
-        {error ? <p className={css.error}>{error}</p> : null}
 
         <div className={css.actions}>
           <button

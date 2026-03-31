@@ -1,18 +1,20 @@
 import { NextResponse } from "next/server";
-
-const API_URL = process.env.API_URL;
+import { isAxiosError } from "axios";
+import { api } from "../../api";
+import { logErrorResponse } from "../../_utils/utils";
 
 export async function GET() {
-  const res = await fetch(`${API_URL}/categories/types`, {
-    cache: "no-store",
-  });
-
-  const data = await res.text();
-
-  return new NextResponse(data, {
-    status: res.status,
-    headers: {
-      "Content-Type": res.headers.get("Content-Type") ?? "application/json",
-    },
-  });
+  try {
+    const { data } = await api.get("/categories/types");
+    return NextResponse.json(data);
+  } catch (error) {
+    if (isAxiosError(error)) {
+      logErrorResponse(error.response?.data);
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.response?.status ?? 500 }
+      );
+    }
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
 }

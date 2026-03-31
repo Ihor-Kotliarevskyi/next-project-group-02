@@ -6,6 +6,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { LocationFormValues } from "@/types/location";
+import { createLocation, updateLocation } from "@/lib/api/clientApi";
+import css from "./LocationForm.module.css";
 
 type Props = {
   id?: string;
@@ -31,7 +33,7 @@ export default function LocationForm({ initialData, id, regions, locationTypes }
   initialData?.image || placeholder
   );
   
-  useEffect(() => {
+  useEffect(() => { 
     setImagePreview(initialData?.image || placeholder);
   }, [initialData]);
  
@@ -95,51 +97,69 @@ const initialValues: LocationFormValues = {
     }
   }, [isEdit, id, router]);
 
+    const uploadImage = async (file: File) => {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "bym9862n");
+
+    const res = await fetch(
+      "https://api.cloudinary.com/v1_1/drr2wc5rr/image/upload",
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    const data = await res.json();
+    console.log("Cloudinary response:", data);
+
+    return data.secure_url;
+  } catch (error) {
+    console.log("UPLOAD ERROR:", error);
+    return "https://picsum.photos/300";
+  }
+};
+  
+
  const handleSubmit = async (
   values: LocationFormValues,
   { setSubmitting }: FormikHelpers<LocationFormValues>
 ) => {
-  try {
-    const res = await fetch(
-      isEdit
-        ? `/api/locations/${id}`
-        : '/api/locations',
-      {
-        method: isEdit ? "PATCH" : "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: values.name,
-          locationType: values.locationType,
-          region: values.region,
-          description: values.description,
-          image: placeholder,
-          coordinates: {
-            lat: 0,
-            lon: 0,
-          },
-        }),
-        credentials: "include",
-      }
-    );
+   try {
+    let imageUrl = initialData?.image || "https://picsum.photos/300";
+    if (values.imageFile) {
+      imageUrl = await uploadImage(values.imageFile);
+    }
 
-    if (!res.ok) throw new Error("Помилка");
+const payload = {
+  name: values.name,
+  locationType: values.locationType,
+  region: values.region,
+  description: values.description,
+  image: imageUrl,
+  coordinates: { lat: 0, lon: 0 },
+};
 
-    const data = await res.json();
+    const data = isEdit
+      ? await updateLocation(id!, payload)
+      : await createLocation(payload);
 
     router.push(`/locations/${data._id}`);
-  } catch (error) {
+  } catch {
     toast.error("Не вдалося зберегти");
   } finally {
     setSubmitting(false);
   }
-};
+  };
   
+
   
   return (
     <main>
-      <h1>
+    <div className={css.locationForm}>
+
+      <h1 className={css.locationFormTitle}>
         {isEdit ? "Редагування місця" : "Додавання нового місця"}
       </h1>
 
@@ -151,10 +171,10 @@ const initialValues: LocationFormValues = {
 
       >
         {({ resetForm, setFieldValue, isSubmitting }) => (
-          <Form>
+          <Form className={css.locationFormWrapper}>
             {/* Фото */}
-            <div>
-              <p>Обкладинка</p>
+            <div className={css.formGroup}>
+              <p className="location-form__label">Обкладинка</p>
 
               <input
                 id="fileInput"
@@ -171,7 +191,8 @@ const initialValues: LocationFormValues = {
               />
 
               <button
-               type="button"
+                type="button"
+                className="location-form_upload-btn"
                 onClick={() =>
                   document.getElementById("fileInput")?.click()
                 }
@@ -182,30 +203,32 @@ const initialValues: LocationFormValues = {
               {imagePreview && (
                 <img
                   src={imagePreview}
+                  className="location-form_preview"
                   alt="preview"
                   width={120}
                   style={{ display: "block", marginTop: 10 }}
                 />
               )}
 
-              <ErrorMessage name="imageFile" component="div" />
+              <ErrorMessage className="location-form__error" name="imageFile" component="div" />
             </div>
 
             {/* Назва */}
             <div>
-              <label htmlFor="name">Назва місця</label>
+              <label className="location-form__label" htmlFor="name">Назва місця</label>
               <Field
                 id="name"
                 name="name"
                 placeholder="Введіть назву місця"
+                className="location-form__input"
               />
-              <ErrorMessage name="name" component="div" />
+              <ErrorMessage className="location-form__error" name="name" component="div" />
             </div>
 
             {/* Тип */}
             <div>
-              <label htmlFor="locationType">Тип місця</label>
-              <Field as="select" id="locationType" name="locationType">
+              <label className="location-form__label" htmlFor="locationType">Тип місця</label>
+              <Field className="location-form__input" as="select" id="locationType" name="locationType">
                 <option value="">Оберіть тип місця</option>
                 {locationTypes.map((location, index) => (
                  <option key={index} value={location}>
@@ -213,13 +236,13 @@ const initialValues: LocationFormValues = {
                 </option>
      ))}
               </Field>
-              <ErrorMessage name="locationType" component="div" />
+              <ErrorMessage className="location-form__error" name="locationType" component="div" />
             </div>
 
             {/* Регіон */}
             <div>
-              <label htmlFor="region">Регіон</label>
-              <Field as="select" id="region" name="region">
+              <label className="location-form__label" htmlFor="region">Регіон</label>
+              <Field className="location-form__input" as="select" id="region" name="region">
                 <option value="">Оберіть регіон</option>
                 {regions.map((region, index) => (
                   <option key={index} value={region}>
@@ -227,25 +250,26 @@ const initialValues: LocationFormValues = {
                   </option>
               ))}
               </Field>
-              <ErrorMessage name="region" component="div" />
+              <ErrorMessage className="location-form__error" name="region" component="div" />
             </div>
 
             {/* Опис */}
             <div>
-              <label htmlFor="description">Опис</label>
+              <label className="location-form__label" htmlFor="description">Опис</label>
               <Field
+                className="location-form__textarea"
                 as="textarea"
                 id="description"
                 name="description"
                 placeholder="Детальний опис локації"
                 maxLength={600}
               />
-              <ErrorMessage name="description" component="div" />
+              <ErrorMessage className="location-form__error" name="description" component="div" />
             </div>
 
             {/* Кнопки */}
             <div style={{ marginTop: 20 }}>
-              <button type="submit" disabled={isSubmitting}>
+              <button className="location-form__actions" type="submit" disabled={isSubmitting}>
                 {isSubmitting
                   ? "Завантаження..."
                   : isEdit
@@ -254,6 +278,7 @@ const initialValues: LocationFormValues = {
               </button>
 
               <button
+                className="location-form__cancel"
                 type="button"
                 onClick={() => {
                   resetForm();
@@ -269,6 +294,7 @@ const initialValues: LocationFormValues = {
           </Form>
         )}
       </Formik>
-    </main>
+      </div>
+      </main>
   );
 }

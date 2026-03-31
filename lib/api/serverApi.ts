@@ -1,14 +1,12 @@
 import { cookies } from 'next/headers';
 import { api } from './api';
-import { User } from '@/types/user';
-import { Location } from '@/types/location';
+import type { User } from '@/types/user';
+import type { Location, NewLocation } from '@/types/location';
 
 export const getMeServer = async (): Promise<User> => {
   const cookieStore = await cookies();
-  const { data } = await api.get('/users/me', {
-    headers: {
-      Cookie: cookieStore.toString(),
-    },
+  const { data } = await api.get<User>('/users/me', {
+    headers: { Cookie: cookieStore.toString() },
   });
   return data;
 };
@@ -16,9 +14,7 @@ export const getMeServer = async (): Promise<User> => {
 export const getUserByIdServer = async (id: string): Promise<User> => {
   const cookieStore = await cookies();
   const { data } = await api.get<User>(`/users/${id}`, {
-    headers: {
-      Cookie: cookieStore.toString(),
-    },
+    headers: { Cookie: cookieStore.toString() },
   });
   return data;
 };
@@ -31,11 +27,27 @@ interface UserLocationsResponse {
 export const getUserLocationsServer = async (id: string): Promise<UserLocationsResponse> => {
   const cookieStore = await cookies();
   const { data } = await api.get<UserLocationsResponse>(`/users/${id}/locations`, {
-    headers: {
-      Cookie: cookieStore.toString(),
-    },
+    headers: { Cookie: cookieStore.toString() },
   });
-  console.log(data);
-
   return data;
+};
+
+export const getLocationByIdServer = async (id: string): Promise<Location> => {
+  const { data } = await api.get<Location>(`/locations/${id}`);
+  return data;
+};
+
+export const createLocationServer = async (location: NewLocation): Promise<Location> => {
+  const { data } = await api.post<Location>('/locations', location);
+  return data;
+};
+
+export const getRegionsServer = async (): Promise<string[]> => {
+  const { data } = await api.get('/categories/regions');
+  return data.data.map((item: { region: string }) => item.region);
+};
+
+export const getLocationTypesServer = async (): Promise<string[]> => {
+  const { data } = await api.get('/categories/types');
+  return data.data.map((item: { type: string }) => item.type);
 };
