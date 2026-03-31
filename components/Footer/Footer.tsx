@@ -30,7 +30,7 @@
 //             <Link href="/locations">Місця відпочинку</Link>
 //           </li>
 //         </ul>
-//         <div className={css.copi}>
+//         <div className={css.copy}>
 //           <p>
 //             © <time dateTime="2025">2025</time> Природні Мандри. Усі права
 //             захищені.
