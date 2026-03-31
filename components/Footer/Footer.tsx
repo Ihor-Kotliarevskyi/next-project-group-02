@@ -13,7 +13,7 @@
 //             <Link href="https://www.facebook.com">FB</Link>
 //           </li>
 //           <li className={css.instagram}>
-//             <Link href="https://www.insragram.com">In</Link>
+//             <Link href="https://www.instagram.com">In</Link>
 //           </li>
 //           <li className={css.x}>
 //             <Link href="https://x.com">X</Link>
