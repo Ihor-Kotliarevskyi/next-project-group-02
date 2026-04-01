@@ -64,7 +64,8 @@ export default function ReviewsSection({
   }, [fetchReviews]);
 
   useEffect(() => {
-    if (reviews.length > 0 && swiperRef.current) {
+    if (swiperRef.current) {
+      swiperRef.current.slideTo(0, 0);
       swiperRef.current.update();
       setIsBeginning(swiperRef.current.isBeginning);
       setIsEnd(swiperRef.current.isEnd);
@@ -72,18 +73,37 @@ export default function ReviewsSection({
   }, [reviews]);
 
   const handlePrev = () => {
-    if (page <= 1) return;
-    const newPage = page - 1;
-    setPage(newPage);
-    fetchReviews(newPage);
+    const swiper = swiperRef.current;
+    if (!swiper) return;
+
+    if (!swiper.isBeginning) {
+      swiper.slidePrev();
+    } else if (page > 1) {
+      const newPage = page - 1;
+      setPage(newPage);
+      fetchReviews(newPage);
+
+      setTimeout(() => {
+        swiperRef.current?.slideTo(LIMIT - 1, 0);
+      }, 0);
+    }
   };
 
   const handleNext = () => {
-    if (page >= totalPages) return;
-    const newPage = page + 1;
-    setPage(newPage);
-    fetchReviews(newPage);
+    const swiper = swiperRef.current;
+    if (!swiper) return;
+
+    if (!swiper.isEnd) {
+      swiper.slideNext();
+    } else if (page < totalPages) {
+      const newPage = page + 1;
+      setPage(newPage);
+      fetchReviews(newPage);
+    }
   };
+
+  const prevDisabled = isBeginning && page <= 1;
+  const nextDisabled = isEnd && page >= totalPages;
 
   const handleAddReview = () => {
     if (!isAuthenticated) {
@@ -111,7 +131,7 @@ export default function ReviewsSection({
       {ready && !error && reviews.length > 0 && (
         <div className={styles.swiperContainer}>
           <Swiper
-            key={reviews.length}
+            key={page}
             modules={[Navigation]}
             slidesPerView={1}
             spaceBetween={16}
@@ -147,9 +167,10 @@ export default function ReviewsSection({
             <button
               className={styles.arrowBtn}
               onClick={handlePrev}
-              disabled={page <= 1}
+              disabled={prevDisabled}
               aria-label="Попередній відгук"
             >
+              {/* your left arrow SVG */}
               <svg
                 width="16"
                 height="16"
@@ -162,9 +183,10 @@ export default function ReviewsSection({
             <button
               className={styles.arrowBtn}
               onClick={handleNext}
-              disabled={page >= totalPages}
+              disabled={nextDisabled}
               aria-label="Наступний відгук"
             >
+              {/* your right arrow SVG */}
               <svg
                 width="16"
                 height="16"

@@ -4768,25 +4768,6 @@ export default function AuthLayout({
 }
 </file>
 
-<file path="app/@modal/loading.tsx">
-"use client";
-
-import Modal from "@/components/Modal/Modal";
-import { ScaleLoader } from "react-spinners";
-
-export default function ModalLoading() {
-  return (
-    <Modal>
-      <div
-        style={{ display: "flex", justifyContent: "center", padding: "32px" }}
-      >
-        <ScaleLoader color="#E76F51" aria-label="Завантаження" />
-      </div>
-    </Modal>
-  );
-}
-</file>
-
 <file path="app/api/auth/session/route.ts">
 import { NextRequest, NextResponse } from "next/server";
 import { isAxiosError } from "axios";
@@ -5173,6 +5154,25 @@ const nextConfig: NextConfig = {
 export default nextConfig;
 </file>
 
+<file path="app/@modal/loading.tsx">
+"use client";
+
+import Modal from "@/components/Modal/Modal";
+import { ScaleLoader } from "react-spinners";
+
+export default function ModalLoading() {
+  return (
+    <Modal>
+      <div
+        style={{ display: "flex", justifyContent: "center", padding: "32px" }}
+      >
+        <ScaleLoader color="#E76F51" aria-label="Завантаження" />
+      </div>
+    </Modal>
+  );
+}
+</file>
+
 <file path="app/api/auth/logout/route.ts">
 import { NextRequest, NextResponse } from "next/server";
 import { api } from "../../api";
@@ -5247,138 +5247,6 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
     }
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
-}
-</file>
-
-<file path="components/ReviewsSection/ReviewsSection.module.css">
-/* Mobile */
-.section {
-    padding: 32px 16px;
-}
-
-.header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-    gap: 12px;
-}
-
-.title {
-    font-size: 24px;
-    font-weight: 700;
-    color: #1b391b;
-}
-
-.addButton {
-    padding: 10px 20px;
-    background: #cc6534;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s ease, transform 0.2s ease;
-    white-space: nowrap;
-}
-
-.addButton:hover {
-    background: #b5572c;
-    transform: translateY(-2px);
-}
-
-/* Arrows at bottom-right, square with rounded corners — matching Figma */
-.controls {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-    margin-top: 24px;
-}
-
-.arrowBtn {
-    width: 48px;
-    height: 48px;
-    border-radius: 8px;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    background: #ffe5d9;
-    color: #4c2613;
-    padding: 12px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
-}
-
-.arrowBtn:hover:not(:disabled) {
-    background: #ffa57a;
-    border-color: #ffa57a;
-    color: #4c2613;
-}
-
-.arrowBtn:disabled {
-    background: #f2f2f2;
-    border-color: #ffa57a;
-    color: #4c2613;
-    cursor: not-allowed;
-    opacity: 0.6;
-}
-
-.grid {
-    display: grid;
-    gap: 16px;
-    grid-template-columns: 1fr;
-}
-
-.loading,
-.error,
-.empty {
-    text-align: center;
-    color: #888;
-    padding: 24px 0;
-    font-size: 15px;
-}
-
-/* Tablet */
-@media (min-width: 704px) {
-    .section {
-        padding: 40px 32px;
-    }
-
-    .title {
-        font-size: 30px;
-    }
-
-    .grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-/* Desktop */
-@media (min-width: 1440px) {
-    .section {
-        padding: 48px 64px;
-    }
-
-    .title {
-        font-size: 36px;
-    }
-
-    .grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-.swiperContainer {
-    position: relative;
-}
-
-:global(.swiper-button-next),
-:global(.swiper-button-prev) {
-    display: none;
 }
 </file>
 
@@ -5603,7 +5471,6 @@ export default function LocationCard({
     display: flex;
     justify-content: flex-end;
     gap: 8px;
-    margin-top: 24px;
 }
 
 .arrowBtn {
@@ -5667,6 +5534,148 @@ export default function LocationCard({
     .title {
         font-size: 52px;
     }
+}
+</file>
+
+<file path="components/ReviewsSection/ReviewsSection.module.css">
+/* Mobile */
+.section {
+    padding: 64px 0;
+    min-width: 335px;
+    
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 40px;
+}
+
+.title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1b391b;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    text-align: center;
+    color: #4c2613;
+    font-family: "Montserrat", sans-serif;
+}
+
+.addButton {
+    background: #cc6534;
+    color: #fff;
+    border: 1px solid #cc6534;
+    border-radius: 8px;
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 500;
+    font-family: "Montserrat", sans-serif;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+    white-space: nowrap;
+    width: 167px;
+    height: 48px;
+}
+
+.addButton:hover {
+    background: #b5572c;
+    transform: translateY(-2px);
+}
+
+
+.controls {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.arrowBtn {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    background: #ffe5d9;
+    color: #4c2613;
+    padding: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.arrowBtn:hover:not(:disabled) {
+    background: #ffa57a;
+    border-color: #ffa57a;
+    color: #4c2613;
+}
+
+.arrowBtn:disabled {
+    background: #f2f2f2;
+    border-color: #ffa57a;
+    color: #4c2613;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 1fr;
+}
+
+.loading,
+.error,
+.empty {
+    text-align: center;
+    color: #888;
+    padding: 24px 0;
+    font-size: 15px;
+}
+
+/* Tablet */
+@media (min-width: 704px) {
+    .section {
+        padding: 40px 32px;
+    }
+
+    .title {
+        font-size: 30px;
+    }
+
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Desktop */
+@media (min-width: 1440px) {
+    .section {
+        padding: 48px 64px;
+    }
+
+    .title {
+        font-size: 36px;
+    }
+
+    .grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.swiperContainer {
+    position: relative;
+}
+
+:global(.swiper-button-next),
+:global(.swiper-button-prev) {
+    display: none;
 }
 </file>
 
@@ -5849,6 +5858,7 @@ export default function ReviewsBlock() {
     flex-direction: column;
     gap: 16px;
     min-height: 203px;
+    margin-bottom: 40px;
 }
 
 .stars {
@@ -5985,7 +5995,8 @@ export default function ReviewsSection({
   }, [fetchReviews]);
 
   useEffect(() => {
-    if (reviews.length > 0 && swiperRef.current) {
+    if (swiperRef.current) {
+      swiperRef.current.slideTo(0, 0);
       swiperRef.current.update();
       setIsBeginning(swiperRef.current.isBeginning);
       setIsEnd(swiperRef.current.isEnd);
@@ -5993,18 +6004,37 @@ export default function ReviewsSection({
   }, [reviews]);
 
   const handlePrev = () => {
-    if (page <= 1) return;
-    const newPage = page - 1;
-    setPage(newPage);
-    fetchReviews(newPage);
+    const swiper = swiperRef.current;
+    if (!swiper) return;
+
+    if (!swiper.isBeginning) {
+      swiper.slidePrev();
+    } else if (page > 1) {
+      const newPage = page - 1;
+      setPage(newPage);
+      fetchReviews(newPage);
+
+      setTimeout(() => {
+        swiperRef.current?.slideTo(LIMIT - 1, 0);
+      }, 0);
+    }
   };
 
   const handleNext = () => {
-    if (page >= totalPages) return;
-    const newPage = page + 1;
-    setPage(newPage);
-    fetchReviews(newPage);
+    const swiper = swiperRef.current;
+    if (!swiper) return;
+
+    if (!swiper.isEnd) {
+      swiper.slideNext();
+    } else if (page < totalPages) {
+      const newPage = page + 1;
+      setPage(newPage);
+      fetchReviews(newPage);
+    }
   };
+
+  const prevDisabled = isBeginning && page <= 1;
+  const nextDisabled = isEnd && page >= totalPages;
 
   const handleAddReview = () => {
     if (!isAuthenticated) {
@@ -6032,7 +6062,7 @@ export default function ReviewsSection({
       {ready && !error && reviews.length > 0 && (
         <div className={styles.swiperContainer}>
           <Swiper
-            key={reviews.length}
+            key={page}
             modules={[Navigation]}
             slidesPerView={1}
             spaceBetween={16}
@@ -6068,9 +6098,10 @@ export default function ReviewsSection({
             <button
               className={styles.arrowBtn}
               onClick={handlePrev}
-              disabled={page <= 1}
+              disabled={prevDisabled}
               aria-label="Попередній відгук"
             >
+              {/* your left arrow SVG */}
               <svg
                 width="16"
                 height="16"
@@ -6083,9 +6114,10 @@ export default function ReviewsSection({
             <button
               className={styles.arrowBtn}
               onClick={handleNext}
-              disabled={page >= totalPages}
+              disabled={nextDisabled}
               aria-label="Наступний відгук"
             >
+              {/* your right arrow SVG */}
               <svg
                 width="16"
                 height="16"

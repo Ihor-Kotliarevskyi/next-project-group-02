@@ -1,6 +1,7 @@
 /* Mobile */
 .section {
-    padding: 32px 16px;
+    padding: 64px 0;
+    
 }
 
 .header {
@@ -10,25 +11,34 @@
     margin-bottom: 24px;
     flex-wrap: wrap;
     gap: 12px;
+    margin-bottom: 40px;
 }
 
 .title {
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 700;
     color: #1b391b;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    text-align: center;
+    color: #4c2613;
+    font-family: "Montserrat", sans-serif;
 }
 
 .addButton {
-    padding: 10px 20px;
     background: #cc6534;
     color: #fff;
-    border: none;
+    border: 1px solid #cc6534;
     border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 500;
+    font-family: "Montserrat", sans-serif;
     cursor: pointer;
     transition: background 0.2s ease, transform 0.2s ease;
     white-space: nowrap;
+    width: 167px;
+    height: 48px;
 }
 
 .addButton:hover {
@@ -36,12 +46,11 @@
     transform: translateY(-2px);
 }
 
-/* Arrows at bottom-right, square with rounded corners — matching Figma */
+
 .controls {
     display: flex;
     justify-content: flex-end;
-    gap: 8px;
-    margin-top: 24px;
+    gap: 10px;
 }
 
 .arrowBtn {
@@ -92,11 +101,11 @@
 /* Tablet */
 @media (min-width: 704px) {
     .section {
-        padding: 40px 32px;
+        padding: 64px 0px;
     }
 
     .title {
-        font-size: 30px;
+        font-size: 44px;
     }
 
     .grid {
@@ -105,13 +114,21 @@
 }
 
 /* Desktop */
-@media (min-width: 1440px) {
+@media (min-width: 1312px) {
     .section {
-        padding: 48px 64px;
+        padding: 72px 0px;
     }
 
     .title {
-        font-size: 36px;
+        font-size: 52px;
+
+    }
+
+    .addButton {
+
+    width: 202px;
+    border-radius: 6px;
+    font-size: 20px;
     }
 
     .grid {

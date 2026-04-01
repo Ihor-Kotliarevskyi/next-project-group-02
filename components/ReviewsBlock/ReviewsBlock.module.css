@@ -20,8 +20,7 @@
 .controls {
     display: flex;
     justify-content: flex-end;
-    gap: 8px;
-    margin-top: 24px;
+    gap: 10px;
 }
 
 .arrowBtn {
