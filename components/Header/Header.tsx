@@ -47,7 +47,7 @@ export default function Header() {
             <>
               <Link href={`/profile/${user._id}`} className={css.profileLink}>
                 {user.avatarUrl ? (
-                  <img
+                  <Image
                     src={user.avatarUrl}
                     alt={user.name}
                     className={css.avatar}
