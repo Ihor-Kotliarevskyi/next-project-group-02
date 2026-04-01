@@ -1,3 +1,4 @@
+import Logo from "../Logo/Logo";
 import css from "./Footer.module.css";
 import Link from "next/link";
 
@@ -5,9 +6,7 @@ export default function Footer() {
   return (
     <footer>
       <div className={css.footer}>
-        <Link href="/" className={css.logo}>
-          Relax Map
-        </Link>
+        <Logo />
         <ul className={css.socials}>
           <li className={css.facebook}>
             <Link href="https://www.facebook.com">FB</Link>
