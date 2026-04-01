@@ -32,7 +32,7 @@ export default function Header() {
                 <Link href="/login" className={css.loginBtn}>
                   Вхід
                 </Link>
-                <Link href="/signup" className={css.signupBtn}>
+                <Link href="/register" className={css.signupBtn}>
                   Реєстрація
                 </Link>
               </>
