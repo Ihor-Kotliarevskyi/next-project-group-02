@@ -127,10 +127,10 @@ const initialValues: LocationFormValues = {
   { setSubmitting }: FormikHelpers<LocationFormValues>
 ) => {
    try {
-    let imageUrl = "https://picsum.photos/300";
+    let imageUrl = initialData?.image || "https://picsum.photos/300";
     if (values.imageFile) {
-  imageUrl = await uploadImage(values.imageFile);
-}
+      imageUrl = await uploadImage(values.imageFile);
+    }
 
 const payload = {
   name: values.name,
@@ -173,7 +173,7 @@ const payload = {
         {({ resetForm, setFieldValue, isSubmitting }) => (
           <Form className={css.locationFormWrapper}>
             {/* Фото */}
-            <div className="location-form__field">
+            <div className={css.formGroup}>
               <p className="location-form__label">Обкладинка</p>
 
               <input

@@ -1,143 +1,56 @@
-"use client";
-
-import { useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useAuthStore } from "@/lib/store/authStore";
 import css from "./Header.module.css";
+import Link from "next/link";
 
 export default function Header() {
-  const pathname = usePathname();
-  const user = useAuthStore((s) => s.user);
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  const closeMenu = () => setMenuOpen(false);
-
-  const navLinks = [
-    { href: "/", label: "Головна" },
-    { href: "/locations", label: "Локації" },
-  ];
-
+  const isAuth = false;
   return (
-    <header className={css.header}>
-      <div className={css.inner}>
-        {/* Logo */}
-        <Link href="/" className={css.logo} onClick={closeMenu}>
+    <header>
+      <div className={css.header}>
+        <Link href="/" className={css.logo}>
           Relax Map
         </Link>
-
-        {/* Desktop nav */}
         <nav className={css.nav}>
-          {navLinks.map(({ href, label }) => (
-            <Link
-              key={href}
-              href={href}
-              className={`${css.navLink} ${pathname === href ? css.active : ""}`}
-            >
-              {label}
-            </Link>
-          ))}
+          <ul className={css.navigation}>
+            {!isAuth && (
+              <li>
+                <Link href="/">Головна</Link>
+              </li>
+            )}
+
+            <li>
+              <Link href="/locations">Місця відпочинку</Link>
+            </li>
+            {isAuth && (
+              <li>
+                <Link href="/pro">Мій Профіль</Link>
+              </li>
+            )}
+          </ul>
+          <div className={css.btn}>
+            {!isAuth ? (
+              <>
+                <Link href="/login" className={css.loginBtn}>
+                  Вхід
+                </Link>
+                <Link href="/signup" className={css.signupBtn}>
+                  Реєстрація
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link href="/locations/add" className={css.locationBtn}>
+                  Поділитися локацією
+                </Link>
+                <div className={css.user}>
+                  <img src="#" alt="User avatar" className={css.avatar} />
+                  <span className={css.username}></span>
+                  <button className={css.exitBtn}>Вийти</button>
+                </div>
+              </>
+            )}
+          </div>
         </nav>
-
-        {/* Desktop auth */}
-        <div className={css.auth}>
-          {user ? (
-            <>
-              <Link href={`/profile/${user._id}`} className={css.profileLink}>
-                {user.avatarUrl ? (
-                  <img
-                    src={user.avatarUrl}
-                    alt={user.name}
-                    className={css.avatar}
-                    width={32}
-                    height={32}
-                  />
-                ) : (
-                  <span className={css.avatarFallback}>
-                    {user.name.charAt(0).toUpperCase()}
-                  </span>
-                )}
-                <span className={css.userName}>{user.name}</span>
-              </Link>
-              <Link href="/logout-confirm" className={css.logoutBtn}>
-                Вийти
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link href="/login" className={css.loginBtn}>
-                Увійти
-              </Link>
-              <Link href="/register" className={css.registerBtn}>
-                Реєстрація
-              </Link>
-            </>
-          )}
-        </div>
-
-        {/* Burger button */}
-        <button
-          type="button"
-          className={css.burger}
-          onClick={() => setMenuOpen((prev) => !prev)}
-          aria-label="Відкрити меню"
-          aria-expanded={menuOpen}
-        >
-          <span className={`${css.burgerLine} ${menuOpen ? css.burgerOpen : ""}`} />
-          <span className={`${css.burgerLine} ${menuOpen ? css.burgerOpen : ""}`} />
-          <span className={`${css.burgerLine} ${menuOpen ? css.burgerOpen : ""}`} />
-        </button>
       </div>
-
-      {/* Mobile menu */}
-      {menuOpen && (
-        <div className={css.mobileMenu}>
-          {navLinks.map(({ href, label }) => (
-            <Link
-              key={href}
-              href={href}
-              className={`${css.mobileLink} ${pathname === href ? css.active : ""}`}
-              onClick={closeMenu}
-            >
-              {label}
-            </Link>
-          ))}
-
-          <div className={css.mobileDivider} />
-
-          {user ? (
-            <>
-              <Link
-                href={`/profile/${user._id}`}
-                className={css.mobileLink}
-                onClick={closeMenu}
-              >
-                Профіль
-              </Link>
-              <Link
-                href="/logout-confirm"
-                className={css.mobileLink}
-                onClick={closeMenu}
-              >
-                Вийти
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link href="/login" className={css.mobileLink} onClick={closeMenu}>
-                Увійти
-              </Link>
-              <Link
-                href="/register"
-                className={css.mobileLink}
-                onClick={closeMenu}
-              >
-                Реєстрація
-              </Link>
-            </>
-          )}
-        </div>
-      )}
     </header>
   );
 }
