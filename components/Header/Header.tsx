@@ -6,6 +6,8 @@ import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import css from "./Header.module.css";
 import Logo from "../Logo/Logo";
+import Image from 'next/image';
+
 
 export default function Header() {
   const pathname = usePathname();
