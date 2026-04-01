@@ -26,84 +26,123 @@ export default function ReviewsSection({
   initialReviews = [],
 }: Props) {
   const [reviews, setReviews] = useState<Feedback[]>(initialReviews);
-  const [page, setPage] = useState(1);
+  const [loadedPages, setLoadedPages] = useState<number[]>([1]);
   const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [ready, setReady] = useState(initialReviews.length > 0);
   const [isBeginning, setIsBeginning] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
   const swiperRef = useRef<SwiperType | null>(null);
-  const [ready, setReady] = useState(initialReviews.length > 0);
   const router = useRouter();
 
-  const fetchReviews = useCallback(
+  // Fetch a specific page and append to the flat reviews array
+  const fetchPage = useCallback(
     async (pageNum: number) => {
+      if (isFetching) return;
       try {
-        setLoading(true);
+        setIsFetching(true);
         setError(null);
         const { data } = await clientApi.get(
           `/locations/${locationId}/feedbacks`,
           { params: { page: pageNum, limit: LIMIT } },
         );
-        setReviews(data.data || data);
+        const newReviews: Feedback[] = data.data || data;
         if (data.pagination) {
           setTotalPages(data.pagination.totalPages ?? 1);
         }
+        setReviews((prev) => {
+          // Deduplicate by _id before appending
+          const existingIds = new Set(prev.map((r) => r._id));
+          const unique = newReviews.filter((r) => !existingIds.has(r._id));
+          return [...prev, ...unique];
+        });
+        setLoadedPages((prev) => [...prev, pageNum]);
       } catch {
         setError("Не вдалося завантажити відгуки");
       } finally {
-        setLoading(false);
+        setIsFetching(false);
         setReady(true);
       }
     },
-    [locationId],
+    [locationId, isFetching],
   );
 
-  useEffect(() => {
-    fetchReviews(1);
-  }, [fetchReviews]);
-
-  useEffect(() => {
-    if (swiperRef.current) {
-      swiperRef.current.slideTo(0, 0);
-      swiperRef.current.update();
-      setIsBeginning(swiperRef.current.isBeginning);
-      setIsEnd(swiperRef.current.isEnd);
+  // Full refresh — called after submitting a new review
+  const refreshReviews = useCallback(async () => {
+    try {
+      setError(null);
+      const { data } = await clientApi.get(
+        `/locations/${locationId}/feedbacks`,
+        { params: { page: 1, limit: LIMIT } },
+      );
+      const fresh: Feedback[] = data.data || data;
+      if (data.pagination) {
+        setTotalPages(data.pagination.totalPages ?? 1);
+      }
+      setReviews(fresh);
+      setLoadedPages([1]);
+      // Slide back to the beginning so the new review is visible
+      setTimeout(() => {
+        swiperRef.current?.slideTo(0, 300);
+      }, 50);
+    } catch {
+      // silently fail — stale data is still shown
     }
-  }, [reviews]);
+  }, [locationId]);
+
+  // Initial load (only if no SSR initialReviews were provided)
+  useEffect(() => {
+    if (initialReviews.length === 0) {
+      fetchPage(1);
+    } else {
+      // Still need totalPages from the server
+      clientApi
+        .get(`/locations/${locationId}/feedbacks`, {
+          params: { page: 1, limit: LIMIT },
+        })
+        .then(({ data }) => {
+          if (data.pagination) {
+            setTotalPages(data.pagination.totalPages ?? 1);
+          }
+          // Merge SSR data with fresh data to catch any new reviews
+          const fresh: Feedback[] = data.data || data;
+          setReviews(fresh);
+        })
+        .catch(() => {});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [locationId]);
+
+  // Listen for a custom event fired by the add-review page on success
+  useEffect(() => {
+    const handler = () => refreshReviews();
+    window.addEventListener("review-added", handler);
+    return () => window.removeEventListener("review-added", handler);
+  }, [refreshReviews]);
 
   const handlePrev = () => {
-    const swiper = swiperRef.current;
-    if (!swiper) return;
-
-    if (!swiper.isBeginning) {
-      swiper.slidePrev();
-    } else if (page > 1) {
-      const newPage = page - 1;
-      setPage(newPage);
-      fetchReviews(newPage);
-
-      setTimeout(() => {
-        swiperRef.current?.slideTo(LIMIT - 1, 0);
-      }, 0);
-    }
+    swiperRef.current?.slidePrev();
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     const swiper = swiperRef.current;
     if (!swiper) return;
 
+    // If not yet at the last slide, just slide forward
     if (!swiper.isEnd) {
       swiper.slideNext();
-    } else if (page < totalPages) {
-      const newPage = page + 1;
-      setPage(newPage);
-      fetchReviews(newPage);
+      return;
+    }
+
+    // At the end of loaded slides — check if there are more pages to fetch
+    const nextPage = loadedPages.length + 1;
+    if (nextPage <= totalPages) {
+      await fetchPage(nextPage);
+      // After state update + re-render, slide to the new slide
+      setTimeout(() => swiper.slideNext(), 50);
     }
   };
-
-  const prevDisabled = isBeginning && page <= 1;
-  const nextDisabled = isEnd && page >= totalPages;
 
   const handleAddReview = () => {
     if (!isAuthenticated) {
@@ -131,10 +170,11 @@ export default function ReviewsSection({
       {ready && !error && reviews.length > 0 && (
         <div className={styles.swiperContainer}>
           <Swiper
-            key={page}
+            // No key={page} — we never remount, slides animate smoothly
             modules={[Navigation]}
             slidesPerView={1}
             spaceBetween={16}
+            speed={400} // smooth 400ms CSS transition
             observer={true}
             observeParents={true}
             breakpoints={{
@@ -167,10 +207,9 @@ export default function ReviewsSection({
             <button
               className={styles.arrowBtn}
               onClick={handlePrev}
-              disabled={prevDisabled}
+              disabled={isBeginning}
               aria-label="Попередній відгук"
             >
-              {/* your left arrow SVG */}
               <svg
                 width="16"
                 height="16"
@@ -183,10 +222,9 @@ export default function ReviewsSection({
             <button
               className={styles.arrowBtn}
               onClick={handleNext}
-              disabled={nextDisabled}
+              disabled={isEnd && loadedPages.length >= totalPages}
               aria-label="Наступний відгук"
             >
-              {/* your right arrow SVG */}
               <svg
                 width="16"
                 height="16"
