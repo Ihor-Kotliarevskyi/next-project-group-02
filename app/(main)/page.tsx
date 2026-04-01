@@ -4,12 +4,12 @@ import PopularLocationsBlock from "@/components/PopularLocationsBlock/PopularLoc
 import ReviewsBlock from "@/components/ReviewsBlock/ReviewsBlock";
 
 export default function HomePage() {
-  return (
-    <main>
-      <HeroBlock />
-      <AdvantagesBlock />
-      <PopularLocationsBlock />
-      <ReviewsBlock />
-    </main>
-  );
+    return (
+        <main>
+            <HeroBlock />
+            <AdvantagesBlock />
+            <PopularLocationsBlock />
+            <ReviewsBlock />
+        </main>
+    );
 }
