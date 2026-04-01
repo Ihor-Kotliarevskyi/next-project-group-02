@@ -10,7 +10,7 @@ export default function AuthLayout({
     <>
       <header className={css.header}>
         <Link href="/">
-          <h1 className={css.logo}>Relax Map</h1>
+          <span className={css.logo}>Relax Map</span>
         </Link>
       </header>
 
