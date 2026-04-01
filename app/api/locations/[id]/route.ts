@@ -23,3 +23,35 @@ export async function GET(_: NextRequest, context: RouteContext) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
+
+export async function PATCH(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const body = await req.json();
+
+    const cookie = req.headers.get("cookie") || "";
+
+    const { data } = await api.patch(`/locations/${id}`, body, {
+      headers: {
+        Cookie: cookie,
+      },
+    });
+
+    return NextResponse.json(data);
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.response?.status ?? 500 }
+      );
+    }
+
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}
