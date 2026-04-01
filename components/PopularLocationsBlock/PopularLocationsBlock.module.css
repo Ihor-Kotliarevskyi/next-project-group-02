@@ -1,21 +1,36 @@
 .section {
-  background-color: var(--color-primary-lighter);
-  padding: 40px 0 56px;
+  background: #fff2ec;
+  padding: 64px 20px;
 }
 
 .container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 40px;
+
   width: 100%;
-  padding: 0 var(--container-padding-mobile);
   margin: 0 auto;
 }
 
+.topRow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 40px;
+  width: 100%;
+}
+
 .title {
-  margin: 0 0 24px;
-  color: var(--color-text-primary);
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-height-tight);
-  text-align: center;
+  margin: 0;
+  color: #000;
+  font-family: "Montserrat", sans-serif;
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  max-width: 221px;
 }
 
 .loader {
@@ -23,6 +38,10 @@
   text-align: center;
   color: var(--color-text-muted);
   font-size: var(--font-size-base);
+}
+
+.swiperWrap {
+  width: 100%;
 }
 
 .grid {
@@ -38,32 +57,41 @@
 }
 
 .ctaBtn {
-  display: inline-block;
-  padding: 12px 32px;
-  background-color: var(--color-primary);
-  color: var(--color-text-white);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-semibold);
-  border-radius: var(--radius-md);
-  transition: background-color var(--transition-base);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 114px;
+  height: 48px;
+  padding: 6px 12px;
+  border: 1px solid #cc6534;
+  border-radius: 8px;
+  background-color: #cc6534;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
 }
 
-.ctaBtn:hover {
-  background-color: var(--color-primary-hover);
+.ctaBtn:hover,
+.ctaBtn:focus-visible {
+  background-color: #a95325;
+  border-color: #a95325;
+  outline: none;
 }
 
 /* ─── Tablet ─── */
 @media (min-width: 768px) {
   .section {
-    padding: 48px 0 72px;
-  }
-
-  .container {
-    padding: 0 var(--container-padding-tablet);
+    padding: 64px 32px;
   }
 
   .title {
-    margin-bottom: 40px;
     font-size: 44px;
   }
 
@@ -74,14 +102,17 @@
 
 /* ─── Desktop ─── */
 @media (min-width: 1440px) {
+  .section {
+    padding: 72px 64px;
+  }
+
   .container {
-    max-width: var(--container-max);
-    padding: 0 var(--container-padding-desktop);
+    max-width: 1280px;
+    margin: 0 auto;
   }
 
   .title {
     font-size: 52px;
-    margin-bottom: 48px;
   }
 
   .grid {
