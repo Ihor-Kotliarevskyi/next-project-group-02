@@ -48,10 +48,14 @@ export const getFeedbacks = (
 
 export const createFeedback = (
   locationId: string,
-  data: { rating: number; comment: string }
+  data: { rating: number; comment: string; userName: string }
 ) =>
   clientApi
-    .post(`/locations/${locationId}/feedbacks`, data)
+    .post(`/locations/${locationId}/feedbacks`, {
+      rate: data.rating,       
+      description: data.comment, 
+      userName: data.userName,
+    })
     .then((r) => r.data);
 
 export const createLocation = (data: unknown) =>
