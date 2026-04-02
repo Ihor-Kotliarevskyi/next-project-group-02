@@ -8,6 +8,8 @@ import toast from "react-hot-toast";
 import { LocationFormValues } from "@/types/location";
 import { createLocation, updateLocation } from "@/lib/api/clientApi";
 import css from "./LocationForm.module.css";
+import { getLocationValidationSchema } from "@/lib/validation/locationSchema";
+import { uploadImage } from "@/utils/uploadImage";
 
 type Props = {
   id?: string;
@@ -24,9 +26,10 @@ type Props = {
 
 export default function LocationForm({ initialData, id, regions, locationTypes }: Props) {
   
-  const isEdit = !!initialData;
+  const isEdit = !!id;
   const router = useRouter();
   const placeholder = "/images/location-form-placeholder-image.jpg";
+  const validationSchema = getLocationValidationSchema(isEdit);
   
 
  const [imagePreview, setImagePreview] = useState<string>(
@@ -56,76 +59,18 @@ const initialValues: LocationFormValues = {
   imageFile: null,
 };
 
-  const validationSchema = Yup.object({
-   imageFile: Yup.mixed<File>()
-  .test("required", "Додайте фото", (value) => {
-    if (isEdit) return true; 
-    return !!value;
-  })
-  .test("fileType", "Тільки JPG або PNG", (value) => {
-    if (!value) return true;
-    return ["image/jpeg", "image/png"].includes(value.type);
-  })
-  .test("fileSize", "Максимум 1MB", (value) => {
-    if (!value) return true;
-    return value.size <= 1024 * 1024;
-  }),
-
-    name: Yup.string()
-      .min(3, "Мінімум 3 символи")
-      .max(96, "Максимум 96 символів")
-      .required("Введіть назву"),
-
-    locationType: Yup.string()
-      .max(64, "Максимум 64 символи")
-      .required("Оберіть тип"),
-
-    region: Yup.string()
-      .max(64, "Максимум 64 символи")
-      .required("Оберіть регіон"),
-
-    description: Yup.string()
-      .min(20, "Мінімум 20 символів")
-      .max(6000, "Максимум 6000символів")
-      .required("Введіть опис"),
-  });
-  
-
   useEffect(() => {
     if (isEdit && !id) {
       router.push("/");
     }
   }, [isEdit, id, router]);
 
-    const uploadImage = async (file: File) => {
-  try {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "bym9862n");
 
-    const res = await fetch(
-      "https://api.cloudinary.com/v1_1/drr2wc5rr/image/upload",
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
-
-    const data = await res.json();
-    console.log("Cloudinary response:", data);
-
-    return data.secure_url;
-  } catch (error) {
-    console.log("UPLOAD ERROR:", error);
-    return "https://picsum.photos/300";
-  }
-};
-  
-
- const handleSubmit = async (
+  const handleSubmit = async (
   values: LocationFormValues,
   { setSubmitting }: FormikHelpers<LocationFormValues>
-) => {
+  ) => {
+     console.log("Submit");
    try {
     let imageUrl = initialData?.image || "https://picsum.photos/300";
     if (values.imageFile) {
