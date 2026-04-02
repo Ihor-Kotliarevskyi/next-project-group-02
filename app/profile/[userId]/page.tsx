@@ -30,17 +30,9 @@ export default async function Profile({ params }: Props) {
     <main className={css.mainContent}>
       <div className={css.header}>
         {avatarSrc ? (
-          <Image
-            src={avatarSrc}
-            alt={user.name}
-            width={145}
-            height={145}
-            className={css.avatar}
-          />
+          <Image src={avatarSrc} alt={user.name} width={145} height={145} className={css.avatar} />
         ) : (
-          <div className={css.avatarFallback}>
-            {user.name.charAt(0).toUpperCase()}
-          </div>
+          <div className={css.avatarFallback}>{user.name.charAt(0).toUpperCase()}</div>
         )}
         <div className={css.profileInfo}>
           <h2 className={css.userName}>{user.name}</h2>
