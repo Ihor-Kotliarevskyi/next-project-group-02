@@ -44,10 +44,13 @@ The content is organized as follows:
 app/(auth routes)/layout.tsx
 app/(auth routes)/login/page.tsx
 app/(auth routes)/register/page.tsx
-app/(private routes)/location/add/page.tsx
-app/(private routes)/location/edit/[id]/page.tsx
-app/(private routes)/locations/[locationId]/edit/page.tsx
+app/(main)/layout.tsx
+app/(main)/locations/[locationId]/page.module.css
+app/(main)/locations/[locationId]/page.tsx
+app/(main)/locations/page.tsx
+app/(main)/page.tsx
 app/(private routes)/locations/add/page.tsx
+app/(private routes)/locations/edit/[id]/page.tsx
 app/(private routes)/profile/[userId]/edit/page.tsx
 app/(private routes)/profile/[userId]/page.tsx
 app/(private routes)/profile/[userId]/ProfilePage.module.css
@@ -56,6 +59,7 @@ app/@modal/(.)add-review/AddReviewForm.tsx
 app/@modal/(.)add-review/page.tsx
 app/@modal/(.)auth-prompt/page.tsx
 app/@modal/(.)logout-confirm/page.tsx
+app/@modal/[...catchAll]/page.tsx
 app/@modal/default.tsx
 app/@modal/loading.tsx
 app/add-review/page.tsx
@@ -77,13 +81,9 @@ app/globals.css
 app/icon.svg
 app/layout.tsx
 app/loading.tsx
-app/locations/[locationId]/page.module.css
-app/locations/[locationId]/page.tsx
-app/locations/page.tsx
 app/logout-confirm/page.tsx
 app/not-found.tsx
 app/page.module.css
-app/page.tsx
 components/AddReviewModal/AddReviewForm.module.css
 components/AddReviewModal/AddReviewForm.tsx
 components/AddReviewModal/AddReviewModal.module.css
@@ -115,6 +115,8 @@ components/LocationForm/LocationForm.module.css
 components/LocationForm/LocationForm.tsx
 components/LocationList/LocationList.module.css
 components/LocationList/LocationList.tsx
+components/Logo/Logo.module.css
+components/Logo/Logo.tsx
 components/Modal/Modal.module.css
 components/Modal/Modal.tsx
 components/Pagination/Pagination.module.css
@@ -138,6 +140,7 @@ lib/api/serverApi.ts
 lib/store/authStore.ts
 lib/store/feedbackStore.ts
 lib/store/locationStore.ts
+lib/validation/locationSchema.ts
 next.config.ts
 package.json
 proxy.ts
@@ -147,8 +150,14 @@ public/globe.svg
 public/iconsAdvantage/community.svg
 public/iconsAdvantage/filters.svg
 public/iconsAdvantage/reviews.svg
+public/images/facebook.png
 public/images/hero-bg.png
+public/images/instagram.png
 public/images/location-form-placeholder-image.jpg
+public/images/logo.png
+public/images/map_search.png
+public/images/x.png
+public/images/youtube.png
 public/next.svg
 public/vercel.svg
 public/window.svg
@@ -161,6 +170,7 @@ types/locationTypes.ts
 types/region.ts
 types/region.type
 types/user.ts
+utils/uploadImage.ts
 utils/validationSchemas.ts
 </directory_structure>
 
@@ -195,153 +205,29 @@ export default function Page() {
 }
 </file>
 
-<file path="app/(private routes)/profile/[userId]/edit/page.tsx">
-export default function Page() {
-    return <div>Profile Page</div>;
+<file path="app/(main)/layout.tsx">
+import Header from "@/components/Header/Header";
+import Footer from "@/components/Footer/Footer";
+
+export default function MainLayout({
+    children,
+    modal,
+}: {
+    children: React.ReactNode;
+    modal: React.ReactNode;
+}) {
+    return (
+        <>
+        <Header />
+            {children}
+            {modal}
+        <Footer />
+        </>
+    );
 }
 </file>
 
-<file path="app/@modal/(.)add-review/AddReviewForm.module.css">
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.title {
-  font-size: 20px;
-  font-weight: 700;
-  color: #111;
-  margin: 0;
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.label {
-  font-size: 14px;
-  font-weight: 600;
-  color: #111;
-}
-
-.stars {
-  display: flex;
-  gap: 4px;
-}
-
-.starOn,
-.starOff {
-  background: none;
-  border: none;
-  font-size: 28px;
-  cursor: pointer;
-  padding: 0;
-  line-height: 1;
-  transition: transform 0.1s;
-}
-
-.starOn {
-  color: #e8a87c;
-}
-
-.starOff {
-  color: #ddd;
-}
-
-.starOn:hover,
-.starOff:hover {
-  transform: scale(1.15);
-}
-
-.textarea {
-  padding: 10px 12px;
-  border: 1.5px solid #ddd;
-  border-radius: 8px;
-  font-size: 14px;
-  font-family: inherit;
-  line-height: 1.6;
-  resize: vertical;
-  transition: border-color 0.2s;
-}
-
-.textarea:focus {
-  outline: none;
-  border-color: #c96a3a;
-}
-
-.error {
-  font-size: 12px;
-  color: #d00;
-}
-
-.submit {
-  padding: 12px;
-  background: #c96a3a;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.submit:hover:not(:disabled) {
-  background: #a0522d;
-}
-
-.submit:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-</file>
-
-<file path="app/@modal/(.)auth-prompt/page.tsx">
-import AuthPromptModal from '@/components/AuthPromptModal/AuthPromptModal';
-
-export default function AuthPromptPage() {
-  return <AuthPromptModal />;
-}
-</file>
-
-<file path="app/@modal/(.)logout-confirm/page.tsx">
-import ConfirmationModal from '@/components/ConfirmationModal/ConfirmationModal';
-
-export default function LogoutConfirmPage() {
-  return <ConfirmationModal />;
-}
-</file>
-
-<file path="app/api/_utils/utils.ts">
-export function logErrorResponse(errorObj: unknown): void {
-  const green = "\x1b[32m";
-  const yellow = "\x1b[33m";
-  const reset = "\x1b[0m";
-
-  console.log(`${green}> ${yellow}Error Response Data:${reset}`);
-  console.dir(errorObj, { depth: null, colors: true });
-}
-</file>
-
-<file path="app/auth-prompt/page.tsx">
-import AuthPromptModal from '@/components/AuthPromptModal/AuthPromptModal';
-
-export default function AuthPromptPage() {
-  return <AuthPromptModal />;
-}
-</file>
-
-<file path="app/icon.svg">
-<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="32" height="32" fill="#FFE5D9"/>
-<path d="M9.22334 23.7267C8.477 22.9607 7.89492 22.0753 7.47709 21.0705C7.05942 20.0658 6.85059 19.0383 6.85059 17.988C6.85059 16.7595 7.06709 15.6321 7.50009 14.6057C7.93309 13.5794 8.57859 12.6372 9.43659 11.7792C10.5098 10.7101 12.0396 9.94099 14.0261 9.47199C16.0128 9.00299 18.4503 8.80216 21.3386 8.86949C21.7118 8.88616 22.0517 8.96182 22.3583 9.09649C22.6648 9.23099 22.9423 9.41857 23.1908 9.65924C23.4342 9.90307 23.6271 10.1784 23.7696 10.4852C23.9119 10.7921 23.9906 11.1342 24.0056 11.5115C24.0516 12.9557 24.0329 14.2896 23.9496 15.5132C23.8663 16.7371 23.7038 17.851 23.4621 18.855C23.2204 19.8588 22.9045 20.7522 22.5143 21.535C22.1242 22.3177 21.6533 22.9855 21.1018 23.5385C20.252 24.3923 19.3267 25.04 18.3258 25.4815C17.325 25.9228 16.2571 26.1435 15.1221 26.1435C13.9494 26.1435 12.876 25.9487 11.9018 25.559C10.9275 25.1693 10.0347 24.5586 9.22334 23.7267ZM11.9301 23.5712C12.3494 23.8546 12.8334 24.0692 13.3821 24.2152C13.9308 24.3612 14.5097 24.4342 15.1188 24.4342C15.9948 24.4342 16.8453 24.2519 17.6701 23.8872C18.4948 23.5226 19.2428 22.9962 19.9143 22.3082C20.3922 21.8262 20.7904 21.2008 21.1091 20.432C21.4278 19.6632 21.6811 18.776 21.8691 17.7705C22.0571 16.7648 22.1785 15.6559 22.2333 14.4437C22.288 13.2316 22.284 11.9432 22.2213 10.5787C20.6667 10.5414 19.2724 10.5612 18.0386 10.6382C16.8049 10.7152 15.7161 10.8537 14.7721 11.0537C13.8281 11.2537 13.0184 11.5089 12.3431 11.8192C11.6678 12.1296 11.1193 12.5037 10.6978 12.9417C10.0098 13.6426 9.4805 14.3917 9.10984 15.189C8.73917 15.9863 8.55384 16.7942 8.55384 17.6125C8.55384 18.3953 8.71967 19.2207 9.05134 20.0885C9.38317 20.9563 9.79967 21.6549 10.3008 22.1842C11.159 20.5747 12.1988 19.128 13.4201 17.844C14.6416 16.56 15.9599 15.533 17.3751 14.763C15.9411 16.017 14.7761 17.3712 13.8801 18.8255C12.9839 20.2798 12.3339 21.8617 11.9301 23.5712Z" fill="#4C2613"/>
-</svg>
-</file>
-
-<file path="app/locations/[locationId]/page.module.css">
+<file path="app/(main)/locations/[locationId]/page.module.css">
 .page {
   width: min(100%, 1440px);
   margin: 0 auto;
@@ -495,6 +381,412 @@ export default function AuthPromptPage() {
     font-size: 16px;
   }
 }
+</file>
+
+<file path="app/(main)/locations/[locationId]/page.tsx">
+import Image from "next/image";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { getMeServer } from "@/lib/api/serverApi";
+import styles from "./page.module.css";
+import ReviewsSection from "@/components/ReviewsSection/ReviewsSection";
+import { Feedback } from "@/types/feedBackCard";
+import { api } from "@/lib/api/api";
+
+type Owner = {
+  _id?: string;
+  name?: string;
+  avatar?: string;
+};
+
+type LocationDetails = {
+  _id: string;
+  image: string;
+  name: string;
+  locationType: string;
+  region: string;
+  rate: number;
+  description: string;
+  ownerId?: string | Owner;
+  feedbacksId?: string[];
+};
+type PageProps = {
+  params: Promise<{ locationId: string }>;
+};
+
+function normalizeFeedbacks(payload: unknown): Feedback[] {
+  if (Array.isArray(payload)) return payload as Feedback[];
+
+  if (payload && typeof payload === "object") {
+    const record = payload as Record<string, unknown>;
+
+    if (Array.isArray(record.data)) return record.data as Feedback[];
+    if (Array.isArray(record.feedbacks)) return record.feedbacks as Feedback[];
+    if (Array.isArray(record.items)) return record.items as Feedback[];
+  }
+
+  return [];
+}
+
+function normalizeFeedback(payload: unknown): Feedback | null {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return null;
+  }
+
+  const record = payload as Record<string, unknown>;
+  const candidate =
+    (record.data as Feedback | undefined) ??
+    (record.feedback as Feedback | undefined) ??
+    (record.item as Feedback | undefined) ??
+    (payload as Feedback);
+
+  return candidate && typeof candidate === "object" && "_id" in candidate
+    ? candidate
+    : null;
+}
+
+async function getLocationById(id: string): Promise<LocationDetails | null> {
+  try {
+    const { data } = await api.get<LocationDetails>(`/locations/${id}`);
+    return data;
+  } catch (error: unknown) {
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "response" in error &&
+      (error as { response?: { status?: number } }).response?.status === 404
+    ) {
+      return null;
+    }
+    throw error;
+  }
+}
+
+async function getLocationFeedbacks(id: string, feedbackIds: string[] = []): Promise<Feedback[]> {
+  try {
+    const { data } = await api.get(`/feedbacks/${id}`);
+    const reviews = normalizeFeedbacks(data);
+
+    if (reviews.length > 0 || feedbackIds.length === 0) {
+      return reviews;
+    }
+
+    const fallbackFeedbacks = await Promise.all(
+      feedbackIds.map(async (feedbackId) => {
+        try {
+          const { data: feedbackData } = await api.get(`/feedbacks/${feedbackId}`);
+          return normalizeFeedback(feedbackData);
+        } catch {
+          return null;
+        }
+      })
+    );
+
+    return fallbackFeedbacks.filter((review): review is Feedback => review !== null);
+  } catch {
+    return [];
+  }
+}
+
+async function getIsAuthorized(): Promise<boolean> {
+  try {
+    await getMeServer();
+    return true;
+  } catch {
+    return false;
+  }
+}
+export default async function LocationPage({ params }: PageProps) {
+  const { locationId } = await params;
+  const [location, isAuthorized] = await Promise.all([
+    getLocationById(locationId),
+    getIsAuthorized(),
+  ]);
+  if (!location) {
+    notFound();
+  }
+
+  const initialReviews = await getLocationFeedbacks(locationId, location.feedbacksId ?? []);
+  const ownerName =
+    typeof location.ownerId === "object" && location.ownerId?.name
+      ? location.ownerId.name
+      : "Невідомий автор";
+  const ownerId =
+    typeof location.ownerId === "object"
+      ? location.ownerId?._id
+      : location.ownerId;
+  const roundedRate = Math.round(location.rate);
+  const clampedRate = Math.max(0, Math.min(5, roundedRate));
+  const stars = "★".repeat(clampedRate) + "☆".repeat(5 - clampedRate);
+  
+  return (
+    <main className={styles.page}>
+      <Link href="/" className={styles.backLink}>
+        Назад до всіх локацій
+      </Link>
+      <article className={styles.card}>
+        <div className={styles.imageWrap}>
+          <Image
+            src={location.image}
+            alt={location.name}
+            fill
+            priority
+            sizes="(max-width: 767px) 100vw, (max-width: 1439px) 50vw, 640px"
+            className={styles.image}
+          />
+        </div>
+        <div className={styles.content}>
+          <div className={styles.ratingRow}>
+            <span>{stars}</span>
+            <span>{location.rate}</span>
+          </div>
+          <div className={styles.meta}>
+            <p className={styles.type}>{location.locationType}</p>
+            <h1 className={styles.title}>{location.name}</h1>
+          </div>
+          <div className={styles.details}>
+            <p>
+              <strong>Регіон:</strong> {location.region}
+            </p>
+            <p>
+              <strong>Тип локації:</strong> {location.locationType}
+            </p>
+            <p>
+              <strong>Автор статті:</strong>{" "}
+              {ownerId ? (
+                <Link href={`/profile/${ownerId}`} className={styles.authorLink}>
+                  {ownerName}
+                </Link>
+              ) : (
+                ownerName
+              )}
+            </p>
+          </div>
+          <p className={styles.description}>{location.description}</p>
+        </div>
+      </article>
+      <ReviewsSection
+        locationId={locationId}
+        isAuthenticated={isAuthorized}
+        initialReviews={initialReviews}
+      />
+    </main>
+  );
+}
+</file>
+
+<file path="app/(main)/locations/page.tsx">
+import LocationList from "@/components/LocationList/LocationList";
+
+export const metadata = {
+  title: "Усі локації | RelaxMap",
+};
+
+export default function LocationsPage() {
+  return (
+    <main>
+      <LocationList />
+    </main>
+  );
+}
+</file>
+
+<file path="app/(main)/page.tsx">
+import HeroBlock from "@/components/HeroBlock/HeroBlock";
+import AdvantagesBlock from "@/components/AdvantagesBlock/AdvantagesBlock";
+import PopularLocationsBlock from "@/components/PopularLocationsBlock/PopularLocationsBlock";
+import ReviewsBlock from "@/components/ReviewsBlock/ReviewsBlock";
+
+export default function HomePage() {
+    return (
+        <main>
+            <HeroBlock />
+            <AdvantagesBlock />
+            <PopularLocationsBlock />
+            <ReviewsBlock />
+        </main>
+    );
+}
+</file>
+
+<file path="app/(private routes)/locations/edit/[id]/page.tsx">
+import LocationForm from "@/components/LocationForm/LocationForm";
+import { getRegionsServer, getLocationTypesServer, getLocationByIdServer } from "@/lib/api/serverApi";
+
+type Props = {
+  params: Promise<{ id: string }>;
+};
+
+export default async function Page({ params }: Props) {
+  const { id } = await params;
+
+  const [regions, types, location] = await Promise.all([
+    getRegionsServer(),
+    getLocationTypesServer(),
+    getLocationByIdServer(id),
+  ]);
+
+  return (
+    <LocationForm
+      id={id}
+      initialData={location}
+      regions={regions}
+      locationTypes={types}
+    />
+  );
+}
+</file>
+
+<file path="app/(private routes)/profile/[userId]/edit/page.tsx">
+export default function Page() {
+    return <div>Profile Page</div>;
+}
+</file>
+
+<file path="app/@modal/(.)add-review/AddReviewForm.module.css">
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111;
+  margin: 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111;
+}
+
+.stars {
+  display: flex;
+  gap: 4px;
+}
+
+.starOn,
+.starOff {
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: transform 0.1s;
+}
+
+.starOn {
+  color: #e8a87c;
+}
+
+.starOff {
+  color: #ddd;
+}
+
+.starOn:hover,
+.starOff:hover {
+  transform: scale(1.15);
+}
+
+.textarea {
+  padding: 10px 12px;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  line-height: 1.6;
+  resize: vertical;
+  transition: border-color 0.2s;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: #c96a3a;
+}
+
+.error {
+  font-size: 12px;
+  color: #d00;
+}
+
+.submit {
+  padding: 12px;
+  background: #c96a3a;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.submit:hover:not(:disabled) {
+  background: #a0522d;
+}
+
+.submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+</file>
+
+<file path="app/@modal/(.)auth-prompt/page.tsx">
+import AuthPromptModal from '@/components/AuthPromptModal/AuthPromptModal';
+
+export default function AuthPromptPage() {
+  return <AuthPromptModal />;
+}
+</file>
+
+<file path="app/@modal/(.)logout-confirm/page.tsx">
+import ConfirmationModal from '@/components/ConfirmationModal/ConfirmationModal';
+
+export default function LogoutConfirmPage() {
+  return <ConfirmationModal />;
+}
+</file>
+
+<file path="app/@modal/[...catchAll]/page.tsx">
+export default function CatchAllModal() {
+  return null;
+}
+</file>
+
+<file path="app/api/_utils/utils.ts">
+export function logErrorResponse(errorObj: unknown): void {
+  const green = "\x1b[32m";
+  const yellow = "\x1b[33m";
+  const reset = "\x1b[0m";
+
+  console.log(`${green}> ${yellow}Error Response Data:${reset}`);
+  console.dir(errorObj, { depth: null, colors: true });
+}
+</file>
+
+<file path="app/auth-prompt/page.tsx">
+import AuthPromptModal from '@/components/AuthPromptModal/AuthPromptModal';
+
+export default function AuthPromptPage() {
+  return <AuthPromptModal />;
+}
+</file>
+
+<file path="app/icon.svg">
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="32" height="32" fill="#FFE5D9"/>
+<path d="M9.22334 23.7267C8.477 22.9607 7.89492 22.0753 7.47709 21.0705C7.05942 20.0658 6.85059 19.0383 6.85059 17.988C6.85059 16.7595 7.06709 15.6321 7.50009 14.6057C7.93309 13.5794 8.57859 12.6372 9.43659 11.7792C10.5098 10.7101 12.0396 9.94099 14.0261 9.47199C16.0128 9.00299 18.4503 8.80216 21.3386 8.86949C21.7118 8.88616 22.0517 8.96182 22.3583 9.09649C22.6648 9.23099 22.9423 9.41857 23.1908 9.65924C23.4342 9.90307 23.6271 10.1784 23.7696 10.4852C23.9119 10.7921 23.9906 11.1342 24.0056 11.5115C24.0516 12.9557 24.0329 14.2896 23.9496 15.5132C23.8663 16.7371 23.7038 17.851 23.4621 18.855C23.2204 19.8588 22.9045 20.7522 22.5143 21.535C22.1242 22.3177 21.6533 22.9855 21.1018 23.5385C20.252 24.3923 19.3267 25.04 18.3258 25.4815C17.325 25.9228 16.2571 26.1435 15.1221 26.1435C13.9494 26.1435 12.876 25.9487 11.9018 25.559C10.9275 25.1693 10.0347 24.5586 9.22334 23.7267ZM11.9301 23.5712C12.3494 23.8546 12.8334 24.0692 13.3821 24.2152C13.9308 24.3612 14.5097 24.4342 15.1188 24.4342C15.9948 24.4342 16.8453 24.2519 17.6701 23.8872C18.4948 23.5226 19.2428 22.9962 19.9143 22.3082C20.3922 21.8262 20.7904 21.2008 21.1091 20.432C21.4278 19.6632 21.6811 18.776 21.8691 17.7705C22.0571 16.7648 22.1785 15.6559 22.2333 14.4437C22.288 13.2316 22.284 11.9432 22.2213 10.5787C20.6667 10.5414 19.2724 10.5612 18.0386 10.6382C16.8049 10.7152 15.7161 10.8537 14.7721 11.0537C13.8281 11.2537 13.0184 11.5089 12.3431 11.8192C11.6678 12.1296 11.1193 12.5037 10.6978 12.9417C10.0098 13.6426 9.4805 14.3917 9.10984 15.189C8.73917 15.9863 8.55384 16.7942 8.55384 17.6125C8.55384 18.3953 8.71967 19.2207 9.05134 20.0885C9.38317 20.9563 9.79967 21.6549 10.3008 22.1842C11.159 20.5747 12.1988 19.128 13.4201 17.844C14.6416 16.56 15.9599 15.533 17.3751 14.763C15.9411 16.017 14.7761 17.3712 13.8801 18.8255C12.9839 20.2798 12.3339 21.8617 11.9301 23.5712Z" fill="#4C2613"/>
+</svg>
 </file>
 
 <file path="app/logout-confirm/page.tsx">
@@ -1322,166 +1614,6 @@ export default function HeroBlock() {
 
 </file>
 
-<file path="components/PopularLocationsBlock/PopularLocationsBlock.module.css">
-.section {
-  background-color: var(--color-primary-lighter);
-  padding: 40px 0 56px;
-}
-
-.container {
-  width: 100%;
-  padding: 0 var(--container-padding-mobile);
-  margin: 0 auto;
-}
-
-.title {
-  margin: 0 0 24px;
-  color: var(--color-text-primary);
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-height-tight);
-  text-align: center;
-}
-
-.loader {
-  padding: 48px 0;
-  text-align: center;
-  color: var(--color-text-muted);
-  font-size: var(--font-size-base);
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
-}
-
-.cta {
-  display: flex;
-  justify-content: center;
-  margin-top: 40px;
-}
-
-.ctaBtn {
-  display: inline-block;
-  padding: 12px 32px;
-  background-color: var(--color-primary);
-  color: var(--color-text-white);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-semibold);
-  border-radius: var(--radius-md);
-  transition: background-color var(--transition-base);
-}
-
-.ctaBtn:hover {
-  background-color: var(--color-primary-hover);
-}
-
-/* ─── Tablet ─── */
-@media (min-width: 768px) {
-  .section {
-    padding: 48px 0 72px;
-  }
-
-  .container {
-    padding: 0 var(--container-padding-tablet);
-  }
-
-  .title {
-    margin-bottom: 40px;
-    font-size: 44px;
-  }
-
-  .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-/* ─── Desktop ─── */
-@media (min-width: 1440px) {
-  .container {
-    max-width: var(--container-max);
-    padding: 0 var(--container-padding-desktop);
-  }
-
-  .title {
-    font-size: 52px;
-    margin-bottom: 48px;
-  }
-
-  .grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-</file>
-
-<file path="components/PopularLocationsBlock/PopularLocationsBlock.tsx">
-"use client";
-
-import { useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
-import Link from "next/link";
-import { getLocations, getLocationTypes } from "@/lib/api/clientApi";
-import LocationCard from "@/components/LocationCard/LocationCard";
-import type { Location } from "@/types/location";
-import styles from "./PopularLocationsBlock.module.css";
-
-export default function PopularLocationsBlock() {
-  const { data, isLoading } = useQuery({
-    queryKey: ["popularLocations"],
-    queryFn: () => getLocations({ page: 1, limit: 6 }),
-  });
-
-  const { data: locationTypes = [] } = useQuery<{ slug: string; type: string }[]>({
-    queryKey: ["locationTypes"],
-    queryFn: getLocationTypes,
-  });
-
-  const locationTypeLabels = useMemo(
-    () => new Map(locationTypes.map((lt) => [lt.slug, lt.type])),
-    [locationTypes],
-  );
-
-  const locations = useMemo(() => {
-    const list = (data?.locations as Location[]) ?? [];
-    return [...list].sort((a, b) => b.rate - a.rate);
-  }, [data]);
-
-  return (
-    <section className={styles.section}>
-      <div className={styles.container}>
-        <h2 className={styles.title}>Популярні місця відпочинку</h2>
-
-        {isLoading ? (
-          <p className={styles.loader}>Завантаження...</p>
-        ) : (
-          <div className={styles.grid}>
-            {locations.map((location: Location) => (
-              <LocationCard
-                key={location._id}
-                _id={location._id}
-                image={location.image}
-                name={location.name}
-                locationType={
-                  locationTypeLabels.get(location.locationType) ?? "Тип не вказано"
-                }
-                rate={location.rate}
-              />
-            ))}
-          </div>
-        )}
-
-        <div className={styles.cta}>
-          <Link href="/locations" className={styles.ctaBtn}>
-            Переглянути всі локації
-          </Link>
-        </div>
-      </div>
-    </section>
-  );
-}
-</file>
-
 <file path="env.d.ts">
 /// <reference types="next" />
 /// <reference types="next/image-types/global" />
@@ -1514,6 +1646,45 @@ export default eslintConfig;
 
 <file path="lib/store/feedbackStore.ts">
 
+</file>
+
+<file path="lib/validation/locationSchema.ts">
+import * as Yup from "yup";
+
+export const getLocationValidationSchema = (isEdit: boolean) =>
+  Yup.object({
+    imageFile: Yup.mixed<File>()
+      .test("required", "Додайте фото", (value) => {
+        if (isEdit) return true;
+        return !!value;
+      })
+      .test("fileType", "Тільки JPG або PNG", (value) => {
+        if (!value) return true;
+        return ["image/jpeg", "image/png"].includes(value.type);
+      })
+      .test("fileSize", "Максимум 1MB", (value) => {
+        if (!value) return true;
+        return value.size <= 1024 * 1024;
+      }),
+
+    name: Yup.string()
+      .min(3, "Мінімум 3 символи")
+      .max(96, "Максимум 96 символів")
+      .required("Введіть назву"),
+
+    locationType: Yup.string()
+      .max(64, "Максимум 64 символи")
+      .required("Оберіть тип"),
+
+    region: Yup.string()
+      .max(64, "Максимум 64 символи")
+      .required("Оберіть регіон"),
+
+    description: Yup.string()
+      .min(20, "Мінімум 20 символів")
+      .max(6000, "Максимум 6000 символів")
+      .required("Введіть опис"),
+  });
 </file>
 
 <file path="proxy.ts">
@@ -1738,6 +1909,31 @@ type Region = {
 };
 </file>
 
+<file path="utils/uploadImage.ts">
+export const uploadImage = async (file: File): Promise<string> => {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "bym9862n");
+
+    const res = await fetch(
+      "https://api.cloudinary.com/v1_1/drr2wc5rr/image/upload",
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    const data = await res.json();
+
+    return data.secure_url;
+  } catch (error) {
+    console.log("UPLOAD ERROR:", error);
+    return "https://picsum.photos/300";
+  }
+};
+</file>
+
 <file path="utils/validationSchemas.ts">
 import * as Yup from 'yup';
 
@@ -1811,33 +2007,6 @@ next-env.d.ts
 
 # docs
 .claude
-</file>
-
-<file path="app/(private routes)/locations/[locationId]/edit/page.tsx">
-import LocationForm from "@/components/LocationForm/LocationForm";
-import { getRegionsServer, getLocationTypesServer, getLocationByIdServer } from "@/lib/api/serverApi";
-
-type Props = {
-  params: Promise<{ locationId: string }>;
-};
-
-export default async function Page({ params }: Props) {
-  const { locationId } = await params;
-  const [regions, types, location] = await Promise.all([
-    getRegionsServer(),
-    getLocationTypesServer(),
-    getLocationByIdServer(locationId),
-  ]);
-
-  return (
-    <LocationForm
-      id={locationId}
-      initialData={location}
-      regions={regions}
-      locationTypes={types}
-    />
-  );
-}
 </file>
 
 <file path="app/(private routes)/locations/add/page.tsx">
@@ -2004,107 +2173,6 @@ export default async function Profile({ params }: Props) {
 }
 </file>
 
-<file path="app/@modal/(.)add-review/AddReviewForm.tsx">
-"use client";
-
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
-import { createFeedback, getMe } from "@/lib/api/clientApi";
-import styles from "./AddReviewForm.module.css";
-
-const schema = Yup.object({
-  rating: Yup.number().min(1, "Оберіть рейтинг").required(),
-  comment: Yup.string()
-    .min(10, "Мінімум 10 символів")
-    .max(500, "Максимум 500 символів")
-    .required("Обовʼязково"),
-});
-
-export default function AddReviewForm({ locationId }: { locationId: string }) {
-  const router = useRouter();
-
-  const { data: me } = useQuery({ queryKey: ["me"], queryFn: getMe });
-
-  const mutation = useMutation({
-    mutationFn: (values: { rating: number; comment: string }) =>
-      createFeedback(locationId, {
-        ...values,
-        userName: me?.name ?? "Анонім",
-      }),
-    onSuccess: () => {
-      window.dispatchEvent(new Event("review-added"));
-      toast.success("Відгук додано!");
-      router.back();
-    },
-    onError: () => toast.error("Помилка. Спробуйте ще раз."),
-  });
-
-  const formik = useFormik({
-    initialValues: { rating: 0, comment: "" },
-    validationSchema: schema,
-    onSubmit: (values) => mutation.mutate(values),
-  });
-
-  return (
-    <form onSubmit={formik.handleSubmit} className={styles.form} noValidate>
-      <h2 className={styles.title}>Залишити відгук</h2>
-
-      <div className={styles.field}>
-        <label className={styles.label}>Рейтинг</label>
-        <div className={styles.stars}>
-          {[1, 2, 3, 4, 5].map((s) => (
-            <button
-              key={s}
-              type="button"
-              className={
-                s <= formik.values.rating ? styles.starOn : styles.starOff
-              }
-              onClick={() => formik.setFieldValue("rating", s)}
-              aria-label={`${s} зірок`}
-            >
-              ★
-            </button>
-          ))}
-        </div>
-        {formik.touched.rating && formik.errors.rating && (
-          <span className={styles.error}>{formik.errors.rating}</span>
-        )}
-      </div>
-
-      <div className={styles.field}>
-        <label htmlFor="comment" className={styles.label}>
-          Коментар
-        </label>
-        <textarea
-          id="comment"
-          name="comment"
-          rows={4}
-          className={styles.textarea}
-          placeholder="Поділіться враженнями…"
-          value={formik.values.comment}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-        />
-        {formik.touched.comment && formik.errors.comment && (
-          <span className={styles.error}>{formik.errors.comment}</span>
-        )}
-      </div>
-
-      <button
-        type="submit"
-        className={styles.submit}
-        disabled={mutation.isPending}
-      >
-        {mutation.isPending ? "Надсилаємо…" : "Надіслати"}
-      </button>
-    </form>
-  );
-}
-</file>
-
 <file path="app/@modal/(.)add-review/page.tsx">
 import { redirect } from "next/navigation";
 import { getMeServer } from "@/lib/api/serverApi";
@@ -2257,22 +2325,6 @@ export async function POST(req: NextRequest) {
 }
 </file>
 
-<file path="app/locations/page.tsx">
-import LocationList from "@/components/LocationList/LocationList";
-
-export const metadata = {
-  title: "Усі локації | RelaxMap",
-};
-
-export default function LocationsPage() {
-  return (
-    <main>
-      <LocationList />
-    </main>
-  );
-}
-</file>
-
 <file path="app/not-found.tsx">
 import Link from "next/link";
 
@@ -2289,123 +2341,6 @@ export default function NotFound() {
 
 <file path="app/page.module.css">
 
-</file>
-
-<file path="components/AddReviewModal/AddReviewForm.tsx">
-"use client";
-
-import { useState, useEffect } from "react";
-import { createFeedback, getMe } from "@/lib/api/clientApi";
-import styles from "./AddReviewForm.module.css";
-
-interface AddReviewFormProps {
-  locationId: string | string[] | undefined;
-  onSuccess: () => void;
-}
-
-export const AddReviewForm = ({
-  locationId,
-  onSuccess,
-}: AddReviewFormProps) => {
-  const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState("");
-  const [userName, setUserName] = useState("Анонім");
-  const [errors, setErrors] = useState<{ rating?: string; comment?: string }>(
-    {},
-  );
-  const [loading, setLoading] = useState(false);
-
-  const validate = () => {
-    const newErrors: { rating?: string; comment?: string } = {};
-
-    if (rating < 1) newErrors.rating = "Оберіть рейтинг";
-
-    if (!comment.trim()) {
-      newErrors.comment = "Обов'язкове поле";
-    } else if (comment.trim().length < 10) {
-      newErrors.comment = "Мінімум 10 символів";
-    } else if (comment.length > 100) {
-      newErrors.comment = "Максимум 100 символів";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  useEffect(() => {
-    getMe()
-      .then((user) => {
-        if (user?.name) setUserName(user.name);
-      })
-      .catch(() => {});
-  }, []);
-
-  const handleSubmit = async (e: { preventDefault(): void }) => {
-    e.preventDefault();
-    if (!validate()) return;
-
-    try {
-      setLoading(true);
-      await createFeedback(String(locationId), { rating, comment, userName });
-      onSuccess();
-    } catch (error) {
-      console.error("Помилка при відправці:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const renderStars = () =>
-    [1, 2, 3, 4, 5].map((star) => (
-      <button
-        key={star}
-        type="button"
-        className={star <= rating ? styles.starOn : styles.starOff}
-        onClick={() => {
-          setRating(star);
-          setErrors((prev) => ({ ...prev, rating: undefined }));
-        }}
-        aria-label={`${star} зірок`}
-      >
-        ★
-      </button>
-    ));
-
-  return (
-    <form className={styles.form} onSubmit={handleSubmit}>
-      <div className={styles.field}>
-        <h3 className={styles.subtitle}>Ваш відгук</h3>
-        <textarea
-          placeholder="Напишіть ваш відгук"
-          value={comment}
-          onChange={(e) => {
-            setComment(e.target.value);
-            setErrors((prev) => ({ ...prev, comment: undefined }));
-          }}
-          className={`${styles.textarea} ${errors.comment ? styles.textareaError : ""}`}
-        />
-        <div className={styles.warning}>
-          {errors.comment && <p className={styles.error}>{errors.comment}</p>}
-          <p className={styles.counter}>{comment.length}/100</p>
-        </div>
-      </div>
-
-      <div className={styles.field}>
-        <div className={styles.stars}>{renderStars()}</div>
-        {errors.rating && <p className={styles.error}>{errors.rating}</p>}
-      </div>
-
-      <div className={styles.actions}>
-        <button type="button" onClick={onSuccess} className={styles.cancel}>
-          Відмінити
-        </button>
-        <button type="submit" disabled={loading} className={styles.submit}>
-          {loading ? "Відправка..." : "Надіслати"}
-        </button>
-      </div>
-    </form>
-  );
-};
 </file>
 
 <file path="components/AuthComponent/AuthNav/Auth.module.css">
@@ -2731,73 +2666,6 @@ export default function RegistrationForm() {
 }
 </file>
 
-<file path="components/Footer/Footer.module.css">
-.footer {
-  background-color: var(--color-bg-page);
-  border-top: 1px solid var(--color-border);
-  margin-top: auto;
-}
-
-.inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  padding: 32px var(--container-padding-mobile);
-  margin: 0 auto;
-  max-width: var(--container-max);
-}
-
-.logo {
-  font-size: 20px;
-  font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
-  letter-spacing: -0.5px;
-  transition: color var(--transition-base);
-}
-
-.logo:hover {
-  color: var(--color-primary-hover);
-}
-
-.nav {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-}
-
-.link {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
-  transition: color var(--transition-base);
-}
-
-.link:hover {
-  color: var(--color-primary);
-}
-
-.copy {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
-}
-
-/* ─── Tablet ─── */
-@media (min-width: 768px) {
-  .inner {
-    flex-direction: row;
-    justify-content: space-between;
-    padding: 24px var(--container-padding-tablet);
-  }
-}
-
-/* ─── Desktop ─── */
-@media (min-width: 1024px) {
-  .inner {
-    padding: 24px var(--container-padding-desktop);
-  }
-}
-</file>
-
 <file path="components/LocationForm/LocationForm.module.css">
 .locationForm {
   background-color: #fff2ec;
@@ -3019,6 +2887,57 @@ export default function RegistrationForm() {
 }
 </file>
 
+<file path="components/Logo/Logo.module.css">
+.logoContainer {
+    width: 129px;
+    height: 36px;
+}
+.logoLink {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+.logoImg {
+    width: 24px;
+    height: 24px;
+}
+.logoText {
+    font-weight: 500;
+    font-size: 21px;
+    line-height: 100%;
+    letter-spacing: -0.01em;
+    color: #4C2613;
+    margin: 0;
+}
+</file>
+
+<file path="components/Logo/Logo.tsx">
+import Link from "next/link";
+import css from "./Logo.module.css";
+import Image from "next/image";
+
+type LogoProps = {
+  onClick?: () => void;
+};
+
+export default function Logo({ onClick }: LogoProps) {
+  return (
+    <div className={css.logoContainer}>
+      <Link href="/" onClick={onClick} className={css.logoLink}>
+        <Image
+          src="/images/map_search.png"
+          alt="Relax Map logo"
+          width={24}
+          height={24}
+          className={css.logoImg}
+        />
+        <span className={css.logoText}>Relax Map</span>
+      </Link>
+    </div>
+  );
+}
+</file>
+
 <file path="lib/store/locationStore.ts">
 import { create } from "zustand";
 
@@ -3108,349 +3027,6 @@ export interface User {
   avatar: string;
   avatarUrl?: string;
   articlesAmount: number;
-}
-</file>
-
-<file path="app/(private routes)/location/add/page.tsx">
-import LocationForm from "@/components/LocationForm/LocationForm";
-import { getRegionsServer, getLocationTypesServer } from "@/lib/api/serverApi";
-
-export default async function Page() {
-
-  const regions = await getRegionsServer();
-  const locationTypes = await getLocationTypesServer();
-
-  return <LocationForm regions={regions} locationTypes={locationTypes}  />;
-}
-</file>
-
-<file path="app/(private routes)/location/edit/[id]/page.tsx">
-import LocationForm from "@/components/LocationForm/LocationForm";
-import { getRegionsServer, getLocationTypesServer, getLocationByIdServer } from "@/lib/api/serverApi";
-
-type Props = {
-  params: Promise<{ locationId: string }>;
-};
-
-export default async function Page({ params }: Props) {
-  const { locationId } = await params;
-  const [regions, types, location] = await Promise.all([
-    getRegionsServer(),
-    getLocationTypesServer(),
-    getLocationByIdServer(locationId),
-  ]);
-
-  return (
-    <LocationForm
-      id={locationId}
-      initialData={location}
-      regions={regions}
-      locationTypes={types}
-    />
-  );
-}
-</file>
-
-<file path="app/globals.css">
-:root {
-  /* ─── Buttons ─── */
-  --color-button-primary: #CC6534;
-  --color-button-secondary: rgba(0, 0, 0, 0.05);
-  --color-button-primary-hover: #FFE5D9;
-  --color-button-secondary-hover: #A95325;
-  --color-button-secondary-active: #254c24;
-
-  /* ─── Slider ─── */
-  --color-slider-normal: #ffe5d9;
-  --color-slider-hover: #f2f2f2;
-  --color-slider-active: #ffa57a;
-  --color-slider-disabled: rgba(242, 242, 242, 0.4);
-
-  /* ─── Text ─── */
-  --color-text-main: #4c2613;
-  --color-text-input: #1b391b;
-  --color-text-input-error: #b00101;
-  --color-text-input-placeholder: rgba(0, 0, 0, 0.6);
-
-  /* ─── Backgrounds ─── */
-  --color-bg-page: #FFF2EC;
-  --color-bg-white: #FFFFFF;
-  --color-bg-input: #FFE5D9;
-  --color-bg-footer: #FFE5D9;
-  --color-bg-disabled: #F2F2F2;
-
-  /* ─── Overlays ─── */
-  --color-overlay: rgba(0, 0, 0, 0.6);
-  --color-overlay-light: rgba(0, 0, 0, 0.25);
-
-  --font-size-xs: 12px;
-  --font-size-sm: 14px;
-  --font-size-base: 16px;
-  --font-size-md: 18px;
-  --font-size-lg: 24px;
-  --font-size-xl: 32px;
-  --font-size-2xl: 48px;
-
-  --font-weight-regular: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
-
-  --line-height-tight: 1.2;
-  --line-height-normal: 1.5;
-  --line-height-loose: 1.7;
-
-  /* ─── Layout ─── */
-  --container-max: 1440px;
-  --container-padding-mobile: 20px;
-  --container-padding-tablet: 32px;
-  --container-padding-desktop: 64px;
-
-  /* ─── Transitions ─── */
-  --transition-base: 0.2s ease;
-}
-
-/* ─── Reset & Base ───────────────────────────── */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
-
-html {
-  height: 100%;
-}
-
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  color: var(--color-text-primary);
-  background-color: var(--color-bg-white);
-  font-family: var(--font-family);
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-normal);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  cursor: pointer;
-  text-decoration: none;
-}
-
-img,
-svg {
-  display: block;
-  max-width: 100%;
-}
-
-button {
-  cursor: pointer;
-}
-
-main {
-  flex: 1;
-}
-</file>
-
-<file path="app/locations/[locationId]/page.tsx">
-import Image from "next/image";
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import { getMeServer } from "@/lib/api/serverApi";
-import styles from "./page.module.css";
-import ReviewsSection from "@/components/ReviewsSection/ReviewsSection";
-import { Feedback } from "@/types/feedBackCard";
-import { api } from "@/lib/api/api";
-
-type Owner = {
-  _id?: string;
-  name?: string;
-  avatar?: string;
-};
-
-type LocationDetails = {
-  _id: string;
-  image: string;
-  name: string;
-  locationType: string;
-  region: string;
-  rate: number;
-  description: string;
-  ownerId?: string | Owner;
-  feedbacksId?: string[];
-};
-type PageProps = {
-  params: Promise<{ locationId: string }>;
-};
-
-function normalizeFeedbacks(payload: unknown): Feedback[] {
-  if (Array.isArray(payload)) return payload as Feedback[];
-
-  if (payload && typeof payload === "object") {
-    const record = payload as Record<string, unknown>;
-
-    if (Array.isArray(record.data)) return record.data as Feedback[];
-    if (Array.isArray(record.feedbacks)) return record.feedbacks as Feedback[];
-    if (Array.isArray(record.items)) return record.items as Feedback[];
-  }
-
-  return [];
-}
-
-function normalizeFeedback(payload: unknown): Feedback | null {
-  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
-    return null;
-  }
-
-  const record = payload as Record<string, unknown>;
-  const candidate =
-    (record.data as Feedback | undefined) ??
-    (record.feedback as Feedback | undefined) ??
-    (record.item as Feedback | undefined) ??
-    (payload as Feedback);
-
-  return candidate && typeof candidate === "object" && "_id" in candidate
-    ? candidate
-    : null;
-}
-
-async function getLocationById(id: string): Promise<LocationDetails | null> {
-  try {
-    const { data } = await api.get<LocationDetails>(`/locations/${id}`);
-    return data;
-  } catch (error: unknown) {
-    if (
-      typeof error === "object" &&
-      error !== null &&
-      "response" in error &&
-      (error as { response?: { status?: number } }).response?.status === 404
-    ) {
-      return null;
-    }
-    throw error;
-  }
-}
-
-async function getLocationFeedbacks(id: string, feedbackIds: string[] = []): Promise<Feedback[]> {
-  try {
-    const { data } = await api.get(`/feedbacks/${id}`);
-    const reviews = normalizeFeedbacks(data);
-
-    if (reviews.length > 0 || feedbackIds.length === 0) {
-      return reviews;
-    }
-
-    const fallbackFeedbacks = await Promise.all(
-      feedbackIds.map(async (feedbackId) => {
-        try {
-          const { data: feedbackData } = await api.get(`/feedbacks/${feedbackId}`);
-          return normalizeFeedback(feedbackData);
-        } catch {
-          return null;
-        }
-      })
-    );
-
-    return fallbackFeedbacks.filter((review): review is Feedback => review !== null);
-  } catch {
-    return [];
-  }
-}
-
-async function getIsAuthorized(): Promise<boolean> {
-  try {
-    await getMeServer();
-    return true;
-  } catch {
-    return false;
-  }
-}
-export default async function LocationPage({ params }: PageProps) {
-  const { locationId } = await params;
-  const [location, isAuthorized] = await Promise.all([
-    getLocationById(locationId),
-    getIsAuthorized(),
-  ]);
-  if (!location) {
-    notFound();
-  }
-
-  const initialReviews = await getLocationFeedbacks(locationId, location.feedbacksId ?? []);
-  const ownerName =
-    typeof location.ownerId === "object" && location.ownerId?.name
-      ? location.ownerId.name
-      : "Невідомий автор";
-  const ownerId =
-    typeof location.ownerId === "object"
-      ? location.ownerId?._id
-      : location.ownerId;
-  const roundedRate = Math.round(location.rate);
-  const clampedRate = Math.max(0, Math.min(5, roundedRate));
-  const stars = "★".repeat(clampedRate) + "☆".repeat(5 - clampedRate);
-  
-  return (
-    <main className={styles.page}>
-      <Link href="/" className={styles.backLink}>
-        Назад до всіх локацій
-      </Link>
-      <article className={styles.card}>
-        <div className={styles.imageWrap}>
-          <Image
-            src={location.image}
-            alt={location.name}
-            fill
-            priority
-            sizes="(max-width: 767px) 100vw, (max-width: 1439px) 50vw, 640px"
-            className={styles.image}
-          />
-        </div>
-        <div className={styles.content}>
-          <div className={styles.ratingRow}>
-            <span>{stars}</span>
-            <span>{location.rate}</span>
-          </div>
-          <div className={styles.meta}>
-            <p className={styles.type}>{location.locationType}</p>
-            <h1 className={styles.title}>{location.name}</h1>
-          </div>
-          <div className={styles.details}>
-            <p>
-              <strong>Регіон:</strong> {location.region}
-            </p>
-            <p>
-              <strong>Тип локації:</strong> {location.locationType}
-            </p>
-            <p>
-              <strong>Автор статті:</strong>{" "}
-              {ownerId ? (
-                <Link href={`/profile/${ownerId}`} className={styles.authorLink}>
-                  {ownerName}
-                </Link>
-              ) : (
-                ownerName
-              )}
-            </p>
-          </div>
-          <p className={styles.description}>{location.description}</p>
-        </div>
-      </article>
-      <ReviewsSection
-        locationId={locationId}
-        isAuthenticated={isAuthorized}
-        initialReviews={initialReviews}
-      />
-    </main>
-  );
 }
 </file>
 
@@ -3601,127 +3177,87 @@ export default function ConfirmationModal() {
 }
 </file>
 
-<file path="components/Header/Header.module.css">
-.header {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 24px;
-    padding: 12px;
-    border-block-end: 1px solid #ccc;
-}
-
-.navigation {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 12px;
-    list-style-type: none;
-}
-</file>
-
-<file path="components/LocationCard/LocationCard.module.css">
-.card {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  border-radius: 12px;
-  background-color: #ffe5d9;
-}
-
-.imageWrapper {
-  position: relative;
+<file path="components/Footer/Footer.module.css">
+.footer {
+  background-color: var(--color-bg-page);
+  border-top: 1px solid var(--color-border);
+  margin-top: auto;
   width: 100%;
-  aspect-ratio: 1.16 / 1;
-  overflow: hidden;
+  padding-bottom: 80px;
 }
 
-.image {
-  object-fit: cover;
-}
-
-.content {
+.inner {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 16px;
+  align-items: center;
+  gap: 24px;
+  padding: 32px var(--container-padding-mobile);
+  margin: 0 auto;
+  max-width: var(--container-max);
+  margin-bottom: 24px;
 }
 
-.type {
-  margin: 0;
-  color: #5d4437;
-  font-size: 14px;
-  line-height: 1.2;
-}
-
-.rating {
+.socials {
   display: flex;
+  list-style-type: none;
+  gap: 12px;
+}
+
+.footerNav {
+  display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 2px;
-  min-height: 24px;
-  color: #1f1f1f;
+  list-style-type: none;
+  padding-right: 0;
+  gap: 32px;
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 150%;
+  color: var(--color-scheme-2-text);
 }
 
-.star {
-  font-size: 22px;
-  line-height: 1;
-}
-
-.title {
-  margin: 0 0 8px;
-  color: #4b2d20;
-  font-size: 28px;
-  line-height: 1.15;
-  font-weight: 700;
-}
-
-.button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 48px;
-  padding: 12px 16px;
-  border: 1px solid #e7c7b5;
-  border-radius: 8px;
-  background-color: #f7ddd0;
-  color: #4b2d20;
+.copy {
+  margin-top: 0;
+  text-align: center;
+  font-family: var(--font-family);
+  font-weight: 400;
   font-size: 16px;
-  line-height: 1.2;
-  text-decoration: none;
-  transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease,
-    color 0.2s ease;
+  line-height: 150%;
+  color: var(--color-scheme-2-text);
+  border-top: 1px solid var(--color-scheme-2-border);
 }
 
-.button:hover,
-.button:focus-visible {
-  cursor: pointer;
-  background-color: #e8845a;
-  border-color: #e8845a;
-  color: #fff7f2;
-  outline: none;
+/* .logo {
+  font-size: 20px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  letter-spacing: -0.5px;
+  transition: color var(--transition-base);
 }
 
-@media (min-width: 375px) {
-  .title {
-    font-size: 34px;
-  }
-}
+.logo:hover {
+  color: var(--color-primary-hover);
+} */
 
+
+/* ─── Tablet ─── */
 @media (min-width: 768px) {
-  .content {
-    gap: 10px;
+  .inner {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 24px var(--container-padding-tablet);
   }
-
-  .title {
-    font-size: 26px;
+  .footerNav {
+    flex-direction: row;
+    gap: 24px;
   }
 }
 
-@media (min-width: 1440px) {
-  .title {
-    font-size: 24px;
+/* ─── Desktop ─── */
+@media (min-width: 1024px) {
+  .inner {
+    padding: 24px var(--container-padding-desktop);
   }
 }
 </file>
@@ -3930,6 +3466,321 @@ export default function Pagination({
 }
 </file>
 
+<file path="components/PopularLocationsBlock/PopularLocationsBlock.module.css">
+.section {
+  background: #fff2ec;
+  padding: 64px 20px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 40px;
+
+  width: 100%;
+  margin: 0 auto;
+}
+
+.topRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  width: 100%;
+}
+
+.title {
+  margin: 0;
+  max-width: 180px;
+  color: #000;
+  font-family: "Montserrat", sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.loader {
+  padding: 48px 0;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-base);
+}
+
+.swiperWrap {
+  width: 100%;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.cta {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.ctaBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 114px;
+  height: 48px;
+  padding: 6px 12px;
+  border: 1px solid #cc6534;
+  border-radius: 6px;
+  background-color: #cc6534;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.ctaBtn:hover,
+.ctaBtn:focus-visible {
+  background-color: #a95325;
+  border-color: #a95325;
+  outline: none;
+}
+
+.swiperWrap {
+  width: 100%;
+}
+
+.controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  width: 100%;
+}
+
+.arrowBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #e5cfc2;
+  border-radius: 8px;
+  background: #ffe5d9;
+  color: #4c2613;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.arrowBtn:hover:not(:disabled),
+.arrowBtn:focus-visible:not(:disabled) {
+  background: #f4d5c5;
+  border-color: #d9b9a8;
+  outline: none;
+}
+
+.arrowBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ─── Tablet ─── */
+@media (min-width: 768px) {
+  .section {
+    padding: 64px 32px;
+  }
+
+  .title {
+    font-size: 44px;
+    max-width: 430px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ─── Desktop ─── */
+@media (min-width: 1440px) {
+  .section {
+    padding: 72px 64px;
+  }
+
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  .title {
+    font-size: 52px;
+    max-width: 640px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+</file>
+
+<file path="components/PopularLocationsBlock/PopularLocationsBlock.tsx">
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
+import { getLocations, getLocationTypes } from "@/lib/api/clientApi";
+import LocationCard from "@/components/LocationCard/LocationCard";
+import type { Location } from "@/types/location";
+import styles from "./PopularLocationsBlock.module.css";
+import { useMemo, useRef, useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+import type { Swiper as SwiperType } from "swiper";
+import "swiper/css";
+
+export default function PopularLocationsBlock() {
+  const [isBeginning, setIsBeginning] = useState(true);
+  const [isEnd, setIsEnd] = useState(false);
+  const swiperRef = useRef<SwiperType | null>(null);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["popularLocations"],
+    queryFn: () => getLocations({ page: 1, limit: 6 }),
+  });
+
+  const { data: locationTypes = [] } = useQuery<
+    { slug: string; type: string }[]
+  >({
+    queryKey: ["locationTypes"],
+    queryFn: getLocationTypes,
+  });
+
+  const locationTypeLabels = useMemo(
+    () => new Map(locationTypes.map((lt) => [lt.slug, lt.type])),
+    [locationTypes],
+  );
+
+  const locations = useMemo(() => {
+    const list = (data?.locations as Location[]) ?? [];
+    return [...list].sort((a, b) => b.rate - a.rate);
+  }, [data]);
+
+  return (
+    <section className={styles.section}>
+      <div className={styles.container}>
+        <div className={styles.topRow}>
+          <h2 className={styles.title}>Популярні локації</h2>
+
+          <Link href="/locations" className={styles.ctaBtn}>
+            Всі локації
+          </Link>
+        </div>
+
+        <div className={styles.swiperWrap}>
+          {isLoading ? (
+            <p className={styles.loader}>Завантаження...</p>
+          ) : (
+            <>
+              <Swiper
+                modules={[Navigation]}
+                slidesPerView={1}
+                spaceBetween={24}
+                breakpoints={{
+                  768: { slidesPerView: 2, spaceBetween: 24 },
+                  1440: { slidesPerView: 3, spaceBetween: 24 },
+                }}
+                onSwiper={(swiper) => {
+                  swiperRef.current = swiper;
+                  setIsBeginning(swiper.isBeginning);
+                  setIsEnd(swiper.isEnd);
+                }}
+                onSlideChange={(swiper) => {
+                  setIsBeginning(swiper.isBeginning);
+                  setIsEnd(swiper.isEnd);
+                }}
+              >
+                {locations.map((location: Location) => (
+                  <SwiperSlide key={location._id}>
+                    <LocationCard
+                      _id={location._id}
+                      image={location.image}
+                      name={location.name}
+                      locationType={
+                        locationTypeLabels.get(location.locationType) ??
+                        "Тип не вказано"
+                      }
+                      rate={location.rate}
+                    />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+
+              <div className={styles.controls}>
+                <button
+                  type="button"
+                  className={styles.arrowBtn}
+                  onClick={() => swiperRef.current?.slidePrev()}
+                  disabled={isBeginning}
+                  aria-label="Попередня локація"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M2.9855 8.6525L8.41825 14.1667C8.5885 14.3371 8.8005 14.4195 9.05425 14.4141C9.308 14.4087 9.52 14.3214 9.69025 14.1521C9.85958 13.982 9.94425 13.7723 9.94425 13.523C9.94425 13.2737 9.85958 13.064 9.69025 12.8939L5.714 8.861H12.3823C12.6221 8.861 12.8233 8.78017 12.986 8.6185C13.1487 8.45683 13.23 8.25708 13.23 8.01925C13.23 7.78142 13.1487 7.58167 12.986 7.42C12.8233 7.25833 12.6221 7.1775 12.3823 7.1775H5.714L9.69025 3.14458C9.86042 2.97442 9.94508 2.76296 9.94425 2.51021C9.94342 2.25746 9.85875 2.046 9.69025 1.87583C9.52 1.7065 9.30754 1.62183 9.05288 1.62183C8.79821 1.62183 8.58575 1.7065 8.4155 1.87583L2.9855 7.39C2.89467 7.48083 2.83017 7.57417 2.792 7.67C2.75383 7.76583 2.73475 7.88225 2.73475 8.01925C2.73475 8.15625 2.75383 8.27267 2.792 8.3685C2.83017 8.46433 2.89467 8.55833 2.9855 8.6525Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </button>
+
+                <button
+                  type="button"
+                  className={styles.arrowBtn}
+                  onClick={() => swiperRef.current?.slideNext()}
+                  disabled={isEnd}
+                  aria-label="Наступна локація"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                    style={{ transform: "scaleX(-1)" }}
+                  >
+                    <path
+                      d="M2.9855 8.6525L8.41825 14.1667C8.5885 14.3371 8.8005 14.4195 9.05425 14.4141C9.308 14.4087 9.52 14.3214 9.69025 14.1521C9.85958 13.982 9.94425 13.7723 9.94425 13.523C9.94425 13.2737 9.85958 13.064 9.69025 12.8939L5.714 8.861H12.3823C12.6221 8.861 12.8233 8.78017 12.986 8.6185C13.1487 8.45683 13.23 8.25708 13.23 8.01925C13.23 7.78142 13.1487 7.58167 12.986 7.42C12.8233 7.25833 12.6221 7.1775 12.3823 7.1775H5.714L9.69025 3.14458C9.86042 2.97442 9.94508 2.76296 9.94425 2.51021C9.94342 2.25746 9.85875 2.046 9.69025 1.87583C9.52 1.7065 9.30754 1.62183 9.05288 1.62183C8.79821 1.62183 8.58575 1.7065 8.4155 1.87583L2.9855 7.39C2.89467 7.48083 2.83017 7.57417 2.792 7.67C2.75383 7.76583 2.73475 7.88225 2.73475 8.01925C2.73475 8.15625 2.75383 8.27267 2.792 8.3685C2.83017 8.46433 2.89467 8.55833 2.9855 8.6525Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+</file>
+
 <file path="components/SearchBox/SearchBox.module.css">
 .wrapper {
   display: grid;
@@ -4085,6 +3936,107 @@ export type LocationFormValues = {
 };
 </file>
 
+<file path="app/@modal/(.)add-review/AddReviewForm.tsx">
+"use client";
+
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { createFeedback, getMe } from "@/lib/api/clientApi";
+import styles from "./AddReviewForm.module.css";
+
+const schema = Yup.object({
+  rating: Yup.number().min(1, "Оберіть рейтинг").required(),
+  comment: Yup.string()
+    .min(10, "Мінімум 10 символів")
+    .max(500, "Максимум 500 символів")
+    .required("Обовʼязково"),
+});
+
+export default function AddReviewForm({ locationId }: { locationId: string }) {
+  const router = useRouter();
+
+  const { data: me } = useQuery({ queryKey: ["me"], queryFn: getMe });
+
+  const mutation = useMutation({
+    mutationFn: (values: { rating: number; comment: string }) =>
+      createFeedback(locationId, {
+        ...values,
+        userName: me?.name ?? "Анонім",
+      }),
+    onSuccess: () => {
+      window.dispatchEvent(new Event("review-added"));
+      toast.success("Відгук додано!");
+      router.back();
+    },
+    onError: () => toast.error("Помилка. Спробуйте ще раз."),
+  });
+
+  const formik = useFormik({
+    initialValues: { rating: 0, comment: "" },
+    validationSchema: schema,
+    onSubmit: (values) => mutation.mutate(values),
+  });
+
+  return (
+    <form onSubmit={formik.handleSubmit} className={styles.form} noValidate>
+      <h2 className={styles.title}>Залишити відгук</h2>
+
+      <div className={styles.field}>
+        <label className={styles.label}>Рейтинг</label>
+        <div className={styles.stars}>
+          {[1, 2, 3, 4, 5].map((s) => (
+            <button
+              key={s}
+              type="button"
+              className={
+                s <= formik.values.rating ? styles.starOn : styles.starOff
+              }
+              onClick={() => formik.setFieldValue("rating", s)}
+              aria-label={`${s} зірок`}
+            >
+              ★
+            </button>
+          ))}
+        </div>
+        {formik.touched.rating && formik.errors.rating && (
+          <span className={styles.error}>{formik.errors.rating}</span>
+        )}
+      </div>
+
+      <div className={styles.field}>
+        <label htmlFor="comment" className={styles.label}>
+          Коментар
+        </label>
+        <textarea
+          id="comment"
+          name="comment"
+          rows={4}
+          className={styles.textarea}
+          placeholder="Поділіться враженнями…"
+          value={formik.values.comment}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+        />
+        {formik.touched.comment && formik.errors.comment && (
+          <span className={styles.error}>{formik.errors.comment}</span>
+        )}
+      </div>
+
+      <button
+        type="submit"
+        className={styles.submit}
+        disabled={mutation.isPending}
+      >
+        {mutation.isPending ? "Надсилаємо…" : "Надіслати"}
+      </button>
+    </form>
+  );
+}
+</file>
+
 <file path="app/@modal/default.tsx">
 export default function Default() {
   return null;
@@ -4137,410 +4089,338 @@ export async function PATCH(req: NextRequest) {
 }
 </file>
 
-<file path="components/Footer/Footer.tsx">
-import css from "./Footer.module.css";
-import Link from "next/link";
+<file path="app/globals.css">
+:root {
+  /* ─── Buttons ─── */
+  --color-button-primary: #CC6534;
+  --color-button-secondary: rgba(0, 0, 0, 0.05);
+  --color-button-primary-hover: #FFE5D9;
+  --color-button-secondary-hover: #A95325;
+  --color-button-secondary-active: #254c24;
 
-export default function Footer() {
-  return (
-    <footer>
-      <div className={css.footer}>
-        <Link href="/" className={css.logo}>
-          Relax Map
-        </Link>
-        <ul className={css.socials}>
-          <li className={css.facebook}>
-            <Link href="https://www.facebook.com">FB</Link>
-          </li>
-          <li className={css.instagram}>
-            <Link href="https://www.instagram.com">In</Link>
-          </li>
-          <li className={css.x}>
-            <Link href="https://x.com">X</Link>
-          </li>
-          <li className={css.youtube}>
-            <Link href="https://www.youtube.com">YouTube</Link>
-          </li>
-        </ul>
-        <ul className={css.footerNav}>
-          <li>
-            <Link href="/">Головна</Link>
-          </li>
-          <li>
-            <Link href="/locations">Місця відпочинку</Link>
-          </li>
-        </ul>
-        <div className={css.copy}>
-          <p>
-            © <time dateTime="2025">2025</time> Природні Мандри. Усі права
-            захищені.
-          </p>
-        </div>
-      </div>
-    </footer>
-  );
+  /* ─── Slider ─── */
+  --color-slider-normal: #ffe5d9;
+  --color-slider-hover: #f2f2f2;
+  --color-slider-active: #ffa57a;
+  --color-slider-disabled: rgba(242, 242, 242, 0.4);
+
+  /* ─── Text ─── */
+  --color-text-main: #4c2613;
+  --color-text-input: #1b391b;
+  --color-text-input-error: #b00101;
+  --color-text-input-placeholder: rgba(0, 0, 0, 0.6);
+
+  /* ─── Backgrounds ─── */
+  --color-bg-page: #FFF2EC;
+  --color-bg-white: #FFFFFF;
+  --color-bg-input: #FFE5D9;
+  --color-bg-footer: #FFE5D9;
+  --color-bg-disabled: #F2F2F2;
+
+  /* ─── Overlays ─── */
+  --color-overlay: rgba(0, 0, 0, 0.6);
+  --color-overlay-light: rgba(0, 0, 0, 0.25);
+
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-md: 18px;
+  --font-size-lg: 24px;
+  --font-size-xl: 32px;
+  --font-size-2xl: 48px;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-loose: 1.7;
+
+  /* ─── Layout ─── */
+  --container-max: 1440px;
+  --container-padding-mobile: 20px;
+  --container-padding-tablet: 32px;
+  --container-padding-desktop: 64px;
+
+  /* ─── Transitions ─── */
+  --transition-base: 0.2s ease;
+}
+
+/* ─── Reset & Base ───────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  height: 100%;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-page);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  cursor: pointer;
+}
+
+main {
+  flex: 1;
 }
 </file>
 
-<file path="components/Header/Header.tsx">
-import css from "./Header.module.css";
-import Link from "next/link";
-
-export default function Header() {
-  const isAuth = false;
-  return (
-    <header>
-      <div className={css.header}>
-        <Link href="/" className={css.logo}>
-          Relax Map
-        </Link>
-        <nav className={css.nav}>
-          <ul className={css.navigation}>
-            {!isAuth && (
-              <li>
-                <Link href="/">Головна</Link>
-              </li>
-            )}
-
-            <li>
-              <Link href="/locations">Місця відпочинку</Link>
-            </li>
-            {isAuth && (
-              <li>
-                <Link href="/pro">Мій Профіль</Link>
-              </li>
-            )}
-          </ul>
-          <div className={css.btn}>
-            {!isAuth ? (
-              <>
-                <Link href="/login" className={css.loginBtn}>
-                  Вхід
-                </Link>
-                <Link href="/signup" className={css.signupBtn}>
-                  Реєстрація
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link href="/locations/add" className={css.locationBtn}>
-                  Поділитися локацією
-                </Link>
-                <div className={css.user}>
-                  <img src="#" alt="User avatar" className={css.avatar} />
-                  <span className={css.username}></span>
-                  <button className={css.exitBtn}>Вийти</button>
-                </div>
-              </>
-            )}
-          </div>
-        </nav>
-      </div>
-    </header>
-  );
-}
-</file>
-
-<file path="components/LocationForm/LocationForm.tsx">
+<file path="components/AddReviewModal/AddReviewForm.tsx">
 "use client";
 
-import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
-import * as Yup from "yup";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
-import { LocationFormValues } from "@/types/location";
-import { createLocation, updateLocation } from "@/lib/api/clientApi";
-import css from "./LocationForm.module.css";
+import { createFeedback, getMe } from "@/lib/api/clientApi";
+import styles from "./AddReviewForm.module.css";
 
-type Props = {
-  id?: string;
-  initialData?: {
-    name: string;
-    locationType: string;
-    region: string;
-    description: string;
-    image?: string;
-  };
-  regions: string[];
-  locationTypes: string[];
-};
+interface AddReviewFormProps {
+  locationId: string | string[] | undefined;
+  onSuccess: () => void;
+}
 
-export default function LocationForm({ initialData, id, regions, locationTypes }: Props) {
-  
-  const isEdit = !!initialData;
-  const router = useRouter();
-  const placeholder = "/images/location-form-placeholder-image.jpg";
-  
-
- const [imagePreview, setImagePreview] = useState<string>(
-  initialData?.image || placeholder
+export const AddReviewForm = ({
+  locationId,
+  onSuccess,
+}: AddReviewFormProps) => {
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [userName, setUserName] = useState("Анонім");
+  const [errors, setErrors] = useState<{ rating?: string; comment?: string }>(
+    {},
   );
-  
-  useEffect(() => { 
-    setImagePreview(initialData?.image || placeholder);
-  }, [initialData]);
- 
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const currentPreview = imagePreview;
+  const validate = () => {
+    const newErrors: { rating?: string; comment?: string } = {};
 
-    return () => {
-      if (currentPreview.startsWith("blob:")) {
-        URL.revokeObjectURL(currentPreview);
-      }
-    };
-  }, [imagePreview]);
+    if (rating < 1) newErrors.rating = "Оберіть рейтинг";
 
-const initialValues: LocationFormValues = {
-  name: initialData?.name ?? "",
-  locationType: initialData?.locationType || "",
-  region: initialData?.region || "",
-  description: initialData?.description || "",
-  imageFile: null,
-};
-
-  const validationSchema = Yup.object({
-   imageFile: Yup.mixed<File>()
-  .test("required", "Додайте фото", (value) => {
-    if (isEdit) return true; 
-    return !!value;
-  })
-  .test("fileType", "Тільки JPG або PNG", (value) => {
-    if (!value) return true;
-    return ["image/jpeg", "image/png"].includes(value.type);
-  })
-  .test("fileSize", "Максимум 1MB", (value) => {
-    if (!value) return true;
-    return value.size <= 1024 * 1024;
-  }),
-
-    name: Yup.string()
-      .min(3, "Мінімум 3 символи")
-      .max(96, "Максимум 96 символів")
-      .required("Введіть назву"),
-
-    locationType: Yup.string()
-      .max(64, "Максимум 64 символи")
-      .required("Оберіть тип"),
-
-    region: Yup.string()
-      .max(64, "Максимум 64 символи")
-      .required("Оберіть регіон"),
-
-    description: Yup.string()
-      .min(20, "Мінімум 20 символів")
-      .max(6000, "Максимум 6000символів")
-      .required("Введіть опис"),
-  });
-  
-
-  useEffect(() => {
-    if (isEdit && !id) {
-      router.push("/");
-    }
-  }, [isEdit, id, router]);
-
-    const uploadImage = async (file: File) => {
-  try {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "bym9862n");
-
-    const res = await fetch(
-      "https://api.cloudinary.com/v1_1/drr2wc5rr/image/upload",
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
-
-    const data = await res.json();
-    console.log("Cloudinary response:", data);
-
-    return data.secure_url;
-  } catch (error) {
-    console.log("UPLOAD ERROR:", error);
-    return "https://picsum.photos/300";
-  }
-};
-  
-
- const handleSubmit = async (
-  values: LocationFormValues,
-  { setSubmitting }: FormikHelpers<LocationFormValues>
-) => {
-   try {
-    let imageUrl = initialData?.image || "https://picsum.photos/300";
-    if (values.imageFile) {
-      imageUrl = await uploadImage(values.imageFile);
+    if (!comment.trim()) {
+      newErrors.comment = "Обов'язкове поле";
+    } else if (comment.trim().length < 10) {
+      newErrors.comment = "Мінімум 10 символів";
+    } else if (comment.length > 100) {
+      newErrors.comment = "Максимум 100 символів";
     }
 
-const payload = {
-  name: values.name,
-  locationType: values.locationType,
-  region: values.region,
-  description: values.description,
-  image: imageUrl,
-  coordinates: { lat: 0, lon: 0 },
-};
-
-    const data = isEdit
-      ? await updateLocation(id!, payload)
-      : await createLocation(payload);
-
-    router.push(`/locations/${data._id}`);
-  } catch {
-    toast.error("Не вдалося зберегти");
-  } finally {
-    setSubmitting(false);
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
-  
 
-  
-  return (
-    <main>
-    <div className={css.locationForm}>
+  useEffect(() => {
+    getMe()
+      .then((user) => {
+        if (user?.name) setUserName(user.name);
+      })
+      .catch(() => {});
+  }, []);
 
-      <h1 className={css.locationFormTitle}>
-        {isEdit ? "Редагування місця" : "Додавання нового місця"}
-      </h1>
+  const handleSubmit = async (e: { preventDefault(): void }) => {
+    e.preventDefault();
+    if (!validate()) return;
 
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-          enableReinitialize
+    try {
+      setLoading(true);
+      await createFeedback(String(locationId), { rating, comment, userName });
+      onSuccess();
+    } catch (error) {
+      console.error("Помилка при відправці:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const renderStars = () =>
+    [1, 2, 3, 4, 5].map((star) => (
+      <button
+        key={star}
+        type="button"
+        className={star <= rating ? styles.starOn : styles.starOff}
+        onClick={() => {
+          setRating(star);
+          setErrors((prev) => ({ ...prev, rating: undefined }));
+        }}
+        aria-label={`${star} зірок`}
       >
-        {({ resetForm, setFieldValue, isSubmitting }) => (
-          <Form className={css.locationFormWrapper}>
-            {/* Фото */}
-            <div className={css.formGroup}>
-              <p className="location-form__label">Обкладинка</p>
+        ★
+      </button>
+    ));
 
-              <input
-                id="fileInput"
-                type="file"
-                accept="image/jpeg, image/png"
-                hidden
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    setFieldValue("imageFile", file);
-                    setImagePreview(URL.createObjectURL(file));
-                  }
-                }}
-              />
-
-              <button
-                type="button"
-                className="location-form_upload-btn"
-                onClick={() =>
-                  document.getElementById("fileInput")?.click()
-                }
-              >           
-               Завантажте фото
-              </button>
-
-              {imagePreview && (
-                <img
-                  src={imagePreview}
-                  className="location-form_preview"
-                  alt="preview"
-                  width={120}
-                  style={{ display: "block", marginTop: 10 }}
-                />
-              )}
-
-              <ErrorMessage className="location-form__error" name="imageFile" component="div" />
-            </div>
-
-            {/* Назва */}
-            <div>
-              <label className="location-form__label" htmlFor="name">Назва місця</label>
-              <Field
-                id="name"
-                name="name"
-                placeholder="Введіть назву місця"
-                className="location-form__input"
-              />
-              <ErrorMessage className="location-form__error" name="name" component="div" />
-            </div>
-
-            {/* Тип */}
-            <div>
-              <label className="location-form__label" htmlFor="locationType">Тип місця</label>
-              <Field className="location-form__input" as="select" id="locationType" name="locationType">
-                <option value="">Оберіть тип місця</option>
-                {locationTypes.map((location, index) => (
-                 <option key={index} value={location}>
-                  {location}
-                </option>
-     ))}
-              </Field>
-              <ErrorMessage className="location-form__error" name="locationType" component="div" />
-            </div>
-
-            {/* Регіон */}
-            <div>
-              <label className="location-form__label" htmlFor="region">Регіон</label>
-              <Field className="location-form__input" as="select" id="region" name="region">
-                <option value="">Оберіть регіон</option>
-                {regions.map((region, index) => (
-                  <option key={index} value={region}>
-                    {region} 
-                  </option>
-              ))}
-              </Field>
-              <ErrorMessage className="location-form__error" name="region" component="div" />
-            </div>
-
-            {/* Опис */}
-            <div>
-              <label className="location-form__label" htmlFor="description">Опис</label>
-              <Field
-                className="location-form__textarea"
-                as="textarea"
-                id="description"
-                name="description"
-                placeholder="Детальний опис локації"
-                maxLength={600}
-              />
-              <ErrorMessage className="location-form__error" name="description" component="div" />
-            </div>
-
-            {/* Кнопки */}
-            <div style={{ marginTop: 20 }}>
-              <button className="location-form__actions" type="submit" disabled={isSubmitting}>
-                {isSubmitting
-                  ? "Завантаження..."
-                  : isEdit
-                  ? "Зберегти"
-                  : "Опублікувати"}
-              </button>
-
-              <button
-                className="location-form__cancel"
-                type="button"
-                onClick={() => {
-                  resetForm();
-                  setImagePreview(initialData?.image || placeholder);
-
-                  const input = document.getElementById("fileInput") as HTMLInputElement;
-                  if (input) input.value = "";
-                }}
-              >
-                {isEdit ? "Відмінити зміни" : "Відмінити"}
-              </button>
-            </div>
-          </Form>
-        )}
-      </Formik>
+  return (
+    <form className={styles.form} onSubmit={handleSubmit}>
+      <div className={styles.field}>
+        <h3 className={styles.subtitle}>Ваш відгук</h3>
+        <textarea
+          placeholder="Напишіть ваш відгук"
+          value={comment}
+          onChange={(e) => {
+            setComment(e.target.value);
+            setErrors((prev) => ({ ...prev, comment: undefined }));
+          }}
+          className={`${styles.textarea} ${errors.comment ? styles.textareaError : ""}`}
+        />
+        <div className={styles.warning}>
+          {errors.comment && <p className={styles.error}>{errors.comment}</p>}
+          <p className={styles.counter}>{comment.length}/100</p>
+        </div>
       </div>
-      </main>
+
+      <div className={styles.field}>
+        <div className={styles.stars}>{renderStars()}</div>
+        {errors.rating && <p className={styles.error}>{errors.rating}</p>}
+      </div>
+
+      <div className={styles.actions}>
+        <button type="button" onClick={onSuccess} className={styles.cancel}>
+          Відмінити
+        </button>
+        <button type="submit" disabled={loading} className={styles.submit}>
+          {loading ? "Відправка..." : "Надіслати"}
+        </button>
+      </div>
+    </form>
   );
+};
+</file>
+
+<file path="components/LocationCard/LocationCard.module.css">
+.card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 12px;
+  background-color: #ffe5d9;
+}
+
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1.16 / 1;
+  overflow: hidden;
+}
+
+.image {
+  object-fit: cover;
+  border-radius: 14px 14px 0 0;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+}
+
+.type {
+  margin: 0;
+  color: #5d4437;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-height: 24px;
+  color: #1f1f1f;
+}
+
+.star {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.title {
+  margin: 0 0 8px;
+  color: #4b2d20;
+  font-size: 28px;
+  line-height: 1.15;
+  font-weight: 700;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 12px 16px;
+  border: 1px solid #e7c7b5;
+  border-radius: 8px;
+  background-color: #f7ddd0;
+  color: #4b2d20;
+  font-size: 16px;
+  line-height: 1.2;
+  text-decoration: none;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.button:hover,
+.button:focus-visible {
+  cursor: pointer;
+  background-color: #e8845a;
+  border-color: #e8845a;
+  color: #fff7f2;
+  outline: none;
+}
+
+@media (min-width: 375px) {
+  .title {
+    font-size: 34px;
+  }
+}
+
+@media (min-width: 768px) {
+  .content {
+    gap: 10px;
+  }
+
+  .title {
+    font-size: 26px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .title {
+    font-size: 24px;
+  }
 }
 </file>
 
@@ -4776,18 +4656,6 @@ export const useAuthStore = create<AuthState>()(
 );
 </file>
 
-<file path="app/(auth routes)/layout.tsx">
-import css from "@/components/AuthComponent/AuthNav/Auth.module.css";
-
-export default function AuthLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return <div className={css.content}>{children}</div>;
-}
-</file>
-
 <file path="app/api/auth/session/route.ts">
 import { NextRequest, NextResponse } from "next/server";
 import { isAxiosError } from "axios";
@@ -4870,68 +4738,516 @@ export async function GET() {
 }
 </file>
 
-<file path="app/api/locations/[id]/route.ts">
-import { NextRequest, NextResponse } from "next/server";
-import { isAxiosError } from "axios";
-import { api } from "../../api";
-import { logErrorResponse } from "../../_utils/utils";
+<file path="components/Header/Header.module.css">
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: var(--color-scheme-2-background);
+    border-bottom: 1px solid var(--color-border);
+    padding: 0px 64px;
+    width: 100%;
+    height: 72px;
+    margin-bottom: 0;
+} 
 
-type RouteContext = {
-  params: Promise<{ id: string }>;
-};
+.inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    padding: 0 var(--container-padding-mobile);
+    margin: 0 auto;
+    max-width: var(--container-max);
+}
 
-export async function GET(_: NextRequest, context: RouteContext) {
-  try {
-    const { id } = await context.params;
-    const { data } = await api.get(`/locations/${id}`);
-    return NextResponse.json(data);
-  } catch (error) {
-    if (isAxiosError(error)) {
-      logErrorResponse(error.response?.data);
-      return NextResponse.json(
-        { error: error.message },
-        { status: error.response?.status ?? 500 }
-      );
+/* ─── Logo ─── */
+ .logo {
+    font-size: 22px;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+    letter-spacing: -0.5px;
+    flex-shrink: 0;
+}
+
+.logo:hover {
+    color: var(--color-primary-hover);
+}
+
+/* ─── Desktop Nav ─── */
+/* .nav {
+    display: none;
+} */
+
+.navLink {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-muted);
+    padding: 4px 0;
+    transition: color var(--transition-base);
+    position: relative;
+}
+
+.navLink::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--color-primary);
+    transition: width var(--transition-base);
+}
+
+.navLink:hover,
+.navLink.active {
+    color: var(--color-text-primary);
+}
+
+.navLink.active::after,
+.navLink:hover::after {
+    width: 100%;
+} 
+
+/* ─── Desktop Auth ─── */
+.auth {
+    display: none;
+    /* align-items: center;
+    gap: 12px; */
+}
+
+.profileLink {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    transition: color var(--transition-base);
+}
+
+.profileLink:hover {
+    color: var(--color-primary);
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    object-fit: cover;
+    border: 2px solid var(--color-primary-light);
+}
+
+.avatarFallback {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    background-color: var(--color-primary-light);
+    color: var(--color-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.userName {
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.loginBtn {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    padding: 8px 16px;
+    border-radius: var(--radius-md);
+    transition: color var(--transition-base);
+}
+
+.loginBtn:hover {
+    color: var(--color-primary);
+}
+
+.registerBtn {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-white);
+    background-color: var(--color-primary);
+    padding: 8px 18px;
+    border-radius: var(--radius-md);
+    transition: background-color var(--transition-base);
+}
+
+.registerBtn:hover {
+    background-color: var(--color-primary-hover);
+}
+
+.logoutBtn {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-muted);
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+    transition: color var(--transition-base);
+}
+
+.logoutBtn:hover {
+    color: var(--color-error);
+}
+
+/* ─── Burger ─── */
+.burger {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 32px;
+    height: 32px;
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+}
+
+.burgerLine {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: var(--color-text-primary);
+    border-radius: 2px;
+    transition: transform var(--transition-base), opacity var(--transition-base);
+}
+
+/* ─── Mobile Menu ─── */
+.nav {
+    display: none;
+}
+
+.auth {
+    display: none;
+}
+.mobileMenu {
+    display: flex;
+    flex-direction: column;
+    padding: 16px var(--container-padding-mobile) 24px;
+    border-top: 1px solid var(--color-border);
+    background-color: var(--color-bg-white);
+}
+
+.mobileLink {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    padding: 12px 0;
+    border-bottom: 1px solid var(--color-border-light);
+    transition: color var(--transition-base);
+}
+
+.mobileLink:last-child {
+    border-bottom: none;
+}
+
+.mobileLink:hover,
+.mobileLink.active {
+    color: var(--color-primary);
+}
+
+.mobileDivider {
+    height: 1px;
+    background-color: var(--color-border);
+    margin: 8px 0;
+}
+
+/* ─── Tablet ─────────────────── */
+@media (min-width: 768px) {
+    .inner {
+        padding: 0 var(--container-padding-tablet);
     }
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-  }
+
+    .mobileMenu {
+        padding: 16px var(--container-padding-tablet) 24px;
+    }
+}
+
+/* ─── Desktop ────────────────── */
+@media (min-width: 1024px) {
+    .inner {
+        padding: 0 var(--container-padding-desktop);
+    }
+
+    .nav {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+    }
+
+}
+
+@media (min-width: 1024px) {
+    .auth {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .burger {
+        display: none;
+    }
+
+    .mobileMenu {
+        display: none;
+    }
 }
 </file>
 
-<file path="app/loading.tsx">
+<file path="components/LocationForm/LocationForm.tsx">
 "use client";
 
-import { ScaleLoader } from "react-spinners";
-import type { CSSProperties } from "react";
+import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
+import * as Yup from "yup";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { LocationFormValues } from "@/types/location";
+import { createLocation, updateLocation } from "@/lib/api/clientApi";
+import css from "./LocationForm.module.css";
+import { getLocationValidationSchema } from "@/lib/validation/locationSchema";
+import { uploadImage } from "@/utils/uploadImage";
 
-const override: CSSProperties = {
-  display: "block",
-  margin: "0 auto",
-  borderColor: "#E76F51",
+type Props = {
+  id?: string;
+  initialData?: {
+    name: string;
+    locationType: string;
+    region: string;
+    description: string;
+    image?: string;
+  };
+  regions: string[];
+  locationTypes: string[];
 };
 
-export default function Loading() {
+export default function LocationForm({ initialData, id, regions, locationTypes }: Props) {
+  
+  const isEdit = !!id;
+  const router = useRouter();
+  const placeholder = "/images/location-form-placeholder-image.jpg";
+  const validationSchema = getLocationValidationSchema(isEdit);
+  
+
+ const [imagePreview, setImagePreview] = useState<string>(
+  initialData?.image || placeholder
+  );
+  
+  useEffect(() => { 
+    setImagePreview(initialData?.image || placeholder);
+  }, [initialData]);
+ 
+
+  useEffect(() => {
+    const currentPreview = imagePreview;
+
+    return () => {
+      if (currentPreview.startsWith("blob:")) {
+        URL.revokeObjectURL(currentPreview);
+      }
+    };
+  }, [imagePreview]);
+
+const initialValues: LocationFormValues = {
+  name: initialData?.name ?? "",
+  locationType: initialData?.locationType || "",
+  region: initialData?.region || "",
+  description: initialData?.description || "",
+  imageFile: null,
+};
+
+  useEffect(() => {
+    if (isEdit && !id) {
+      router.push("/");
+    }
+  }, [isEdit, id, router]);
+
+
+  const handleSubmit = async (
+  values: LocationFormValues,
+  { setSubmitting }: FormikHelpers<LocationFormValues>
+  ) => {
+     console.log("Submit");
+   try {
+    let imageUrl = initialData?.image || "https://picsum.photos/300";
+    if (values.imageFile) {
+      imageUrl = await uploadImage(values.imageFile);
+    }
+
+const payload = {
+  name: values.name,
+  locationType: values.locationType,
+  region: values.region,
+  description: values.description,
+  image: imageUrl,
+  coordinates: { lat: 0, lon: 0 },
+};
+
+    const data = isEdit
+      ? await updateLocation(id!, payload)
+      : await createLocation(payload);
+
+    router.push(`/locations/${data._id}`);
+  } catch {
+    toast.error("Не вдалося зберегти");
+  } finally {
+    setSubmitting(false);
+  }
+  };
+  
+
+  
   return (
-    <div
-      style={{
-        flex: 1,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "12px",
-        minHeight: "50vh",
-      }}
-    >
-      <ScaleLoader
-        color="#E76F51"
-        loading
-        cssOverride={override}
-        aria-label="Завантаження"
-        data-testid="loader"
-      />
-      <span>Зачекайте, будь ласка...</span>
-    </div>
+    <main>
+    <div className={css.locationForm}>
+
+      <h1 className={css.locationFormTitle}>
+        {isEdit ? "Редагування місця" : "Додавання нового місця"}
+      </h1>
+
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+          enableReinitialize
+
+      >
+        {({ resetForm, setFieldValue, isSubmitting }) => (
+          <Form className={css.locationFormWrapper}>
+            {/* Фото */}
+            <div className={css.formGroup}>
+              <p className="location-form__label">Обкладинка</p>
+
+              <input
+                id="fileInput"
+                type="file"
+                accept="image/jpeg, image/png"
+                hidden
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    setFieldValue("imageFile", file);
+                    setImagePreview(URL.createObjectURL(file));
+                  }
+                }}
+              />
+
+              <button
+                type="button"
+                className="location-form_upload-btn"
+                onClick={() =>
+                  document.getElementById("fileInput")?.click()
+                }
+              >           
+               Завантажте фото
+              </button>
+
+              {imagePreview && (
+                <img
+                  src={imagePreview}
+                  className="location-form_preview"
+                  alt="preview"
+                  width={120}
+                  style={{ display: "block", marginTop: 10 }}
+                />
+              )}
+
+              <ErrorMessage className="location-form__error" name="imageFile" component="div" />
+            </div>
+
+            {/* Назва */}
+            <div>
+              <label className="location-form__label" htmlFor="name">Назва місця</label>
+              <Field
+                id="name"
+                name="name"
+                placeholder="Введіть назву місця"
+                className="location-form__input"
+              />
+              <ErrorMessage className="location-form__error" name="name" component="div" />
+            </div>
+
+            {/* Тип */}
+            <div>
+              <label className="location-form__label" htmlFor="locationType">Тип місця</label>
+              <Field className="location-form__input" as="select" id="locationType" name="locationType">
+                <option value="">Оберіть тип місця</option>
+                {locationTypes.map((location, index) => (
+                 <option key={index} value={location}>
+                  {location}
+                </option>
+     ))}
+              </Field>
+              <ErrorMessage className="location-form__error" name="locationType" component="div" />
+            </div>
+
+            {/* Регіон */}
+            <div>
+              <label className="location-form__label" htmlFor="region">Регіон</label>
+              <Field className="location-form__input" as="select" id="region" name="region">
+                <option value="">Оберіть регіон</option>
+                {regions.map((region, index) => (
+                  <option key={index} value={region}>
+                    {region} 
+                  </option>
+              ))}
+              </Field>
+              <ErrorMessage className="location-form__error" name="region" component="div" />
+            </div>
+
+            {/* Опис */}
+            <div>
+              <label className="location-form__label" htmlFor="description">Опис</label>
+              <Field
+                className="location-form__textarea"
+                as="textarea"
+                id="description"
+                name="description"
+                placeholder="Детальний опис локації"
+                maxLength={600}
+              />
+              <ErrorMessage className="location-form__error" name="description" component="div" />
+            </div>
+
+            {/* Кнопки */}
+            <div style={{ marginTop: 20 }}>
+              <button className="location-form__actions" type="submit" disabled={isSubmitting}>
+                {isSubmitting
+                  ? "Завантаження..."
+                  : isEdit
+                  ? "Зберегти"
+                  : "Опублікувати"}
+              </button>
+
+              <button
+                className="location-form__cancel"
+                type="button"
+                onClick={() => {
+                  resetForm();
+                  setImagePreview(initialData?.image || placeholder);
+
+                  const input = document.getElementById("fileInput") as HTMLInputElement;
+                  if (input) input.value = "";
+                }}
+              >
+                {isEdit ? "Відмінити зміни" : "Відмінити"}
+              </button>
+            </div>
+          </Form>
+        )}
+      </Formik>
+      </div>
+      </main>
   );
 }
 </file>
@@ -5152,47 +5468,6 @@ export const api = axios.create({
 });
 </file>
 
-<file path="next.config.ts">
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  reactCompiler: true,
-  images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "ftp.goit.study",
-      },
-      {
-        protocol: "https",
-        hostname: "res.cloudinary.com",
-      },
-    ],
-  },
-};
-
-export default nextConfig;
-</file>
-
-<file path="app/@modal/loading.tsx">
-"use client";
-
-import Modal from "@/components/Modal/Modal";
-import { ScaleLoader } from "react-spinners";
-
-export default function ModalLoading() {
-  return (
-    <Modal>
-      <div
-        style={{ display: "flex", justifyContent: "center", padding: "32px" }}
-      >
-        <ScaleLoader color="#E76F51" aria-label="Завантаження" />
-      </div>
-    </Modal>
-  );
-}
-</file>
-
 <file path="app/api/auth/logout/route.ts">
 import { NextRequest, NextResponse } from "next/server";
 import { api } from "../../api";
@@ -5270,75 +5545,224 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
 }
 </file>
 
-<file path="lib/api/feedbacks.ts">
-import axios from "axios";
-import clientApi from "./clientApi";
+<file path="app/api/locations/[id]/route.ts">
+import { NextRequest, NextResponse } from "next/server";
+import { isAxiosError } from "axios";
+import { api } from "../../api";
+import { logErrorResponse } from "../../_utils/utils";
 
-export const getFeedbacks = async (locationId: string, page = 1, retries = 2) => {
-  for (let i = 0; i <= retries; i++) {
-    try {
-      const { data } = await clientApi.get(`/locations/${locationId}/feedbacks`, {
-        params: { page, limit: 3 },
-      });
-      return data;
-    } catch (err: unknown) {
-      const isLast = i === retries;
-      const status = axios.isAxiosError(err) ? err.response?.status : undefined;
-
-      if (isLast || (status !== undefined && status !== 404 && status !== 500)) {
-        throw err;
-      }
-
-      await new Promise((res) => setTimeout(res, 2000));
-    }
-  }
+type RouteContext = {
+  params: Promise<{ id: string }>;
 };
+
+export async function GET(_: NextRequest, context: RouteContext) {
+  try {
+    const { id } = await context.params;
+    const { data } = await api.get(`/locations/${id}`);
+    return NextResponse.json(data);
+  } catch (error) {
+    if (isAxiosError(error)) {
+      logErrorResponse(error.response?.data);
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.response?.status ?? 500 }
+      );
+    }
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}
+
+export async function PATCH(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const body = await req.json();
+
+    const cookie = req.headers.get("cookie") || "";
+
+    const { data } = await api.patch(`/locations/${id}`, body, {
+      headers: {
+        Cookie: cookie,
+      },
+    });
+
+    return NextResponse.json(data);
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.response?.status ?? 500 }
+      );
+    }
+
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}
 </file>
 
-<file path="app/layout.tsx">
-import React from "react";
-import type { Metadata } from "next";
-import { Montserrat } from "next/font/google";
-import TanStackProvider from "@/components/TanStackProvider/TanStackProvider";
-import AuthProvider from "@/components/AuthProvider/AuthProvider";
-import Header from "@/components/Header/Header";
-import Footer from "@/components/Footer/Footer";
-import { Toaster } from "react-hot-toast";
-import "modern-normalize";
-import "./globals.css";
+<file path="app/loading.tsx">
+"use client";
 
-const montserrat = Montserrat({
-  variable: "--font-manrope",
-  subsets: ["latin", "cyrillic"],
-  display: "swap",
-});
+import { ScaleLoader } from "react-spinners";
+import type { CSSProperties } from "react";
 
-export const metadata: Metadata = {
-  title: "Relax Map",
-  description: "Знаходьте та діліться місцями для відпочинку в Україні",
+const override: CSSProperties = {
+  display: "block",
+  margin: "0 auto",
+  borderColor: "#E76F51",
 };
 
-export default function RootLayout({
-  children,
-  modal,
-}: Readonly<{
-  children: React.ReactNode;
-  modal: React.ReactNode;
-}>) {
+export default function Loading() {
   return (
-    <html lang="uk" className={montserrat.variable}>
-      <body>
-        <TanStackProvider>
-          <AuthProvider>
-            <Header />
-            {children}
-            {modal}
-            <Footer />
-          </AuthProvider>
-          <Toaster position="top-right" />
-        </TanStackProvider>
-      </body>
-    </html>
+    <div
+      style={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "12px",
+        minHeight: "50vh",
+      }}
+    >
+      <ScaleLoader
+        color="#E76F51"
+        loading
+        cssOverride={override}
+        aria-label="Завантаження"
+        data-testid="loader"
+      />
+      <span>Зачекайте, будь ласка...</span>
+    </div>
+  );
+}
+</file>
+
+<file path="components/Footer/Footer.tsx">
+import Image from "next/image";
+import Logo from "../Logo/Logo";
+import css from "./Footer.module.css";
+import Link from "next/link";
+
+export default function Footer() {
+  return (
+    <footer>
+      <div className={css.footer}>
+        <div className={css.inner}>
+          <Logo />
+          <ul className={css.socials}>
+            <li className={css.facebook}>
+              <Link href="https://www.facebook.com">
+                <Image
+                  src="/images/facebook.png"
+                  alt="Facebook logo"
+                  width={24}
+                  height={24}
+                  className={css.logoImg}
+                />
+              </Link>
+            </li>
+            <li className={css.instagram}>
+              <Link href="https://www.instagram.com">
+                <Image
+                  src="/images/instagram.png"
+                  alt="Instagram logo"
+                  width={24}
+                  height={24}
+                  className={css.logoImg}
+                />
+              </Link>
+            </li>
+            <li className={css.x}>
+              <Link href="https://x.com">
+                <Image
+                  src="/images/x.png"
+                  alt="X logo"
+                  width={24}
+                  height={24}
+                  className={css.logoImg}
+                />
+              </Link>
+            </li>
+            <li className={css.youtube}>
+              <Link href="https://www.youtube.com">
+                <Image
+                  src="/images/youtube.png"
+                  alt="YouTube logo"
+                  width={24}
+                  height={24}
+                  className={css.logoImg}
+                />
+              </Link>
+            </li>
+          </ul>
+          <ul className={css.footerNav}>
+            <li className={css.items}>
+              <Link href="/">Головна</Link>
+            </li>
+            <li className={css.items}>
+              <Link href="/locations">Місця відпочинку</Link>
+            </li>
+          </ul>
+        </div>
+        <div className={css.copy}>
+          <p>
+            © <time dateTime="2025">2025</time> Природні Мандри. Усі права
+            захищені.
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+}
+</file>
+
+<file path="next.config.ts">
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  reactCompiler: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "ftp.goit.study",
+      },
+      {
+        protocol: "https",
+        hostname: "ac.goit.global",
+      },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      },
+    ],
+  },
+};
+
+export default nextConfig;
+</file>
+
+<file path="app/@modal/loading.tsx">
+"use client";
+
+import Modal from "@/components/Modal/Modal";
+import { ScaleLoader } from "react-spinners";
+
+export default function ModalLoading() {
+  return (
+    <Modal>
+      <div
+        style={{ display: "flex", justifyContent: "center", padding: "32px" }}
+      >
+        <ScaleLoader color="#E76F51" aria-label="Завантаження" />
+      </div>
+    </Modal>
   );
 }
 </file>
@@ -5467,6 +5891,259 @@ export default function LocationCard({
 }
 </file>
 
+<file path="lib/api/feedbacks.ts">
+import axios from "axios";
+import clientApi from "./clientApi";
+
+export const getFeedbacks = async (locationId: string, page = 1, retries = 2) => {
+  for (let i = 0; i <= retries; i++) {
+    try {
+      const { data } = await clientApi.get(`/locations/${locationId}/feedbacks`, {
+        params: { page, limit: 3 },
+      });
+      return data;
+    } catch (err: unknown) {
+      const isLast = i === retries;
+      const status = axios.isAxiosError(err) ? err.response?.status : undefined;
+
+      if (isLast || (status !== undefined && status !== 404 && status !== 500)) {
+        throw err;
+      }
+
+      await new Promise((res) => setTimeout(res, 2000));
+    }
+  }
+};
+</file>
+
+<file path="app/(auth routes)/layout.tsx">
+import Link from "next/link";
+import css from "@/components/AuthComponent/AuthNav/Auth.module.css";
+import Logo from "@/components/Logo/Logo";
+
+export default function AuthLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <>
+      <header className={css.header}>
+        <Logo />
+      </header>
+
+      <main className={css.content}>{children}</main>
+
+      <footer className={css.footer}>
+        <p>© 2026 Relax Map</p>
+      </footer>
+    </>
+  );
+}
+</file>
+
+<file path="app/layout.tsx">
+import type { Metadata } from "next";
+import { Montserrat } from "next/font/google";
+import TanStackProvider from "@/components/TanStackProvider/TanStackProvider";
+import AuthProvider from "@/components/AuthProvider/AuthProvider";
+import { Toaster } from "react-hot-toast";
+import "modern-normalize";
+import "./globals.css";
+
+const montserrat = Montserrat({
+  variable: "--font-manrope",
+  subsets: ["latin", "cyrillic"],
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  title: "Relax Map",
+  description: "Знаходьте та діліться місцями для відпочинку в Україні",
+};
+
+export default function RootLayout({
+  children,
+  modal,
+}: {
+  children: React.ReactNode;
+  modal: React.ReactNode;
+}) {
+  return (
+    <html lang="uk" className={montserrat.variable}>
+      <body>
+        <TanStackProvider>
+          <AuthProvider>
+            {children}
+            {modal}
+          </AuthProvider>
+          <Toaster position="top-right" />
+        </TanStackProvider>
+      </body>
+    </html>
+  );
+}
+</file>
+
+<file path="components/Header/Header.tsx">
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { useAuthStore } from "@/lib/store/authStore";
+import css from "./Header.module.css";
+import Logo from "../Logo/Logo";
+
+export default function Header() {
+  const pathname = usePathname();
+  const user = useAuthStore((s) => s.user);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const closeMenu = () => setMenuOpen(false);
+
+  const navLinks = [
+    { href: "/", label: "Головна" },
+    { href: "/locations", label: "Місця відпочинку" },
+  ];
+
+  return (
+    <header className={css.header}>
+      <div className={css.inner}>
+        {/* Logo */}
+        {/* <Link href="/" className={css.logo} onClick={closeMenu}>
+          Relax Map
+        </Link> */}
+        <Logo onClick={closeMenu} />
+
+        {/* Desktop nav */}
+        <nav className={css.nav}>
+          {navLinks.map(({ href, label }) => (
+            <Link
+              key={href}
+              href={href}
+              className={`${css.navLink} ${pathname === href ? css.active : ""}`}
+            >
+              {label}
+            </Link>
+          ))}
+        </nav>
+
+        {/* Desktop auth */}
+        <div className={css.auth}>
+          {user ? (
+            <>
+              <Link href={`/profile/${user._id}`} className={css.profileLink}>
+                {user.avatarUrl ? (
+                  <Image
+                    src={user.avatarUrl}
+                    alt={user.name}
+                    className={css.avatar}
+                    width={32}
+                    height={32}
+                  />
+                ) : (
+                  <span className={css.avatarFallback}>
+                    {user.name.charAt(0).toUpperCase()}
+                  </span>
+                )}
+                <span className={css.userName}>{user.name}</span>
+              </Link>
+              <Link href="/logout-confirm" className={css.logoutBtn}>
+                Вийти
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link href="/login" className={css.loginBtn}>
+                Увійти
+              </Link>
+              <Link href="/register" className={css.registerBtn}>
+                Реєстрація
+              </Link>
+            </>
+          )}
+        </div>
+        {/* </div> */}
+        {/* Burger button */}
+        <button
+          type="button"
+          className={css.burger}
+          onClick={() => setMenuOpen((prev) => !prev)}
+          aria-label="Відкрити меню"
+          aria-expanded={menuOpen}
+        >
+          <span
+            className={`${css.burgerLine} ${menuOpen ? css.burgerOpen : ""}`}
+          />
+          <span
+            className={`${css.burgerLine} ${menuOpen ? css.burgerOpen : ""}`}
+          />
+          <span
+            className={`${css.burgerLine} ${menuOpen ? css.burgerOpen : ""}`}
+          />
+        </button>
+      </div>
+
+      {/* Mobile menu */}
+      {menuOpen && (
+        <div className={css.mobileMenu}>
+          {navLinks.map(({ href, label }) => (
+            <Link
+              key={href}
+              href={href}
+              className={`${css.mobileLink} ${pathname === href ? css.active : ""}`}
+              onClick={closeMenu}
+            >
+              {label}
+            </Link>
+          ))}
+
+          <div className={css.mobileDivider} />
+
+          {user ? (
+            <>
+              <Link
+                href={`/profile/${user._id}`}
+                className={css.mobileLink}
+                onClick={closeMenu}
+              >
+                Профіль
+              </Link>
+              <Link
+                href="/logout-confirm"
+                className={css.mobileLink}
+                onClick={closeMenu}
+              >
+                Вийти
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className={css.mobileLink}
+                onClick={closeMenu}
+              >
+                Увійти
+              </Link>
+              <Link
+                href="/register"
+                className={css.mobileLink}
+                onClick={closeMenu}
+              >
+                Реєстрація
+              </Link>
+            </>
+          )}
+        </div>
+      )}
+    </header>
+  );
+}
+</file>
+
 <file path="components/ReviewsBlock/ReviewsBlock.module.css">
 .section {
     padding: 64px 20px;
@@ -5494,8 +6171,8 @@ export default function LocationCard({
 }
 
 .arrowBtn {
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     border-radius: 8px;
     border: 1px solid rgba(0, 0, 0, 0.15);
     background: #ffe5d9;
@@ -5554,176 +6231,6 @@ export default function LocationCard({
     .title {
         font-size: 52px;
     }
-}
-</file>
-
-<file path="components/ReviewsBlock/ReviewsBlock.tsx">
-"use client";
-
-import { useEffect, useState, useRef } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
-import type { Swiper as SwiperType } from "swiper";
-import "swiper/css";
-
-import { FeedBackCard } from "@/components/FeedBackCard/FeedBackCard";
-import { Feedback } from "@/types/feedBackCard";
-import clientApi from "@/lib/api/clientApi";
-import styles from "./ReviewsBlock.module.css";
-
-// Known location IDs that have feedbacks — fetched directly, no loop needed
-const SEEDED_LOCATION_IDS = [
-  "68d568270e6bcc357e9833e8",
-  "68d568270e6bcc357e9833e9",
-  "68d568270e6bcc357e9833ea",
-];
-
-export default function ReviewsBlock() {
-  const [reviews, setReviews] = useState<Feedback[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isBeginning, setIsBeginning] = useState(true);
-  const [isEnd, setIsEnd] = useState(false);
-  const swiperRef = useRef<SwiperType | null>(null);
-
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const collected: Feedback[] = [];
-
-        // First try the known seeded locations (fast path)
-        for (const id of SEEDED_LOCATION_IDS) {
-          if (collected.length >= 9) break;
-          try {
-            const fbRes = await clientApi.get(`/locations/${id}/feedbacks`, {
-              params: { page: 1, limit: 9 - collected.length },
-            });
-            const feedbacks: Feedback[] = fbRes.data?.data ?? [];
-            collected.push(...feedbacks);
-          } catch {
-            // skip
-          }
-        }
-
-        // If still empty, scan first 20 locations (fallback for when DB is fresh)
-        if (collected.length === 0) {
-          const locRes = await clientApi.get("/locations", {
-            params: { page: 1, limit: 20 },
-          });
-          const locations: { _id: string }[] = locRes.data?.data ?? [];
-
-          for (const loc of locations) {
-            if (collected.length >= 9) break;
-            try {
-              const fbRes = await clientApi.get(
-                `/locations/${loc._id}/feedbacks`,
-                { params: { page: 1, limit: 9 - collected.length } },
-              );
-              const feedbacks: Feedback[] = fbRes.data?.data ?? [];
-              collected.push(...feedbacks);
-            } catch (e) {
-              console.warn(
-                "Failed to fetch feedbacks for location " + loc._id + ":",
-                e,
-              );
-            }
-          }
-        }
-
-        const unique = Array.from(
-          new Map(collected.map((r) => [r._id, r])).values(),
-        );
-        setReviews(unique);
-      } catch {
-        setError("Не вдалося завантажити відгуки");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchReviews();
-  }, []);
-
-  return (
-    <section className={styles.section}>
-      <h2 className={styles.title}>Останні відгуки</h2>
-
-      {loading && <p className={styles.loading}>Завантаження відгуків...</p>}
-      {error && <p className={styles.error}>{error}</p>}
-      {!loading && !error && reviews.length === 0 && (
-        <p className={styles.empty}>Відгуків поки немає</p>
-      )}
-
-      {!loading && !error && reviews.length > 0 && (
-        <div className={styles.swiperContainer}>
-          <Swiper
-            modules={[Navigation]}
-            slidesPerView={1}
-            spaceBetween={16}
-            breakpoints={{
-              704: { slidesPerView: 2, spaceBetween: 24 },
-              1312: { slidesPerView: 3, spaceBetween: 24 },
-            }}
-            onSwiper={(swiper) => {
-              swiperRef.current = swiper;
-              setIsBeginning(swiper.isBeginning);
-              setIsEnd(swiper.isEnd);
-            }}
-            onSlideChange={(swiper) => {
-              setIsBeginning(swiper.isBeginning);
-              setIsEnd(swiper.isEnd);
-            }}
-          >
-            {reviews.map((review) => (
-              <SwiperSlide key={review._id}>
-                <FeedBackCard
-                  userName={review.userName}
-                  description={review.description}
-                  rate={review.rate}
-                />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-
-          <div className={styles.controls}>
-            <button
-              className={styles.arrowBtn}
-              onClick={() => swiperRef.current?.slidePrev()}
-              disabled={isBeginning}
-              aria-label="Попередній відгук"
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 32 32"
-                fill="currentColor"
-              >
-                <path d="M15.643 1c0.171 0 0.318 0.053 0.482 0.217 0.165 0.172 0.217 0.326 0.217 0.498-0 0.174-0.053 0.322-0.217 0.486l-12.723 12.723h26.82c0.243 0 0.393 0.071 0.522 0.197 0.124 0.123 0.193 0.266 0.193 0.506s-0.069 0.383-0.193 0.506c-0.128 0.127-0.279 0.197-0.522 0.197h-26.82l12.711 12.709c0.165 0.165 0.221 0.319 0.223 0.502v0.002c0.001 0.133-0.028 0.25-0.111 0.369l-0.104 0.123c-0.16 0.162-0.306 0.214-0.484 0.213-0.189-0.002-0.346-0.062-0.512-0.227l-13.896-13.896c-0.106-0.108-0.158-0.193-0.182-0.25v-0.002c-0.030-0.073-0.047-0.153-0.047-0.248s0.017-0.173 0.047-0.244v-0.002c0.024-0.057 0.075-0.142 0.182-0.25l13.9-13.9c0.181-0.174 0.34-0.229 0.514-0.229z" />
-              </svg>
-            </button>
-            <button
-              className={styles.arrowBtn}
-              onClick={() => swiperRef.current?.slideNext()}
-              disabled={isEnd}
-              aria-label="Наступний відгук"
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 32 32"
-                fill="currentColor"
-              >
-                <path d="M16.289 1c0.142 0.001 0.266 0.035 0.389 0.121l0.123 0.105 13.896 13.896c0.106 0.108 0.158 0.193 0.182 0.25v0.002c0.030 0.073 0.047 0.153 0.047 0.248s-0.017 0.173-0.047 0.244v0.002c-0.024 0.057-0.075 0.142-0.182 0.25l-13.908 13.896c-0.183 0.181-0.34 0.232-0.506 0.232-0.161-0-0.306-0.049-0.473-0.221l-0.010-0.010-0.104-0.121c-0.084-0.119-0.113-0.235-0.113-0.365s0.030-0.245 0.113-0.363l0.104-0.121 12.723-12.723h-26.82c-0.244-0-0.389-0.070-0.51-0.191h-0.002c-0.122-0.122-0.191-0.268-0.191-0.512s0.070-0.39 0.191-0.512h0.002c0.121-0.121 0.266-0.191 0.51-0.191h26.82l-12.711-12.711c-0.123-0.123-0.186-0.24-0.211-0.369l-0.012-0.135c-0.002-0.18 0.050-0.327 0.211-0.488l0.002-0.002c0.16-0.161 0.307-0.214 0.486-0.213z" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      )}
-    </section>
-  );
 }
 </file>
 
@@ -5876,6 +6383,170 @@ export default function ReviewsBlock() {
 }
 </file>
 
+<file path="components/ReviewsBlock/ReviewsBlock.tsx">
+"use client";
+
+import { useEffect, useState, useRef, useCallback } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+import type { Swiper as SwiperType } from "swiper";
+import "swiper/css";
+
+import { FeedBackCard } from "@/components/FeedBackCard/FeedBackCard";
+import { Feedback } from "@/types/feedBackCard";
+import clientApi from "@/lib/api/clientApi";
+import styles from "./ReviewsBlock.module.css";
+
+const MAX_REVIEWS = 9;
+
+export default function ReviewsBlock() {
+  const [reviews, setReviews] = useState<Feedback[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isBeginning, setIsBeginning] = useState(true);
+  const [isEnd, setIsEnd] = useState(false);
+  const swiperRef = useRef<SwiperType | null>(null);
+
+  const fetchReviews = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Fetch all locations, then collect their latest reviews
+      const locRes = await clientApi.get("/locations", {
+        params: { page: 1, limit: 20 },
+      });
+      const locations: { _id: string }[] = locRes.data?.data ?? [];
+
+      const collected: Feedback[] = [];
+
+      for (const loc of locations) {
+        if (collected.length >= MAX_REVIEWS) break;
+        try {
+          const fbRes = await clientApi.get(`/locations/${loc._id}/feedbacks`, {
+            params: { page: 1, limit: MAX_REVIEWS - collected.length },
+          });
+          const feedbacks: Feedback[] = fbRes.data?.data ?? [];
+          collected.push(...feedbacks);
+        } catch {
+          // skip locations with no reviews
+        }
+      }
+
+      const unique = Array.from(
+        new Map(collected.map((r) => [r._id, r])).values(),
+      );
+      setReviews(unique);
+    } catch {
+      setError("Не вдалося завантажити відгуки");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Initial load
+  useEffect(() => {
+    fetchReviews();
+  }, [fetchReviews]);
+
+  // Re-fetch when a new review is submitted anywhere in the app
+  useEffect(() => {
+    const handler = () => fetchReviews();
+    window.addEventListener("review-added", handler);
+    return () => window.removeEventListener("review-added", handler);
+  }, [fetchReviews]);
+
+  return (
+    <section className={styles.section}>
+      <h2 className={styles.title}>Останні відгуки</h2>
+
+      {loading && <p className={styles.loading}>Завантаження відгуків...</p>}
+      {error && <p className={styles.error}>{error}</p>}
+      {!loading && !error && reviews.length === 0 && (
+        <p className={styles.empty}>Відгуків поки немає</p>
+      )}
+
+      {!loading && !error && reviews.length > 0 && (
+        <div className={styles.swiperContainer}>
+          <Swiper
+            modules={[Navigation]}
+            slidesPerView={1}
+            spaceBetween={16}
+            speed={400}
+            breakpoints={{
+              704: { slidesPerView: 2, spaceBetween: 24 },
+              1312: { slidesPerView: 3, spaceBetween: 24 },
+            }}
+            onSwiper={(swiper) => {
+              swiperRef.current = swiper;
+              setIsBeginning(swiper.isBeginning);
+              setIsEnd(swiper.isEnd);
+            }}
+            onSlideChange={(swiper) => {
+              setIsBeginning(swiper.isBeginning);
+              setIsEnd(swiper.isEnd);
+            }}
+          >
+            {reviews.map((review) => (
+              <SwiperSlide key={review._id}>
+                <FeedBackCard
+                  userName={review.userName}
+                  description={review.description}
+                  rate={review.rate}
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+
+          <div className={styles.controls}>
+            <button
+              className={styles.arrowBtn}
+              onClick={() => swiperRef.current?.slidePrev()}
+              disabled={isBeginning}
+              aria-label="Попередній відгук"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M7.82129 0.5C7.90691 0.500059 7.98026 0.526325 8.0625 0.608398C8.1448 0.694341 8.1709 0.771445 8.1709 0.857422C8.17081 0.944261 8.14426 1.01826 8.0625 1.10059L1.70117 7.46191H15.1113C15.2328 7.46193 15.3079 7.49726 15.3721 7.56055C15.4342 7.6219 15.4687 7.69362 15.4688 7.81348C15.4688 7.93333 15.4342 8.00505 15.3721 8.06641C15.3079 8.12969 15.2328 8.16502 15.1113 8.16504H1.70117L8.05664 14.5205V14.5195C8.1389 14.602 8.16719 14.6788 8.16797 14.7705V14.7715C8.16849 14.838 8.15383 14.8964 8.1123 14.9561L8.06055 15.0176C7.9806 15.0985 7.90742 15.1248 7.81836 15.124C7.72391 15.1231 7.6456 15.0931 7.5625 15.0107L0.614258 8.0625C0.561096 8.00833 0.5354 7.9662 0.523438 7.9375V7.93652C0.50833 7.90019 0.5 7.8601 0.5 7.8125C0.50003 7.76491 0.508641 7.72576 0.523438 7.69043V7.68945C0.535302 7.66099 0.560769 7.61862 0.614258 7.56445L7.56445 0.614258C7.65485 0.527034 7.73453 0.5 7.82129 0.5Z"
+                  fill="currentColor"
+                  stroke="currentColor"
+                />
+              </svg>
+            </button>
+            <button
+              className={styles.arrowBtn}
+              onClick={() => swiperRef.current?.slideNext()}
+              disabled={isEnd}
+              aria-label="Наступний відгук"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M8.14453 0.5C8.21548 0.500668 8.27733 0.517317 8.33887 0.560547L8.40039 0.613281L15.3486 7.56152C15.4018 7.61569 15.4275 7.65782 15.4395 7.68652V7.6875C15.4546 7.72385 15.4629 7.7639 15.4629 7.81152C15.4629 7.85913 15.4543 7.89825 15.4395 7.93359V7.93457C15.4276 7.96304 15.4022 8.00538 15.3486 8.05957L8.39453 15.0078C8.30318 15.0981 8.22456 15.124 8.1416 15.124C8.0609 15.1239 7.98874 15.0994 7.90527 15.0137L7.90039 15.0088L7.84863 14.9482C7.80653 14.8886 7.79201 14.8306 7.79199 14.7656C7.79199 14.701 7.80676 14.6433 7.84863 14.584L7.90039 14.5234L14.2617 8.16211H0.851562C0.729469 8.16207 0.657228 8.12693 0.59668 8.06641H0.595703C0.53483 8.0055 0.500002 7.93257 0.5 7.81055C0.5 7.68853 0.534835 7.6156 0.595703 7.55469H0.59668C0.657231 7.49416 0.729461 7.45902 0.851562 7.45898H14.2617L7.90625 1.10352C7.84494 1.04216 7.81315 0.983763 7.80078 0.918945L7.79492 0.851562C7.79401 0.761613 7.82017 0.688031 7.90039 0.607422L7.90137 0.606445C7.98151 0.525858 8.05487 0.499224 8.14453 0.5Z"
+                  fill="currentColor"
+                  stroke="currentColor"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+</file>
+
 <file path="components/FeedBackCard/FeedBackCard.module.css">
 .card {
     background: #ffe5d9;
@@ -5955,251 +6626,6 @@ export default function ReviewsBlock() {
 }
 </file>
 
-<file path="components/ReviewsSection/ReviewsSection.tsx">
-"use client";
-
-import { useState, useEffect, useCallback, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
-import type { Swiper as SwiperType } from "swiper";
-import "swiper/css";
-
-import { FeedBackCard } from "@/components/FeedBackCard/FeedBackCard";
-import { Feedback } from "@/types/feedBackCard";
-import clientApi from "@/lib/api/clientApi";
-import styles from "./ReviewsSection.module.css";
-
-const LIMIT = 3;
-
-type Props = {
-  locationId: string;
-  isAuthenticated?: boolean;
-  initialReviews?: Feedback[];
-};
-
-export default function ReviewsSection({
-  locationId,
-  isAuthenticated = false,
-  initialReviews = [],
-}: Props) {
-  const [reviews, setReviews] = useState<Feedback[]>(initialReviews);
-  const [loadedPages, setLoadedPages] = useState<number[]>([1]);
-  const [totalPages, setTotalPages] = useState(1);
-  const [isFetching, setIsFetching] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [ready, setReady] = useState(initialReviews.length > 0);
-  const [isBeginning, setIsBeginning] = useState(true);
-  const [isEnd, setIsEnd] = useState(false);
-  const swiperRef = useRef<SwiperType | null>(null);
-  const router = useRouter();
-
-  // Fetch a specific page and append to the flat reviews array
-  const fetchPage = useCallback(
-    async (pageNum: number) => {
-      if (isFetching) return;
-      try {
-        setIsFetching(true);
-        setError(null);
-        const { data } = await clientApi.get(
-          `/locations/${locationId}/feedbacks`,
-          { params: { page: pageNum, limit: LIMIT } },
-        );
-        const newReviews: Feedback[] = data.data || data;
-        if (data.pagination) {
-          setTotalPages(data.pagination.totalPages ?? 1);
-        }
-        setReviews((prev) => {
-          // Deduplicate by _id before appending
-          const existingIds = new Set(prev.map((r) => r._id));
-          const unique = newReviews.filter((r) => !existingIds.has(r._id));
-          return [...prev, ...unique];
-        });
-        setLoadedPages((prev) => [...prev, pageNum]);
-      } catch {
-        setError("Не вдалося завантажити відгуки");
-      } finally {
-        setIsFetching(false);
-        setReady(true);
-      }
-    },
-    [locationId, isFetching],
-  );
-
-  // Full refresh — called after submitting a new review
-  const refreshReviews = useCallback(async () => {
-    try {
-      setError(null);
-      const { data } = await clientApi.get(
-        `/locations/${locationId}/feedbacks`,
-        { params: { page: 1, limit: LIMIT } },
-      );
-      const fresh: Feedback[] = data.data || data;
-      if (data.pagination) {
-        setTotalPages(data.pagination.totalPages ?? 1);
-      }
-      setReviews(fresh);
-      setLoadedPages([1]);
-      // Slide back to the beginning so the new review is visible
-      setTimeout(() => {
-        swiperRef.current?.slideTo(0, 300);
-      }, 50);
-    } catch {
-      // silently fail — stale data is still shown
-    }
-  }, [locationId]);
-
-  // Initial load (only if no SSR initialReviews were provided)
-  useEffect(() => {
-    if (initialReviews.length === 0) {
-      fetchPage(1);
-    } else {
-      // Still need totalPages from the server
-      clientApi
-        .get(`/locations/${locationId}/feedbacks`, {
-          params: { page: 1, limit: LIMIT },
-        })
-        .then(({ data }) => {
-          if (data.pagination) {
-            setTotalPages(data.pagination.totalPages ?? 1);
-          }
-          // Merge SSR data with fresh data to catch any new reviews
-          const fresh: Feedback[] = data.data || data;
-          setReviews(fresh);
-        })
-        .catch(() => {});
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [locationId]);
-
-  // Listen for a custom event fired by the add-review page on success
-  useEffect(() => {
-    const handler = () => refreshReviews();
-    window.addEventListener("review-added", handler);
-    return () => window.removeEventListener("review-added", handler);
-  }, [refreshReviews]);
-
-  const handlePrev = () => {
-    swiperRef.current?.slidePrev();
-  };
-
-  const handleNext = async () => {
-    const swiper = swiperRef.current;
-    if (!swiper) return;
-
-    // If not yet at the last slide, just slide forward
-    if (!swiper.isEnd) {
-      swiper.slideNext();
-      return;
-    }
-
-    // At the end of loaded slides — check if there are more pages to fetch
-    const nextPage = loadedPages.length + 1;
-    if (nextPage <= totalPages) {
-      await fetchPage(nextPage);
-      // After state update + re-render, slide to the new slide
-      setTimeout(() => swiper.slideNext(), 50);
-    }
-  };
-
-  const handleAddReview = () => {
-    if (!isAuthenticated) {
-      router.push("/auth-prompt");
-    } else {
-      router.push(`/add-review?locationId=${locationId}`);
-    }
-  };
-
-  return (
-    <section className={styles.section}>
-      <div className={styles.header}>
-        <h2 className={styles.title}>Відгуки</h2>
-        <button className={styles.addButton} onClick={handleAddReview}>
-          Залишити відгук
-        </button>
-      </div>
-
-      {!ready && <p className={styles.loading}>Завантаження відгуків...</p>}
-      {ready && error && <p className={styles.error}>{error}</p>}
-      {ready && !error && reviews.length === 0 && (
-        <p className={styles.empty}>Відгуків поки немає. Будьте першим!</p>
-      )}
-
-      {ready && !error && reviews.length > 0 && (
-        <div className={styles.swiperContainer}>
-          <Swiper
-            // No key={page} — we never remount, slides animate smoothly
-            modules={[Navigation]}
-            slidesPerView={1}
-            spaceBetween={16}
-            speed={400} // smooth 400ms CSS transition
-            observer={true}
-            observeParents={true}
-            breakpoints={{
-              704: { slidesPerView: 2, spaceBetween: 24 },
-              1312: { slidesPerView: 3, spaceBetween: 24 },
-            }}
-            onSwiper={(swiper) => {
-              swiperRef.current = swiper;
-              setIsBeginning(swiper.isBeginning);
-              setIsEnd(swiper.isEnd);
-            }}
-            onSlideChange={(swiper) => {
-              setIsBeginning(swiper.isBeginning);
-              setIsEnd(swiper.isEnd);
-            }}
-          >
-            {reviews.map((review) => (
-              <SwiperSlide key={review._id}>
-                <FeedBackCard
-                  userName={review.userName}
-                  description={review.description}
-                  rate={review.rate}
-                  locationType={review.locationType}
-                />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-
-          <div className={styles.controls}>
-            <button
-              className={styles.arrowBtn}
-              onClick={handlePrev}
-              disabled={isBeginning}
-              aria-label="Попередній відгук"
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 32 32"
-                fill="currentColor"
-              >
-                <path d="M15.643 1c0.171 0 0.318 0.053 0.482 0.217 0.165 0.172 0.217 0.326 0.217 0.498-0 0.174-0.053 0.322-0.217 0.486l-12.723 12.723h26.82c0.243 0 0.393 0.071 0.522 0.197 0.124 0.123 0.193 0.266 0.193 0.506s-0.069 0.383-0.193 0.506c-0.128 0.127-0.279 0.197-0.522 0.197h-26.82l12.711 12.709c0.165 0.165 0.221 0.319 0.223 0.502v0.002c0.001 0.133-0.028 0.25-0.111 0.369l-0.104 0.123c-0.16 0.162-0.306 0.214-0.484 0.213-0.189-0.002-0.346-0.062-0.512-0.227l-13.896-13.896c-0.106-0.108-0.158-0.193-0.182-0.25v-0.002c-0.030-0.073-0.047-0.153-0.047-0.248s0.017-0.173 0.047-0.244v-0.002c0.024-0.057 0.075-0.142 0.182-0.25l13.9-13.9c0.181-0.174 0.34-0.229 0.514-0.229z" />
-              </svg>
-            </button>
-            <button
-              className={styles.arrowBtn}
-              onClick={handleNext}
-              disabled={isEnd && loadedPages.length >= totalPages}
-              aria-label="Наступний відгук"
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 32 32"
-                fill="currentColor"
-              >
-                <path d="M16.289 1c0.142 0.001 0.266 0.035 0.389 0.121l0.123 0.105 13.896 13.896c0.106 0.108 0.158 0.193 0.182 0.25v0.002c0.030 0.073 0.047 0.153 0.047 0.248s-0.017 0.173-0.047 0.244v-0.002c-0.024 0.057-0.075 0.142-0.182 0.25l-13.908 13.896c-0.183 0.181-0.34 0.232-0.506 0.232-0.161-0-0.306-0.049-0.473-0.221l-0.010-0.010-0.104-0.121c-0.084-0.119-0.113-0.235-0.113-0.365s0.030-0.245 0.113-0.363l0.104-0.121 12.723-12.723h-26.82c-0.244-0-0.389-0.070-0.51-0.191h-0.002c-0.122-0.122-0.191-0.268-0.191-0.512s0.070-0.39 0.191-0.512h0.002c0.121-0.121 0.266-0.191 0.51-0.191h26.82l-12.711-12.711c-0.123-0.123-0.186-0.24-0.211-0.369l-0.012-0.135c-0.002-0.18 0.050-0.327 0.211-0.488l0.002-0.002c0.16-0.161 0.307-0.214 0.486-0.213z" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      )}
-    </section>
-  );
-}
-</file>
-
 <file path="app/api/locations/route.ts">
 import { NextRequest, NextResponse } from "next/server";
 import { isAxiosError } from "axios";
@@ -6261,20 +6687,240 @@ const { data } = await api.post("/locations", body, {
 }
 </file>
 
-<file path="app/page.tsx">
-import HeroBlock from "@/components/HeroBlock/HeroBlock";
-import AdvantagesBlock from "@/components/AdvantagesBlock/AdvantagesBlock";
-import PopularLocationsBlock from "@/components/PopularLocationsBlock/PopularLocationsBlock";
-import ReviewsBlock from "@/components/ReviewsBlock/ReviewsBlock";
+<file path="components/ReviewsSection/ReviewsSection.tsx">
+"use client";
 
-export default function HomePage() {
+import { useState, useEffect, useCallback, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+import type { Swiper as SwiperType } from "swiper";
+import "swiper/css";
+
+import { FeedBackCard } from "@/components/FeedBackCard/FeedBackCard";
+import { Feedback } from "@/types/feedBackCard";
+import clientApi from "@/lib/api/clientApi";
+import styles from "./ReviewsSection.module.css";
+
+const LIMIT = 3;
+
+type Props = {
+  locationId: string;
+  isAuthenticated?: boolean;
+  initialReviews?: Feedback[];
+};
+
+export default function ReviewsSection({
+  locationId,
+  isAuthenticated = false,
+  initialReviews = [],
+}: Props) {
+  const [reviews, setReviews] = useState<Feedback[]>(initialReviews);
+  const [loadedPages, setLoadedPages] = useState<number[]>([1]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isFetching, setIsFetching] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [ready, setReady] = useState(initialReviews.length > 0);
+  const [isBeginning, setIsBeginning] = useState(true);
+  const [isEnd, setIsEnd] = useState(false);
+  const swiperRef = useRef<SwiperType | null>(null);
+  const router = useRouter();
+
+  const fetchPage = useCallback(
+    async (pageNum: number) => {
+      if (isFetching) return;
+      try {
+        setIsFetching(true);
+        setError(null);
+        const { data } = await clientApi.get(
+          `/locations/${locationId}/feedbacks`,
+          { params: { page: pageNum, limit: LIMIT } },
+        );
+        const newReviews: Feedback[] = data.data || data;
+        if (data.pagination) {
+          setTotalPages(data.pagination.totalPages ?? 1);
+        }
+        setReviews((prev) => {
+          const existingIds = new Set(prev.map((r) => r._id));
+          const unique = newReviews.filter((r) => !existingIds.has(r._id));
+          return [...prev, ...unique];
+        });
+        setLoadedPages((prev) => [...prev, pageNum]);
+      } catch {
+        setError("Не вдалося завантажити відгуки");
+      } finally {
+        setIsFetching(false);
+        setReady(true);
+      }
+    },
+    [locationId, isFetching],
+  );
+
+  const refreshReviews = useCallback(async () => {
+    try {
+      setError(null);
+      const { data } = await clientApi.get(
+        `/locations/${locationId}/feedbacks`,
+        { params: { page: 1, limit: LIMIT } },
+      );
+      const fresh: Feedback[] = data.data || data;
+      if (data.pagination) {
+        setTotalPages(data.pagination.totalPages ?? 1);
+      }
+      setReviews(fresh);
+      setLoadedPages([1]);
+      setTimeout(() => {
+        swiperRef.current?.slideTo(0, 300);
+      }, 50);
+    } catch {}
+  }, [locationId]);
+
+  useEffect(() => {
+    if (initialReviews.length === 0) {
+      fetchPage(1);
+    } else {
+      clientApi
+        .get(`/locations/${locationId}/feedbacks`, {
+          params: { page: 1, limit: LIMIT },
+        })
+        .then(({ data }) => {
+          if (data.pagination) {
+            setTotalPages(data.pagination.totalPages ?? 1);
+          }
+          const fresh: Feedback[] = data.data || data;
+          setReviews(fresh);
+        })
+        .catch(() => {});
+    }
+  }, [locationId]);
+
+  useEffect(() => {
+    const handler = () => refreshReviews();
+    window.addEventListener("review-added", handler);
+    return () => window.removeEventListener("review-added", handler);
+  }, [refreshReviews]);
+
+  const handlePrev = () => {
+    swiperRef.current?.slidePrev();
+  };
+
+  const handleNext = async () => {
+    const swiper = swiperRef.current;
+    if (!swiper) return;
+    if (!swiper.isEnd) {
+      swiper.slideNext();
+      return;
+    }
+    const nextPage = loadedPages.length + 1;
+    if (nextPage <= totalPages) {
+      await fetchPage(nextPage);
+      setTimeout(() => swiper.slideNext(), 50);
+    }
+  };
+
+  const handleAddReview = () => {
+    if (!isAuthenticated) {
+      router.push("/auth-prompt");
+    } else {
+      router.push(`/add-review?locationId=${locationId}`);
+    }
+  };
+
   return (
-    <main>
-      <HeroBlock />
-      <AdvantagesBlock />
-      <PopularLocationsBlock />
-      <ReviewsBlock />
-    </main>
+    <section className={styles.section}>
+      <div className={styles.header}>
+        <h2 className={styles.title}>Відгуки</h2>
+        <button className={styles.addButton} onClick={handleAddReview}>
+          Залишити відгук
+        </button>
+      </div>
+
+      {!ready && <p className={styles.loading}>Завантаження відгуків...</p>}
+      {ready && error && <p className={styles.error}>{error}</p>}
+      {ready && !error && reviews.length === 0 && (
+        <p className={styles.empty}>Відгуків поки немає. Будьте першим!</p>
+      )}
+
+      {ready && !error && reviews.length > 0 && (
+        <div className={styles.swiperContainer}>
+          <Swiper
+            modules={[Navigation]}
+            slidesPerView={1}
+            spaceBetween={16}
+            speed={400}
+            observer={true}
+            observeParents={true}
+            breakpoints={{
+              704: { slidesPerView: 2, spaceBetween: 24 },
+              1312: { slidesPerView: 3, spaceBetween: 24 },
+            }}
+            onSwiper={(swiper) => {
+              swiperRef.current = swiper;
+              setIsBeginning(swiper.isBeginning);
+              setIsEnd(swiper.isEnd);
+            }}
+            onSlideChange={(swiper) => {
+              setIsBeginning(swiper.isBeginning);
+              setIsEnd(swiper.isEnd);
+            }}
+          >
+            {reviews.map((review) => (
+              <SwiperSlide key={review._id}>
+                <FeedBackCard
+                  userName={review.userName}
+                  description={review.description}
+                  rate={review.rate}
+                  locationType={review.locationType}
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+
+          <div className={styles.controls}>
+            <button
+              className={styles.arrowBtn}
+              onClick={handlePrev}
+              disabled={isBeginning}
+              aria-label="Попередній відгук"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M7.82129 0.5C7.90691 0.500059 7.98026 0.526325 8.0625 0.608398C8.1448 0.694341 8.1709 0.771445 8.1709 0.857422C8.17081 0.944261 8.14426 1.01826 8.0625 1.10059L1.70117 7.46191H15.1113C15.2328 7.46193 15.3079 7.49726 15.3721 7.56055C15.4342 7.6219 15.4687 7.69362 15.4688 7.81348C15.4688 7.93333 15.4342 8.00505 15.3721 8.06641C15.3079 8.12969 15.2328 8.16502 15.1113 8.16504H1.70117L8.05664 14.5205V14.5195C8.1389 14.602 8.16719 14.6788 8.16797 14.7705V14.7715C8.16849 14.838 8.15383 14.8964 8.1123 14.9561L8.06055 15.0176C7.9806 15.0985 7.90742 15.1248 7.81836 15.124C7.72391 15.1231 7.6456 15.0931 7.5625 15.0107L0.614258 8.0625C0.561096 8.00833 0.5354 7.9662 0.523438 7.9375V7.93652C0.50833 7.90019 0.5 7.8601 0.5 7.8125C0.50003 7.76491 0.508641 7.72576 0.523438 7.69043V7.68945C0.535302 7.66099 0.560769 7.61862 0.614258 7.56445L7.56445 0.614258C7.65485 0.527034 7.73453 0.5 7.82129 0.5Z"
+                  fill="currentColor"
+                  stroke="currentColor"
+                />
+              </svg>
+            </button>
+            <button
+              className={styles.arrowBtn}
+              onClick={handleNext}
+              disabled={isEnd && loadedPages.length >= totalPages}
+              aria-label="Наступний відгук"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M8.14453 0.5C8.21548 0.500668 8.27733 0.517317 8.33887 0.560547L8.40039 0.613281L15.3486 7.56152C15.4018 7.61569 15.4275 7.65782 15.4395 7.68652V7.6875C15.4546 7.72385 15.4629 7.7639 15.4629 7.81152C15.4629 7.85913 15.4543 7.89825 15.4395 7.93359V7.93457C15.4276 7.96304 15.4022 8.00538 15.3486 8.05957L8.39453 15.0078C8.30318 15.0981 8.22456 15.124 8.1416 15.124C8.0609 15.1239 7.98874 15.0994 7.90527 15.0137L7.90039 15.0088L7.84863 14.9482C7.80653 14.8886 7.79201 14.8306 7.79199 14.7656C7.79199 14.701 7.80676 14.6433 7.84863 14.584L7.90039 14.5234L14.2617 8.16211H0.851562C0.729469 8.16207 0.657228 8.12693 0.59668 8.06641H0.595703C0.53483 8.0055 0.500002 7.93257 0.5 7.81055C0.5 7.68853 0.534835 7.6156 0.595703 7.55469H0.59668C0.657231 7.49416 0.729461 7.45902 0.851562 7.45898H14.2617L7.90625 1.10352C7.84494 1.04216 7.81315 0.983763 7.80078 0.918945L7.79492 0.851562C7.79401 0.761613 7.82017 0.688031 7.90039 0.607422L7.90137 0.606445C7.98151 0.525858 8.05487 0.499224 8.14453 0.5Z"
+                  fill="currentColor"
+                  stroke="currentColor"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+    </section>
   );
 }
 </file>
@@ -6369,7 +7015,18 @@ export const updateLocation = (id: string, data: unknown) =>
     "react-rating-stars-component": "^2.2.0",
     "react-spinners": "^0.17.0",
     "swiper": "^12.1.3",
-    "@tanstack/react-query": "^5.95.2",
+    "@tanstack/react-query": "^5.96.0",
+    "axios": "^1.14.0",
+    "formik": "^2.4.9",
+    "modern-normalize": "^3.0.1",
+    "next": "^15.0.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-hot-toast": "^2.6.0",
+    "react-rating-stars-component": "^2.2.0",
+    "react-spinners": "^0.17.0",
+    "swiper": "^12.1.3",
+    "@tanstack/react-query": "^5.96.0",
     "axios": "^1.14.0",
     "cloudinary": "^2.9.0",
     "cookie": "^1.1.1",

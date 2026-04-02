@@ -10,7 +10,6 @@ import { useMemo, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
-import "swiper/css";
 
 export default function PopularLocationsBlock() {
   const [isBeginning, setIsBeginning] = useState(true);
