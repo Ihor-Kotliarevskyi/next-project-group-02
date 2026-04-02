@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { createFeedback } from "@/lib/api/clientApi";
+import { useState, useEffect } from "react";
+import { createFeedback, getMe } from "@/lib/api/clientApi";
 import styles from "./AddReviewForm.module.css";
 
 interface AddReviewFormProps {
@@ -9,10 +9,16 @@ interface AddReviewFormProps {
   onSuccess: () => void;
 }
 
-export const AddReviewForm = ({ locationId, onSuccess }: AddReviewFormProps) => {
+export const AddReviewForm = ({
+  locationId,
+  onSuccess,
+}: AddReviewFormProps) => {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
-  const [errors, setErrors] = useState<{ rating?: string; comment?: string }>({});
+  const [userName, setUserName] = useState("Анонім");
+  const [errors, setErrors] = useState<{ rating?: string; comment?: string }>(
+    {},
+  );
   const [loading, setLoading] = useState(false);
 
   const validate = () => {
@@ -32,13 +38,21 @@ export const AddReviewForm = ({ locationId, onSuccess }: AddReviewFormProps) => 
     return Object.keys(newErrors).length === 0;
   };
 
+  useEffect(() => {
+    getMe()
+      .then((user) => {
+        if (user?.name) setUserName(user.name);
+      })
+      .catch(() => {});
+  }, []);
+
   const handleSubmit = async (e: { preventDefault(): void }) => {
     e.preventDefault();
     if (!validate()) return;
 
     try {
       setLoading(true);
-      await createFeedback(String(locationId), { rating, comment });
+      await createFeedback(String(locationId), { rating, comment, userName });
       onSuccess();
     } catch (error) {
       console.error("Помилка при відправці:", error);

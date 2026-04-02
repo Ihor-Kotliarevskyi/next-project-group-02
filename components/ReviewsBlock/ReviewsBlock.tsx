@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
@@ -11,12 +11,7 @@ import { Feedback } from "@/types/feedBackCard";
 import clientApi from "@/lib/api/clientApi";
 import styles from "./ReviewsBlock.module.css";
 
-// Known location IDs that have feedbacks — fetched directly, no loop needed
-const SEEDED_LOCATION_IDS = [
-  "68d568270e6bcc357e9833e8",
-  "68d568270e6bcc357e9833e9",
-  "68d568270e6bcc357e9833ea",
-];
+const MAX_REVIEWS = 9;
 
 export default function ReviewsBlock() {
   const [reviews, setReviews] = useState<Feedback[]>([]);
@@ -26,63 +21,54 @@ export default function ReviewsBlock() {
   const [isEnd, setIsEnd] = useState(false);
   const swiperRef = useRef<SwiperType | null>(null);
 
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        setLoading(true);
-        setError(null);
+  const fetchReviews = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-        const collected: Feedback[] = [];
+      // Fetch all locations, then collect their latest reviews
+      const locRes = await clientApi.get("/locations", {
+        params: { page: 1, limit: 20 },
+      });
+      const locations: { _id: string }[] = locRes.data?.data ?? [];
 
-        // First try the known seeded locations (fast path)
-        for (const id of SEEDED_LOCATION_IDS) {
-          if (collected.length >= 9) break;
-          try {
-            const fbRes = await clientApi.get(`/locations/${id}/feedbacks`, {
-              params: { page: 1, limit: 9 - collected.length },
-            });
-            const feedbacks: Feedback[] = fbRes.data?.data ?? [];
-            collected.push(...feedbacks);
-          } catch {
-            // skip
-          }
-        }
+      const collected: Feedback[] = [];
 
-        // If still empty, scan first 20 locations (fallback for when DB is fresh)
-        if (collected.length === 0) {
-          const locRes = await clientApi.get("/locations", {
-            params: { page: 1, limit: 20 },
+      for (const loc of locations) {
+        if (collected.length >= MAX_REVIEWS) break;
+        try {
+          const fbRes = await clientApi.get(`/locations/${loc._id}/feedbacks`, {
+            params: { page: 1, limit: MAX_REVIEWS - collected.length },
           });
-          const locations: { _id: string }[] = locRes.data?.data ?? [];
-
-          for (const loc of locations) {
-            if (collected.length >= 9) break;
-            try {
-              const fbRes = await clientApi.get(
-                `/locations/${loc._id}/feedbacks`,
-                { params: { page: 1, limit: 9 - collected.length } },
-              );
-              const feedbacks: Feedback[] = fbRes.data?.data ?? [];
-              collected.push(...feedbacks);
-            } catch (e) {
-              console.warn("Failed to fetch feedbacks for location " + loc._id + ":", e);
-            }
-          }
+          const feedbacks: Feedback[] = fbRes.data?.data ?? [];
+          collected.push(...feedbacks);
+        } catch {
+          // skip locations with no reviews
         }
-
-        const unique = Array.from(
-          new Map(collected.map((r) => [r._id, r])).values()
-        );
-        setReviews(unique);
-      } catch {
-        setError("Не вдалося завантажити відгуки");
-      } finally {
-        setLoading(false);
       }
-    };
 
-    fetchReviews();
+      const unique = Array.from(
+        new Map(collected.map((r) => [r._id, r])).values(),
+      );
+      setReviews(unique);
+    } catch {
+      setError("Не вдалося завантажити відгуки");
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  // Initial load
+  useEffect(() => {
+    fetchReviews();
+  }, [fetchReviews]);
+
+  // Re-fetch when a new review is submitted anywhere in the app
+  useEffect(() => {
+    const handler = () => fetchReviews();
+    window.addEventListener("review-added", handler);
+    return () => window.removeEventListener("review-added", handler);
+  }, [fetchReviews]);
 
   return (
     <section className={styles.section}>
@@ -100,6 +86,7 @@ export default function ReviewsBlock() {
             modules={[Navigation]}
             slidesPerView={1}
             spaceBetween={16}
+            speed={400}
             breakpoints={{
               704: { slidesPerView: 2, spaceBetween: 24 },
               1312: { slidesPerView: 3, spaceBetween: 24 },
@@ -153,7 +140,7 @@ export default function ReviewsBlock() {
                 viewBox="0 0 32 32"
                 fill="currentColor"
               >
-                <path d="M16.289 1c0.142 0.001 0.266 0.035 0.389 0.121l0.123 0.105 13.896 13.896c0.106 0.108 0.158 0.193 0.182 0.25v0.002c0.030 0.073 0.047 0.153 0.047 0.248s-0.017 0.173-0.047 0.244v0.002c-0.024 0.057-0.075 0.142-0.182 0.25l-13.908 13.896c-0.183 0.181-0.34 0.232-0.506 0.232-0.161-0-0.306-0.049-0.473-0.221l-0.010-0.010-0.104-0.121c-0.084-0.119-0.113-0.235-0.113-0.365s0.030-0.245 0.113-0.363l0.104-0.121 12.723-12.723h-26.82c-0.244-0-0.389-0.070-0.51-0.191h-0.002c-0.122-0.122-0.191-0.268-0.191-0.512s0.070-0.39 0.191-0.512h0.002c0.121-0.121 0.266-0.191 0.51-0.191h26.82l-12.711-12.711c-0.123-0.123-0.186-0.24-0.211-0.369l-0.012-0.135c-0.002-0.18 0.050-0.327 0.211-0.488l0.002-0.002c0.16-0.161 0.307-0.214 0.486-0.213z" />
+                <path d="M16.289 1c0.142 0.001 0.266 0.035 0.389 0.121l0.123 0.105 13.896 13.896c0.106 0.108 0.158 0.193 0.182 0.25v0.002c0.030 0.073 0.047 0.153 0.047 0.248s-0.017 0.173-0.047 0.244v-0.002c-0.024 0.057-0.075 0.142-0.182 0.25l-13.908 13.896c-0.183 0.181-0.34 0.232-0.506 0.232-0.161-0-0.306-0.049-0.473-0.221l-0.010-0.010-0.104-0.121c-0.084-0.119-0.113-0.235-0.113-0.365s0.030-0.245 0.113-0.363l0.104-0.121 12.723-12.723h-26.82c-0.244-0-0.389-0.070-0.51-0.191h-0.002c-0.122-0.122-0.191-0.268-0.191-0.512s0.070-0.39 0.191-0.512h0.002c0.121-0.121 0.266-0.191 0.51-0.191h26.82l-12.711-12.711c-0.123-0.123-0.186-0.24-0.211-0.369l-0.012-0.135c-0.002-0.18 0.050-0.327 0.211-0.488l0.002-0.002c0.16-0.161 0.307-0.214 0.486-0.213z" />
               </svg>
             </button>
           </div>
