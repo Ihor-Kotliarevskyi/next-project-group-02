@@ -101,8 +101,8 @@ const payload = {
 
   
   return (
-    <main>
-    <div className={css.locationForm}>
+    <section className={css.section}>
+      <div className={css.container}>
 
       <h1 className={css.locationFormTitle}>
         {isEdit ? "Редагування місця" : "Додавання нового місця"}
@@ -112,77 +112,77 @@ const payload = {
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
-          enableReinitialize
-
+        enableReinitialize
       >
-        {({ resetForm, setFieldValue, isSubmitting }) => (
-          <Form className={css.locationFormWrapper}>
-            {/* Фото */}
-            <div className={css.formGroup}>
-              <p className="location-form__label">Обкладинка</p>
+        
 
-              <input
-                id="fileInput"
-                type="file"
-                accept="image/jpeg, image/png"
-                hidden
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    setFieldValue("imageFile", file);
-                    setImagePreview(URL.createObjectURL(file));
-                  }
-                }}
-              />
+      {({ resetForm, setFieldValue, isSubmitting }) => (
+        <Form className={css.locationFormWrapper}>
+          {/* Фото */}
+          <div className={css.formGroup}>
+            <p className="location-form__label">Обкладинка</p>
 
-              <button
-                type="button"
-                className="location-form_upload-btn"
-                onClick={() =>
-                  document.getElementById("fileInput")?.click()
+            <input
+              id="fileInput"
+              type="file"
+              accept="image/jpeg, image/png"
+              hidden
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  setFieldValue("imageFile", file);
+                  setImagePreview(URL.createObjectURL(file));
                 }
-              >           
-               Завантажте фото
-              </button>
+              }}
+            />
 
-              {imagePreview && (
-                <img
-                  src={imagePreview}
-                  className="location-form_preview"
-                  alt="preview"
-                  width={120}
-                  style={{ display: "block", marginTop: 10 }}
-                />
-              )}
+            <button
+              type="button"
+              className="location-form_upload-btn"
+              onClick={() =>
+                document.getElementById("fileInput")?.click()
+              }
+              >
+                Завантажте фото
+            </button>
 
-              <ErrorMessage className="location-form__error" name="imageFile" component="div" />
-            </div>
-
-            {/* Назва */}
-            <div>
-              <label className="location-form__label" htmlFor="name">Назва місця</label>
-              <Field
-                id="name"
-                name="name"
-                placeholder="Введіть назву місця"
-                className="location-form__input"
+            {imagePreview && (
+              <img
+                src={imagePreview}
+                className="location-form_preview"
+                alt="preview"
+                width={120}
+                style={{ display: "block", marginTop: 10 }}
               />
-              <ErrorMessage className="location-form__error" name="name" component="div" />
-            </div>
+            )}
+            <ErrorMessage className="location-form__error" name="imageFile" component="div" />
+          </div>
 
-            {/* Тип */}
-            <div>
-              <label className="location-form__label" htmlFor="locationType">Тип місця</label>
-              <Field className="location-form__input" as="select" id="locationType" name="locationType">
-                <option value="">Оберіть тип місця</option>
+          {/* Назва */}
+          <div>
+            <label className="location-form__label" htmlFor="name">Назва місця</label>
+            <Field
+              id="name"
+              name="name"
+              placeholder="Введіть назву місця"
+              className="location-form__input"
+            />
+            <ErrorMessage className="location-form__error" name="name" component="div" />
+          </div>
+
+          {/* Тип */}
+          <div>
+            <label className="location-form__label" htmlFor="locationType">Тип місця</label>
+            <Field className="location-form__input" as="select" id="locationType" name="locationType">
+              <option value="">Оберіть тип місця</option>
                 {locationTypes.map((location, index) => (
-                 <option key={index} value={location}>
-                  {location}
-                </option>
-     ))}
-              </Field>
-              <ErrorMessage className="location-form__error" name="locationType" component="div" />
-            </div>
+                  <option key={index} value={location}>
+                    {location}
+                  </option>
+                ))}
+            </Field>
+            <ErrorMessage className="location-form__error" name="locationType" component="div" />
+          </div>
 
             {/* Регіон */}
             <div>
@@ -239,7 +239,7 @@ const payload = {
           </Form>
         )}
       </Formik>
-      </div>
-      </main>
+    </div>
+    </main>
   );
 }
