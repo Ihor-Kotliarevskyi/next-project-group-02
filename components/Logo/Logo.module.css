@@ -1,0 +1,21 @@
+.logoContainer {
+    width: 129px;
+    height: 36px;
+}
+.logoLink {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+.logoImg {
+    width: 24px;
+    height: 24px;
+}
+.logoText {
+    font-weight: 500;
+    font-size: 21px;
+    line-height: 100%;
+    letter-spacing: -0.01em;
+    color: #4C2613;
+    margin: 0;
+}
