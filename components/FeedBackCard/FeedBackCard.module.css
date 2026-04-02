@@ -6,6 +6,7 @@
     flex-direction: column;
     gap: 16px;
     min-height: 203px;
+    margin-bottom: 40px;
 }
 
 .stars {
