@@ -1,11 +1,11 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { createFeedback } from "@/lib/api/clientApi";
+import { createFeedback, getMe } from "@/lib/api/clientApi";
 import styles from "./AddReviewForm.module.css";
 
 const schema = Yup.object({
@@ -18,13 +18,17 @@ const schema = Yup.object({
 
 export default function AddReviewForm({ locationId }: { locationId: string }) {
   const router = useRouter();
-  const queryClient = useQueryClient();
+
+  const { data: me } = useQuery({ queryKey: ["me"], queryFn: getMe });
 
   const mutation = useMutation({
     mutationFn: (values: { rating: number; comment: string }) =>
-      createFeedback(locationId, values),
+      createFeedback(locationId, {
+        ...values,
+        userName: me?.name ?? "Анонім",
+      }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["reviews", locationId] });
+      window.dispatchEvent(new Event("review-added"));
       toast.success("Відгук додано!");
       router.back();
     },
@@ -48,7 +52,9 @@ export default function AddReviewForm({ locationId }: { locationId: string }) {
             <button
               key={s}
               type="button"
-              className={s <= formik.values.rating ? styles.starOn : styles.starOff}
+              className={
+                s <= formik.values.rating ? styles.starOn : styles.starOff
+              }
               onClick={() => formik.setFieldValue("rating", s)}
               aria-label={`${s} зірок`}
             >
