@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import css from "./Header.module.css";
 import Logo from "../Logo/Logo";
+import Image from "next/image";
 
 export default function Header() {
   const pathname = usePathname();
@@ -26,8 +27,10 @@ export default function Header() {
         {/* <Link href="/" className={css.logo} onClick={closeMenu}>
           Relax Map
         </Link> */}
+
         {/* onClick={closeMenu} */}
         <Logo />
+
         {/* Desktop nav */}
         <nav className={css.nav}>
           {navLinks.map(({ href, label }) => (
@@ -40,13 +43,14 @@ export default function Header() {
             </Link>
           ))}
         </nav>
+
         {/* Desktop auth */}
         <div className={css.auth}>
           {user ? (
             <>
               <Link href={`/profile/${user._id}`} className={css.profileLink}>
                 {user.avatarUrl ? (
-                  <img
+                  <Image
                     src={user.avatarUrl}
                     alt={user.name}
                     className={css.avatar}
