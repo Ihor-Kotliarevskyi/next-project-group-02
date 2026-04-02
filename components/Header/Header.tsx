@@ -16,7 +16,7 @@ export default function Header() {
 
   const navLinks = [
     { href: "/", label: "Головна" },
-    { href: "/locations", label: "Локації" },
+    { href: "/locations", label: "Місця відпочинку" },
   ];
 
   return (
@@ -76,7 +76,7 @@ export default function Header() {
             </>
           )}
         </div>
-
+        {/* </div> */}
         {/* Burger button */}
         <button
           type="button"
