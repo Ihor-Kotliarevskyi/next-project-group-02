@@ -11,7 +11,7 @@ export default function Logo({ onClick }: LogoProps) {
     <div className={css.logoContainer}>
       <Link href="/" onClick={onClick} className={css.logoLink}>
         <Image
-          src="/images/logo.png"
+          src="/images/map_search.png"
           alt="Relax Map logo"
           width={24}
           height={24}

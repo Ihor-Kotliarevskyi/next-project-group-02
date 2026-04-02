@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import css from "./Header.module.css";
 import Logo from "../Logo/Logo";
-import Image from 'next/image';
-
+import Logo from "../Logo/Logo";
 
 export default function Header() {
   const pathname = usePathname();
@@ -18,7 +18,7 @@ export default function Header() {
 
   const navLinks = [
     { href: "/", label: "Головна" },
-    { href: "/locations", label: "Локації" },
+    { href: "/locations", label: "Місця відпочинку" },
   ];
 
   return (
@@ -78,7 +78,7 @@ export default function Header() {
             </>
           )}
         </div>
-
+        {/* </div> */}
         {/* Burger button */}
         <button
           type="button"
