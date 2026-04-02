@@ -1,5 +1,6 @@
 import Link from "next/link";
 import css from "@/components/AuthComponent/AuthNav/Auth.module.css";
+import Logo from "@/components/Logo/Logo";
 
 export default function AuthLayout({
   children,
@@ -9,9 +10,7 @@ export default function AuthLayout({
   return (
     <>
       <header className={css.header}>
-        <Link href="/">
-          <h1 className={css.logo}>Relax Map</h1>
-        </Link>
+        <Logo />
       </header>
 
       <main className={css.content}>{children}</main>
