@@ -39,6 +39,7 @@
 
 .copy{
 margin-top: 0;
+padding-top: 32px;
 text-align: center;
 font-family: var(--font-family);
 font-weight: 400;
@@ -59,6 +60,10 @@ border-top: 1px solid var(--color-scheme-2-border);
 .logo:hover {
   color: var(--color-primary-hover);
 } */
+
+
+/* ─── Mobil ─── */
+
 
 
 /* ─── Tablet ─── */

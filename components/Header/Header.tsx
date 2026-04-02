@@ -26,8 +26,8 @@ export default function Header() {
         {/* <Link href="/" className={css.logo} onClick={closeMenu}>
           Relax Map
         </Link> */}
-        <Logo onClick={closeMenu} />
-
+        {/* onClick={closeMenu} */}
+        <Logo />
         {/* Desktop nav */}
         <nav className={css.nav}>
           {navLinks.map(({ href, label }) => (
@@ -40,7 +40,6 @@ export default function Header() {
             </Link>
           ))}
         </nav>
-
         {/* Desktop auth */}
         <div className={css.auth}>
           {user ? (

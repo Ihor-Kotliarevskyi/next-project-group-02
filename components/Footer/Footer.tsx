@@ -66,8 +66,10 @@ export default function Footer() {
         </div>
         <div className={css.copy}>
           <p>
-            © <time dateTime="2025">2025</time> Природні Мандри. Усі права
+            &copy; {new Date().getFullYear()} Природні Мандри. Усі права
             захищені.
+            {/* © <time dateTime="2025">2025</time>{" "} Природні Мандри. Усі права
+            захищені.*/}
           </p>
         </div>
       </div>
