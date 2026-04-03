@@ -60,24 +60,28 @@ export default function LocationList() {
 
   const locations = useMemo(() => {
     const allLocations =
-      data?.pages.flatMap((page) => page.locations as Location[]) ?? [];
+    data?.pages.flatMap((page) => page.locations as Location[]) ?? [];
 
-    const normalizedSearch = filters.search.trim().toLowerCase();
+  const uniqueLocations = Array.from(
+    new Map(allLocations.map((loc) => [loc._id, loc])).values()
+  );
 
-    const filteredLocations = normalizedSearch
-      ? allLocations.filter((location) => {
-          const locationName = location.name.toLowerCase();
-          const locationTypeLabel =
-            locationTypeLabels.get(location.locationType)?.toLowerCase() ?? "";
-          const locationTypeSlug = location.locationType.toLowerCase();
+  const normalizedSearch = filters.search.trim().toLowerCase();
 
-          return (
-            locationName.includes(normalizedSearch) ||
-            locationTypeLabel.includes(normalizedSearch) ||
-            locationTypeSlug.includes(normalizedSearch)
-          );
-        })
-      : allLocations;
+  const filteredLocations = normalizedSearch
+    ? uniqueLocations.filter((location) => {
+        const locationName = location.name.toLowerCase();
+        const locationTypeLabel =
+          locationTypeLabels.get(location.locationType)?.toLowerCase() ?? "";
+        const locationTypeSlug = location.locationType.toLowerCase();
+
+        return (
+          locationName.includes(normalizedSearch) ||
+          locationTypeLabel.includes(normalizedSearch) ||
+          locationTypeSlug.includes(normalizedSearch)
+        );
+      })
+    : uniqueLocations;
 
     if (filters.sort === "name") {
       return [...filteredLocations].sort((a, b) =>
