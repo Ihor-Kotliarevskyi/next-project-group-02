@@ -29,6 +29,14 @@ function dedupeReviews(reviews: Feedback[]): Feedback[] {
   return Array.from(uniqueReviews.values());
 }
 
+function sortByNewest(reviews: Feedback[]): Feedback[] {
+  return [...reviews].sort(
+    (a, b) =>
+      new Date(b.createdAt ?? 0).getTime() -
+      new Date(a.createdAt ?? 0).getTime(),
+  );
+}
+
 function extractPageReviews(payload: unknown): Feedback[] {
   if (Array.isArray(payload)) return dedupeReviews(payload as Feedback[]);
 
@@ -48,9 +56,12 @@ function extractTotalPages(payload: unknown): number | null {
     return null;
   }
 
-  const pagination = (payload as { pagination?: { totalPages?: number } }).pagination;
+  const pagination = (payload as { pagination?: { totalPages?: number } })
+    .pagination;
 
-  return typeof pagination?.totalPages === "number" ? pagination.totalPages : null;
+  return typeof pagination?.totalPages === "number"
+    ? pagination.totalPages
+    : null;
 }
 
 export default function ReviewsSection({
@@ -59,15 +70,17 @@ export default function ReviewsSection({
   initialReviews = [],
 }: Props) {
   const initialUniqueReviews = useMemo(
-    () => dedupeReviews(initialReviews),
-    [initialReviews]
+    () => sortByNewest(dedupeReviews(initialReviews)),
+    [initialReviews],
   );
   const [reviews, setReviews] = useState<Feedback[]>(initialUniqueReviews);
   const [loadedPages, setLoadedPages] = useState<number[]>(
-    initialUniqueReviews.length > 0 ? [1] : []
+    initialUniqueReviews.length > 0 ? [1] : [],
   );
   const [totalPages, setTotalPages] = useState<number | null>(
-    initialUniqueReviews.length > 0 && initialUniqueReviews.length < LIMIT ? 1 : null
+    initialUniqueReviews.length > 0 && initialUniqueReviews.length < LIMIT
+      ? 1
+      : null,
   );
   const [, setIsFetching] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -77,32 +90,38 @@ export default function ReviewsSection({
   const swiperRef = useRef<SwiperType | null>(null);
   const isFetchingRef = useRef(false);
   const loadedPagesRef = useRef<number[]>(
-    initialUniqueReviews.length > 0 ? [1] : []
+    initialUniqueReviews.length > 0 ? [1] : [],
   );
   const totalPagesRef = useRef<number | null>(
-    initialUniqueReviews.length > 0 && initialUniqueReviews.length < LIMIT ? 1 : null
+    initialUniqueReviews.length > 0 && initialUniqueReviews.length < LIMIT
+      ? 1
+      : null,
   );
   const router = useRouter();
 
-  const resetWithInitialReviews = useCallback((nextInitialReviews: Feedback[]) => {
-    const nextReviews = dedupeReviews(nextInitialReviews);
-    const nextLoadedPages = nextReviews.length > 0 ? [1] : [];
-    const nextTotalPages = nextReviews.length > 0 && nextReviews.length < LIMIT ? 1 : null;
+  const resetWithInitialReviews = useCallback(
+    (nextInitialReviews: Feedback[]) => {
+      const nextReviews = sortByNewest(dedupeReviews(nextInitialReviews));
+      const nextLoadedPages = nextReviews.length > 0 ? [1] : [];
+      const nextTotalPages =
+        nextReviews.length > 0 && nextReviews.length < LIMIT ? 1 : null;
 
-    setReviews(nextReviews);
-    setLoadedPages(nextLoadedPages);
-    setTotalPages(nextTotalPages);
-    setError(null);
-    setReady(nextReviews.length > 0);
-    loadedPagesRef.current = nextLoadedPages;
-    totalPagesRef.current = nextTotalPages;
+      setReviews(nextReviews);
+      setLoadedPages(nextLoadedPages);
+      setTotalPages(nextTotalPages);
+      setError(null);
+      setReady(nextReviews.length > 0);
+      loadedPagesRef.current = nextLoadedPages;
+      totalPagesRef.current = nextTotalPages;
 
-    if (swiperRef.current) {
-      swiperRef.current.slideTo(0, 0);
-      setIsBeginning(true);
-      setIsEnd(swiperRef.current.isEnd);
-    }
-  }, []);
+      if (swiperRef.current) {
+        swiperRef.current.slideTo(0, 0);
+        setIsBeginning(true);
+        setIsEnd(swiperRef.current.isEnd);
+      }
+    },
+    [],
+  );
 
   const fetchPage = useCallback(
     async (pageNum: number, options?: { replace?: boolean }) => {
@@ -128,12 +147,14 @@ export default function ReviewsSection({
         totalPagesRef.current = nextTotalPages;
 
         if (replace) {
-          const dedupedPage = dedupeReviews(nextPageReviews);
+          const dedupedPage = sortByNewest(nextPageReviews);
           setReviews(dedupedPage);
           setLoadedPages([pageNum]);
           loadedPagesRef.current = [pageNum];
         } else {
-          setReviews((prev) => dedupeReviews([...prev, ...nextPageReviews]));
+          setReviews((prev) =>
+            sortByNewest(dedupeReviews([...prev, ...nextPageReviews])),
+          );
           setLoadedPages((prev) => {
             if (prev.includes(pageNum)) return prev;
 
@@ -213,8 +234,7 @@ export default function ReviewsSection({
 
   const currentMaxLoadedPage =
     loadedPages.length > 0 ? Math.max(...loadedPages) : 0;
-  const hasMorePages =
-    totalPages === null || currentMaxLoadedPage < totalPages;
+  const hasMorePages = totalPages === null || currentMaxLoadedPage < totalPages;
 
   return (
     <section className={styles.section}>
@@ -241,8 +261,8 @@ export default function ReviewsSection({
             observer={true}
             observeParents={true}
             breakpoints={{
-              704: { slidesPerView: 2, spaceBetween: 24 },
-              1312: { slidesPerView: 3, spaceBetween: 24 },
+              768: { slidesPerView: 2, spaceBetween: 24 },
+              1440: { slidesPerView: 3, spaceBetween: 24 },
             }}
             onSwiper={(swiper) => {
               swiperRef.current = swiper;
