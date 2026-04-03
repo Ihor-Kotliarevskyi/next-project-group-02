@@ -147,7 +147,7 @@ export default function ReviewsSection({
         totalPagesRef.current = nextTotalPages;
 
         if (replace) {
-          const dedupedPage = sortByNewest(dedupeReviews(nextPageReviews));
+          const dedupedPage = sortByNewest(nextPageReviews);
           setReviews(dedupedPage);
           setLoadedPages([pageNum]);
           loadedPagesRef.current = [pageNum];
