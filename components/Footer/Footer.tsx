@@ -5,8 +5,8 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer>
-      <div className={css.footer}>
+    <footer className={css.footer}>
+      <div className={css.footerContainer}>
         <div className={css.inner}>
           <Logo />
           <ul className={css.socials}>
@@ -55,21 +55,25 @@ export default function Footer() {
               </Link>
             </li>
           </ul>
+
           <ul className={css.footerNav}>
             <li className={css.items}>
-              <Link href="/">Головна</Link>
+              <Link href="/" className={css.itemsLink}>
+                Головна
+              </Link>
             </li>
             <li className={css.items}>
-              <Link href="/locations">Місця відпочинку</Link>
+              <Link href="/locations" className={css.itemsLink}>
+                Місця відпочинку
+              </Link>
             </li>
           </ul>
         </div>
+        <hr className={css.line} />
         <div className={css.copy}>
           <p>
             &copy; {new Date().getFullYear()} Природні Мандри. Усі права
             захищені.
-            {/* © <time dateTime="2025">2025</time>{" "} Природні Мандри. Усі права
-            захищені.*/}
           </p>
         </div>
       </div>
