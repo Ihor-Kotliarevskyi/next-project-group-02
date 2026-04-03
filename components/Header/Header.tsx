@@ -6,8 +6,7 @@ import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import css from "./Header.module.css";
 import Logo from "../Logo/Logo";
-import Image from 'next/image';
-
+import Image from "next/image";
 
 export default function Header() {
   const pathname = usePathname();
@@ -18,7 +17,7 @@ export default function Header() {
 
   const navLinks = [
     { href: "/", label: "Головна" },
-    { href: "/locations", label: "Локації" },
+    { href: "/locations", label: "Місця відпочинку" },
   ];
 
   return (
@@ -28,7 +27,9 @@ export default function Header() {
         {/* <Link href="/" className={css.logo} onClick={closeMenu}>
           Relax Map
         </Link> */}
-        <Logo onClick={closeMenu} />
+
+        {/* onClick={closeMenu} */}
+        <Logo />
 
         {/* Desktop nav */}
         <nav className={css.nav}>
@@ -78,7 +79,7 @@ export default function Header() {
             </>
           )}
         </div>
-
+        {/* </div> */}
         {/* Burger button */}
         <button
           type="button"
