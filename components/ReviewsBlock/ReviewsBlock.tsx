@@ -25,7 +25,6 @@ export default function ReviewsBlock() {
       setLoading(true);
       setError(null);
 
-      // Fetch all locations, then collect their latest reviews
       const locRes = await clientApi.get("/locations", {
         params: { page: 1, limit: 20 },
       });
@@ -41,15 +40,18 @@ export default function ReviewsBlock() {
           });
           const feedbacks: Feedback[] = fbRes.data?.data ?? [];
           collected.push(...feedbacks);
-        } catch {
-          // skip locations with no reviews
-        }
+        } catch {}
       }
 
       const unique = Array.from(
         new Map(collected.map((r) => [r._id, r])).values(),
       );
-      setReviews(unique);
+      const sorted = unique.sort(
+        (a, b) =>
+          new Date(b.createdAt ?? 0).getTime() -
+          new Date(a.createdAt ?? 0).getTime(),
+      );
+      setReviews(sorted);
     } catch {
       setError("Не вдалося завантажити відгуки");
     } finally {
@@ -57,12 +59,10 @@ export default function ReviewsBlock() {
     }
   }, []);
 
-  // Initial load
   useEffect(() => {
     fetchReviews();
   }, [fetchReviews]);
 
-  // Re-fetch when a new review is submitted anywhere in the app
   useEffect(() => {
     const handler = () => fetchReviews();
     window.addEventListener("review-added", handler);
@@ -87,8 +87,8 @@ export default function ReviewsBlock() {
             spaceBetween={16}
             speed={400}
             breakpoints={{
-              704: { slidesPerView: 2, spaceBetween: 24 },
-              1312: { slidesPerView: 3, spaceBetween: 24 },
+              768: { slidesPerView: 2, spaceBetween: 24 },
+              1440: { slidesPerView: 3, spaceBetween: 24 },
             }}
             onSwiper={(swiper) => {
               swiperRef.current = swiper;

@@ -160,8 +160,8 @@ export default function ReviewsSection({
             observer={true}
             observeParents={true}
             breakpoints={{
-              704: { slidesPerView: 2, spaceBetween: 24 },
-              1312: { slidesPerView: 3, spaceBetween: 24 },
+              768: { slidesPerView: 2, spaceBetween: 24 },
+              1440: { slidesPerView: 3, spaceBetween: 24 },
             }}
             onSwiper={(swiper) => {
               swiperRef.current = swiper;

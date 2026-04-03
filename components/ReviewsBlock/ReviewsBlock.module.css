@@ -62,21 +62,17 @@
     font-size: 15px;
 }
 
-@media (min-width: 704px) {
+@media (min-width: 768px) {
     .section {
         padding: 64px 32px;
     }
-
-    /* .swiper-wrapper {
-         column-gap: 24px;
-    } */
 
     .title {
         font-size: 44px;
     }
 }
 
-@media (min-width: 1312px) {
+@media (min-width: 1440px) {
     .section {
         padding: 72px 64px;
     }
