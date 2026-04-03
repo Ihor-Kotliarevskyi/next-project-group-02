@@ -1,31 +1,13 @@
 .page {
   width: min(100%, 1440px);
   margin: 0 auto;
-  padding: 24px 16px 56px;
-}
-
-.backLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 20px;
-  color: #8a5338;
-  font-size: 14px;
-  font-weight: 600;
-  transition: opacity 0.2s ease;
-}
-
-.backLink:hover {
-  opacity: 0.72;
-  cursor: pointer;
+  padding: 32px 20px
 }
 
 .card {
   display: grid;
   gap: 16px;
-  border-radius: 12px;
   overflow: hidden;
-  background: #ffe5d9;
 }
 
 .imageWrap {
@@ -39,15 +21,21 @@
 
 .content {
   display: grid;
-  gap: 16px;
-  padding: 16px;
+  gap: 12px;
+  
 }
 
 .ratingRow {
+  
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: #4e2f21;
+  gap: 12px;
+  width: 160px;
+  color: #1B391B;
+  
+}
+.stars {
+display: flex;
 }
 
 .meta {
@@ -56,13 +44,13 @@
 }
 
 .type {
-  color: #6d5147;
+  color: #1B391B;
   font-size: 14px;
   line-height: 1.2;
 }
 
 .title {
-  color: #4e2f21;
+  color: #1B391B;
   font-size: 32px;
   font-weight: 800;
   line-height: 1.05;
@@ -71,27 +59,35 @@
 .details {
   display: grid;
   gap: 8px;
-  color: #6d5147;
+  color: #1B391B;
   font-size: 14px;
   line-height: 1.5;
 }
 
 .details strong {
-  color: #3d261c;
+  color: #1B391B;
+  font-size: 18px;
 }
 
+
 .description {
-  color: #4b352e;
+  color: #1B391B;
   font-size: 15px;
   line-height: 1.7;
+  padding-top: 20;
 }
 
 .notFound {
   padding: 40px 16px;
   text-align: center;
-  color: #4e2f21;
+  color: #1B391B;
 }
 
+.authorLink {
+    color: #6f8864;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
 @media (min-width: 375px) {
   .imageWrap {
     min-height: 280px;
@@ -100,54 +96,160 @@
 
 @media (min-width: 768px) {
   .page {
-    padding: 32px 32px 64px;
+    padding: 32px;
   }
 
   .card {
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-    align-items: stretch;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    background: transparent;
+    border-radius: 0;
+    overflow: visible;
   }
 
   .imageWrap {
-    min-height: 100%;
+    min-height: 0;
+    height: 520px;
+    border-radius: 20px;
+    overflow: hidden;
   }
 
   .content {
-    gap: 20px;
-    padding: 24px;
+    gap: 18px;
+    padding: 0;
   }
 
   .title {
-    font-size: 42px;
+    color: #274628;
+    font-size: 58px;
+    font-weight: 800;
+    line-height: 1.06;
+    letter-spacing: -0.03em;
   }
 
   .details {
-    font-size: 15px;
+    gap: 8px;
+    font-size: 16px;
+    line-height: 1.45;
   }
 
   .description {
+    margin-top: 4px;
     font-size: 16px;
+    line-height: 1.7;
+  }
+
+  .ratingRow {
+    gap: 10px;
+    color: #2f261f;
+    font-size: 16px;
+  }
+
+  .details p {
+    margin: 0;
+  }
+
+  
+
+  .notFound {
+    padding: 72px 24px;
+    font-size: 18px;
   }
 }
 
 @media (min-width: 1440px) {
   .page {
-    padding: 48px 64px 72px;
+    width: min(100%, 1440px);
+    padding: 44px 80px 88px;
+  }
+
+  .card {
+    grid-template-columns: 440px 760px;
+    column-gap: 68px;
+    row-gap: 0;
+    align-items: start;
+    justify-content: center;
+    background: transparent;
+    border-radius: 0;
+    overflow: visible;
+  }
+
+  .imageWrap {
+    grid-column: 2;
+    grid-row: 1;
+    width: 100%;
+    min-height: 0;
+    height: 520px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(61, 38, 28, 0.08);
   }
 
   .content {
-    padding: 32px;
+    grid-column: 1;
+    grid-row: 1;
+    max-width: 440px;
+    width: 100%;
+    gap: 18px;
+    margin: 0 auto;
+    padding: 62px 0 0;
+    align-content: start;
+  }
+
+  .ratingRow {
+    gap: 10px;
+    color: #26210f;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
   }
 
   .title {
-    font-size: 52px;
-  }
-
-  .type {
-    font-size: 16px;
+    max-width: 420px;
+    color: #274628;
+    font-size: 56px;
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
   }
 
   .details {
+    gap: 10px;
+    color: #364133;
     font-size: 16px;
+    line-height: 1.45;
+  }
+
+  .details p {
+    margin: 0;
+  }
+
+  .details strong {
+    color: #1d241d;
+    font-weight: 700;
+  }
+
+  .authorLink {
+    color: #6f8864;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: opacity 0.2s ease;
+  }
+
+  .authorLink:hover {
+    opacity: 0.75;
+  }
+
+  .description {
+    margin-top: 122px;
+    max-width: 440px;
+    color: #5f564f;
+    font-size: 16px;
+    line-height: 1.72;
+  }
+
+  .notFound {
+    padding: 96px 0;
+    font-size: 18px;
   }
 }
