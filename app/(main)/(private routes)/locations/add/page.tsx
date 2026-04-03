@@ -3,8 +3,10 @@ import { getRegionsServer, getLocationTypesServer } from "@/lib/api/serverApi";
 
 export default async function Page() {
 
-  const regions = await getRegionsServer();
-  const locationTypes = await getLocationTypesServer();
+  const [regions, locationTypes] = await Promise.all([
+    getRegionsServer(),
+    getLocationTypesServer(),
+  ]);
 
   return <LocationForm regions={regions} locationTypes={locationTypes}  />;
 }
