@@ -54,7 +54,7 @@ font-weight: 400;
 font-size: 16px;
 line-height: 150%;
 color: var(--color-scheme-2-text);
-border-top: 1px solid var(--color-scheme-2-border) ;
+border-top: 1px solid var(--color-scheme-2-border);
 }
 
 .itemsLink {
