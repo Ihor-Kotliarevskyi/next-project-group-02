@@ -7,7 +7,7 @@ import "modern-normalize";
 import "./globals.css";
 
 const montserrat = Montserrat({
-  variable: "--font-manrope",
+  variable: "--font-montserrat",
   subsets: ["latin", "cyrillic"],
   display: "swap",
 });

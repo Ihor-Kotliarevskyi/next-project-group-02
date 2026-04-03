@@ -25,6 +25,7 @@ export default function LocationCard({
         <Image
           src={image}
           alt={name}
+          loading="eager"
           fill
           sizes="(min-width: 1440px) 389px, (min-width: 768px) calc((100vw - 88px) / 2), 100vw"
           className={styles.image}

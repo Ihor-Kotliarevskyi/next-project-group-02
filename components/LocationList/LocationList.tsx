@@ -126,10 +126,7 @@ export default function LocationList() {
                   _id={location._id}
                   image={location.image}
                   name={location.name}
-                  locationType={
-                    locationTypeLabels.get(location.locationType) ??
-                    "Тип не вказано"
-                  }
+                  locationType={location.locationType}
                   rate={location.rate}
                 />
               ))
