@@ -190,7 +190,7 @@ export default async function LocationPage({ params }: PageProps) {
               <strong>Тип локації:</strong> {locationTypeLabels[location.locationType as string] ?? location.locationType}
             </p>
             <p>
-              <strong>Автор статті:</strong>
+              <strong>Автор статті:</strong>{" "}
               {ownerId ? (
                 <Link href={`/profile/${ownerId}`} className={styles.authorLink}>
                   {ownerName}
