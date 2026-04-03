@@ -5,6 +5,8 @@ import { useLocationStore } from '@/lib/store/locationStore';
 import LocationCard from '@/components/LocationCard/LocationCard';
 import css from './ProfileLocationList.module.css';
 import { Location } from '@/types/location';
+import { getLocationTypes } from '@/lib/api/clientApi';
+import { useQuery } from '@tanstack/react-query';
 
 interface ProfileLocationListProps {
   locations: Location[];
@@ -44,6 +46,27 @@ export default function ProfileLocationList({
     return <p className={css.loader}>Завантаження...</p>;
   }
 
+  const { data: locationTypes = [] } = useQuery<
+    {
+      slug: string;
+      type: string;
+    }[]
+  >({
+    queryKey: ['locationTypes'],
+    queryFn: getLocationTypes,
+  });
+
+  const locationTypeLabels = useMemo(
+    () =>
+      new Map(
+        locationTypes.map((locationType: { slug: string; type: string }) => [
+          locationType.slug,
+          locationType.type,
+        ]),
+      ),
+    [locationTypes],
+  );
+
   return (
     <section className={css.section}>
       <div className={css.container}>
@@ -57,7 +80,10 @@ export default function ProfileLocationList({
                 _id={location._id}
                 image={location.image}
                 name={location.name}
-                locationType={location.locationType}
+                locationType={
+                    locationTypeLabels.get(location.locationType) ??
+                    location.locationType
+                  }
                 rate={location.rate}
               />
             ))

@@ -42,12 +42,12 @@ export const createLocationServer = async (location: NewLocation): Promise<Locat
   return data;
 };
 
-export const getRegionsServer = async (): Promise<string[]> => {
+export const getRegionsServer = async (): Promise<{ slug: string; region: string }[]> => {
   const { data } = await api.get('/categories/regions');
-  return data.data.map((item: { region: string }) => item.region);
+  return data.data;
 };
 
-export const getLocationTypesServer = async (): Promise<string[]> => {
+export const getLocationTypesServer = async (): Promise<{ slug: string; type: string }[]> => {
   const { data } = await api.get('/categories/types');
-  return data.data.map((item: { type: string }) => item.type);
+  return data.data;
 };

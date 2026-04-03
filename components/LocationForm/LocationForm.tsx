@@ -20,8 +20,8 @@ type Props = {
     description: string;
     image?: string;
   };
-  regions: string[];
-  locationTypes: string[];
+  regions: { slug: string; region: string }[];
+  locationTypes: { slug: string; type: string }[];
 };
 
 export default function LocationForm({ initialData, id, regions, locationTypes }: Props) {
@@ -175,8 +175,8 @@ const payload = {
               <Field className="location-form__input" as="select" id="locationType" name="locationType">
                 <option value="">Оберіть тип місця</option>
                 {locationTypes.map((location, index) => (
-                 <option key={index} value={location}>
-                  {location}
+                 <option key={index} value={location.slug}>
+                  {location.type}
                 </option>
      ))}
               </Field>
@@ -189,8 +189,8 @@ const payload = {
               <Field className="location-form__input" as="select" id="region" name="region">
                 <option value="">Оберіть регіон</option>
                 {regions.map((region, index) => (
-                  <option key={index} value={region}>
-                    {region} 
+                  <option key={index} value={region.slug}>
+                    {region.region}
                   </option>
               ))}
               </Field>

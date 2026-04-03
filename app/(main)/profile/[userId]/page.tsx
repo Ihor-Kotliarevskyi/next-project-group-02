@@ -48,14 +48,26 @@ export default async function Profile({ params }: Props) {
 
         <div className={css.locations}>
           {isLocations ? (
+            <>
             <ProfileLocationList locations={locations} isLoading={false} />
+            <div className={css.wraper}>
+              <div className={css.noLocationsMessage}>
+                <p className={css.text}>Поділіться своєю локацією!</p>
+                <button type="button" className={css.buttonAdd}>
+                  <Link href="/locations/add" className={css.locationAddLink}>
+                    Додати локацію
+                  </Link>
+                </button>
+              </div>
+            </div>
+            </>
           ) : (
             <div className={css.wraper}>
               <div className={css.noLocationsMessage}>
-                <p className={css.text}>Цей користувач ще не ділився локаціями </p>
+                <p className={css.text}>Ви ще нічого не публікували, поділіться своєю першою локацією!</p>
                 <button type="button" className={css.buttonAdd}>
                   <Link href="/locations/add" className={css.locationAddLink}>
-                    Назад до локацій
+                    Додати локацію
                   </Link>
                 </button>
               </div>
