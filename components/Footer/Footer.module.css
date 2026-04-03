@@ -10,7 +10,7 @@
 margin: 48px 20px;
 }
 
-.footer Link {
+.footer a {
   color: var(--color-scheme-2-text);
   text-decoration: none;
 }
