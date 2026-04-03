@@ -44,16 +44,21 @@ The content is organized as follows:
 app/(auth routes)/layout.tsx
 app/(auth routes)/login/page.tsx
 app/(auth routes)/register/page.tsx
+app/(main)/(private routes)/location/add/page.tsx
+app/(main)/(private routes)/location/edit/[id]/page.tsx
+app/(main)/(private routes)/locations/[locationId]/edit/page.tsx
+app/(main)/(private routes)/locations/add/page.tsx
+app/(main)/(private routes)/profile/edit/page.tsx
+app/(main)/(private routes)/profile/page.tsx
+app/(main)/(private routes)/profile/ProfilePage.module.css
 app/(main)/layout.tsx
 app/(main)/locations/[locationId]/page.module.css
 app/(main)/locations/[locationId]/page.tsx
 app/(main)/locations/page.tsx
 app/(main)/page.tsx
-app/(private routes)/locations/add/page.tsx
+app/(main)/profile/[userId]/page.tsx
+app/(main)/profile/[userId]/ProfilePage.module.css
 app/(private routes)/locations/edit/[id]/page.tsx
-app/(private routes)/profile/[userId]/edit/page.tsx
-app/(private routes)/profile/[userId]/page.tsx
-app/(private routes)/profile/[userId]/ProfilePage.module.css
 app/@modal/(.)add-review/AddReviewForm.module.css
 app/@modal/(.)add-review/AddReviewForm.tsx
 app/@modal/(.)add-review/page.tsx
@@ -115,7 +120,6 @@ components/LocationForm/LocationForm.module.css
 components/LocationForm/LocationForm.tsx
 components/LocationList/LocationList.module.css
 components/LocationList/LocationList.tsx
-components/Logo/Logo.module.css
 components/Logo/Logo.tsx
 components/Modal/Modal.module.css
 components/Modal/Modal.tsx
@@ -123,6 +127,8 @@ components/Pagination/Pagination.module.css
 components/Pagination/Pagination.tsx
 components/PopularLocationsBlock/PopularLocationsBlock.module.css
 components/PopularLocationsBlock/PopularLocationsBlock.tsx
+components/ProfileLocationList/ProfileLocationList.module.css
+components/ProfileLocationList/ProfileLocationList.tsx
 components/ReviewsBlock/ReviewsBlock.module.css
 components/ReviewsBlock/ReviewsBlock.tsx
 components/ReviewsSection/ReviewsSection.module.css
@@ -144,6 +150,7 @@ lib/validation/locationSchema.ts
 next.config.ts
 package.json
 proxy.ts
+public/company_logo.svg
 public/exit.svg
 public/file.svg
 public/globe.svg
@@ -158,7 +165,9 @@ public/images/logo.png
 public/images/map_search.png
 public/images/x.png
 public/images/youtube.png
+public/map_search.svg
 public/next.svg
+public/relax_map.svg
 public/vercel.svg
 public/window.svg
 react-rating-stars-component.d.ts
@@ -170,12 +179,832 @@ types/locationTypes.ts
 types/region.ts
 types/region.type
 types/user.ts
+utils/labels.ts
 utils/uploadImage.ts
 utils/validationSchemas.ts
 </directory_structure>
 
 <files>
 This section contains the contents of the repository's files.
+
+<file path="app/(main)/(private routes)/location/add/page.tsx">
+import LocationForm from "@/components/LocationForm/LocationForm";
+import { getRegionsServer, getLocationTypesServer } from "@/lib/api/serverApi";
+
+export default async function Page() {
+
+  const regions = await getRegionsServer();
+  const locationTypes = await getLocationTypesServer();
+
+  return <LocationForm regions={regions} locationTypes={locationTypes}  />;
+}
+</file>
+
+<file path="app/(main)/(private routes)/location/edit/[id]/page.tsx">
+import LocationForm from "@/components/LocationForm/LocationForm";
+import { getRegionsServer, getLocationTypesServer, getLocationByIdServer } from "@/lib/api/serverApi";
+
+type Props = {
+  params: Promise<{ id: string }>;
+};
+
+export default async function Page({ params }: Props) {
+  const { id } = await params;
+
+  const [regions, types, location] = await Promise.all([
+    getRegionsServer(),
+    getLocationTypesServer(),
+    getLocationByIdServer(id),
+  ]);
+
+  return (
+    <LocationForm
+      id={id}
+      initialData={location}
+      regions={regions}
+      locationTypes={types}
+    />
+  );
+}
+</file>
+
+<file path="app/(main)/(private routes)/locations/[locationId]/edit/page.tsx">
+import LocationForm from "@/components/LocationForm/LocationForm";
+import { getRegionsServer, getLocationTypesServer, getLocationByIdServer } from "@/lib/api/serverApi";
+
+type Props = {
+  params: Promise<{ locationId: string }>;
+};
+
+export default async function Page({ params }: Props) {
+  const { locationId } = await params;
+  const [regions, types, location] = await Promise.all([
+    getRegionsServer(),
+    getLocationTypesServer(),
+    getLocationByIdServer(locationId),
+  ]);
+
+  return (
+    <LocationForm
+      id={locationId}
+      initialData={location}
+      regions={regions}
+      locationTypes={types}
+    />
+  );
+}
+</file>
+
+<file path="app/(main)/(private routes)/locations/add/page.tsx">
+import LocationForm from "@/components/LocationForm/LocationForm";
+import { getRegionsServer, getLocationTypesServer } from "@/lib/api/serverApi";
+
+export default async function Page() {
+
+  const [regions, locationTypes] = await Promise.all([
+    getRegionsServer(),
+    getLocationTypesServer(),
+  ]);
+
+  return <LocationForm regions={regions} locationTypes={locationTypes}  />;
+}
+</file>
+
+<file path="app/(main)/(private routes)/profile/edit/page.tsx">
+export default function Page() {
+    return <div>Profile Page</div>;
+}
+</file>
+
+<file path="app/(main)/(private routes)/profile/page.tsx">
+import Image from 'next/image';
+import Link from 'next/link';
+import { getMeServer, getUserLocationsServer } from '@/lib/api/serverApi';
+import ProfileLocationList from '@/components/ProfileLocationList/ProfileLocationList';
+import css from './ProfilePage.module.css';
+
+async function Profile() {
+  const user = await getMeServer();
+
+  const data = await getUserLocationsServer(user._id);
+  const locations = data.data;
+  const isLocations = locations.length !== 0 ? true : false;
+  const isEditable = true;
+
+  return (
+    <main className={css.mainContent}>
+      <div className={css.profile}>
+        <div className={css.header}>
+          <Image
+            src={user.avatarUrl || user.avatar}
+            alt="User Avatar"
+            width={120}
+            height={120}
+            className={css.avatar}
+          />
+          <div className={css.profileInfo}>
+            <h2 className={css.userName}>{user.name}</h2>
+            <p className={css.articles}>Статей: {user.articlesAmount}</p>
+          </div>
+        </div>
+
+        <div className={css.locations}>
+          {isLocations ? (
+            <ProfileLocationList locations={locations} isLoading={false} />
+          ) : (
+            <div className={css.wraper}>
+              <div className={css.noLocationsMessage}>
+                <p className={css.text}>
+                  Ви ще нічого не публікували, поділіться своєю першою локацією!
+                </p>
+                <button type="button" className={css.buttonAdd}>
+                  <Link href="/locations/add" className={css.locationAddLink}>
+                    Поділитися локацією
+                  </Link>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </main>
+  );
+}
+
+export default Profile;
+</file>
+
+<file path="app/(main)/(private routes)/profile/ProfilePage.module.css">
+.mainContent {
+  background: var(--color-bg-page);
+  display: flex;
+  justify-content: center;
+}
+
+.profile,
+.header,
+.locations {
+  width: 100%;
+  max-width: 375px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 32px 20px 0px;
+}
+
+.avatar {
+  width: 145px;
+  height: 145px;
+  margin-bottom: 24px;
+  border-radius: 50%;
+}
+
+.profileInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.userName {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 130%;
+  letter-spacing: -0.01em;
+  color: #000;
+}
+
+.articles {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 150%;
+  color: #000;
+}
+
+.locations {
+  padding: 32px 20px 64px;
+}
+
+.wraper {
+  max-width: 335px;
+  max-height: 195px;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-bg-locationCard);
+  border-radius: 24px;
+  padding: 20px;
+}
+
+.text {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 140%;
+  letter-spacing: -0.01em;
+  color: #000;
+  margin-bottom: 32px;
+}
+
+.buttonAdd {
+  border: 1px solid var(--color-button-primary);
+  border-radius: 6px;
+  background: var(--color-button-primary);
+  padding: 6px 12px;
+  max-height: 48px;
+  width: 100%;
+  height: 100%;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+  cursor: pointer;
+}
+
+.buttonAdd:hover {
+  background: var(--color-slider-normal);
+}
+
+.buttonAdd:hover .locationAddLink {
+  color: black;
+}
+
+.locationAddLink {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 150%;
+  color: #fff7f2;
+  transition: color 0.3s ease;
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .profile,
+  .header,
+  .locations {
+    max-width: 768px;
+  }
+
+  .header {
+    flex-direction: row;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .avatar {
+    margin: 0;
+  }
+
+  .profileInfo {
+    align-items: start;
+  }
+
+  .locations {
+    padding: 32px 32px 64px;
+  }
+
+  .wraper {
+    padding: 40px 32px;
+    max-width: 533px;
+    max-height: 210px;
+  }
+
+  .buttonAdd {
+    max-width: 204px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .profile,
+  .header,
+  .locations {
+    max-width: 1440px;
+  }
+
+  .header {
+    padding: 48px 64px 0px;
+  }
+
+  .userName {
+    font-size: 32px;
+  }
+
+  .articles {
+    font-size: 20px;
+  }
+
+  .locations {
+    padding: 48px 64px 72px;
+  }
+
+  .wraper {
+    max-height: 268px;
+  }
+
+  .text {
+    font-size: 26px;
+  }
+
+  .buttonAdd {
+    max-width: 249px;
+  }
+}
+</file>
+
+<file path="app/(main)/profile/[userId]/page.tsx">
+import { redirect } from 'next/navigation';
+import Image from 'next/image';
+import { getUserByIdServer, getUserLocationsServer } from '@/lib/api/serverApi';
+import css from './ProfilePage.module.css';
+import Link from 'next/link';
+import ProfileLocationList from '@/components/ProfileLocationList/ProfileLocationList';
+import { Location } from '@/types/location';
+
+type Props = {
+  params: Promise<{ userId: string }>;
+};
+
+export default async function Profile({ params }: Props) {
+  const { userId } = await params;
+
+  let user;
+  let locations: Location[] = [];
+
+  try {
+    const [userData, locationsData] = await Promise.all([
+      getUserByIdServer(userId),
+      getUserLocationsServer(userId),
+    ]);
+    user = userData;
+    locations = locationsData.data;
+  } catch {
+    redirect('/login');
+  }
+
+  const isLocations = locations.length !== 0 ? true : false;
+
+  return (
+    <main className={css.mainContent}>
+      <div className={css.profile}>
+        <div className={css.header}>
+          <Image
+            src={user.avatarUrl ? user.avatarUrl : user.avatar}
+            alt="User Avatar"
+            width={120}
+            height={120}
+            className={css.avatar}
+          />
+          <div className={css.profileInfo}>
+            <h2 className={css.userName}>{user.name}</h2>
+            <p className={css.articles}>Статей: {user.articlesAmount}</p>
+          </div>
+        </div>
+
+        <div className={css.locations}>
+          {isLocations ? (
+            <ProfileLocationList locations={locations} isLoading={false} />
+          ) : (
+            <div className={css.wraper}>
+              <div className={css.noLocationsMessage}>
+                <p className={css.text}>Цей користувач ще не ділився локаціями </p>
+                <button type="button" className={css.buttonAdd}>
+                  <Link href="/locations/add" className={css.locationAddLink}>
+                    Назад до локацій
+                  </Link>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </main>
+  );
+}
+</file>
+
+<file path="app/(main)/profile/[userId]/ProfilePage.module.css">
+.mainContent {
+  background: var(--color-bg-page);
+  display: flex;
+  justify-content: center;
+}
+
+.profile,
+.header,
+.locations {
+  width: 100%;
+  max-width: 375px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 32px 20px 0px;
+}
+
+.avatar {
+  width: 145px;
+  height: 145px;
+  margin-bottom: 24px;
+  border-radius: 50%;
+}
+
+.profileInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.userName {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 130%;
+  letter-spacing: -0.01em;
+  color: #000;
+}
+
+.articles {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 150%;
+  color: #000;
+}
+
+.locations {
+  padding: 32px 20px 64px;
+}
+
+.wraper {
+  max-width: 335px;
+  max-height: 195px;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-bg-locationCard);
+  border-radius: 24px;
+  padding: 20px;
+}
+
+.text {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 140%;
+  letter-spacing: -0.01em;
+  color: #000;
+  margin-bottom: 32px;
+}
+
+.buttonAdd {
+  border: 1px solid var(--color-button-primary);
+  border-radius: 6px;
+  background: var(--color-button-primary);
+  padding: 6px 12px;
+  max-height: 48px;
+  width: 100%;
+  height: 100%;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+  cursor: pointer;
+}
+
+.buttonAdd:hover {
+  background: var(--color-slider-normal);
+}
+
+.buttonAdd:hover .locationAddLink {
+  color: black;
+}
+
+.locationAddLink {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 150%;
+  color: #fff7f2;
+  transition: color 0.3s ease;
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .profile,
+  .header,
+  .locations {
+    max-width: 768px;
+  }
+
+  .header {
+    flex-direction: row;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .avatar {
+    margin: 0;
+  }
+
+  .profileInfo {
+    align-items: start;
+  }
+
+  .locations {
+    padding: 32px 32px 64px;
+  }
+
+  .wraper {
+    padding: 40px 32px;
+    max-width: 533px;
+    max-height: 210px;
+  }
+
+  .buttonAdd {
+    max-width: 204px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .profile,
+  .header,
+  .locations {
+    max-width: 1440px;
+  }
+
+  .header {
+    padding: 48px 64px 0px;
+  }
+
+  .userName {
+    font-size: 32px;
+  }
+
+  .articles {
+    font-size: 20px;
+  }
+
+  .locations {
+    padding: 48px 64px 72px;
+  }
+
+  .wraper {
+    max-height: 268px;
+  }
+
+  .text {
+    font-size: 26px;
+  }
+
+  .buttonAdd {
+    max-width: 249px;
+  }
+}
+</file>
+
+<file path="components/ProfileLocationList/ProfileLocationList.module.css">
+/* Прибираємо помилку гідратації, навіть якщо селектор був порожній */
+.section {
+  display: block;
+  width: 100%;
+}
+
+.container {
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.loader,
+.empty {
+  width: 100%;
+  padding: 48px 0;
+  text-align: center;
+  color: #6b5d56;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 32px;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 160px;
+  min-height: 48px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  border: 1px solid var(--color-button-primary);
+  border-radius: 10px;
+  background-color: var(--color-button-primary);
+  color: #fff7f2;
+  font-size: 16px;
+  line-height: 1.2;
+  font-weight: 400;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.button:hover,
+.button:focus-visible {
+  cursor: pointer;
+  background: var(--color-slider-normal);
+  color: black;
+}
+
+.button:disabled {
+  cursor: wait;
+  opacity: 0.8;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .wrapper {
+    margin-top: 40px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .wrapper {
+    margin-top: 48px;
+  }
+}
+
+/*  */
+</file>
+
+<file path="components/ProfileLocationList/ProfileLocationList.tsx">
+'use client';
+
+import { useMemo, useState } from 'react';
+import { useLocationStore } from '@/lib/store/locationStore';
+import LocationCard from '@/components/LocationCard/LocationCard';
+import css from './ProfileLocationList.module.css';
+import { Location } from '@/types/location';
+
+interface ProfileLocationListProps {
+  locations: Location[];
+  isLoading?: boolean;
+}
+
+export default function ProfileLocationList({
+  locations = [],
+  isLoading = false,
+}: ProfileLocationListProps) {
+  const { filters } = useLocationStore();
+
+  const [visibleCount, setVisibleCount] = useState(6);
+
+  const sortedLocations = useMemo(() => {
+    const list = [...locations];
+    if (filters.sort === 'name') {
+      return list.sort((a, b) => a.name.localeCompare(b.name, 'uk'));
+    }
+    if (filters.sort === 'rate') {
+      return list.sort((a, b) => b.rate - a.rate);
+    }
+    return list;
+  }, [locations, filters.sort]);
+
+  const displayedLocations = useMemo(() => {
+    return sortedLocations.slice(0, visibleCount);
+  }, [sortedLocations, visibleCount]);
+
+  const handleLoadMore = () => {
+    setVisibleCount(prev => prev + 6);
+  };
+
+  const hasMore = visibleCount < sortedLocations.length;
+
+  if (isLoading) {
+    return <p className={css.loader}>Завантаження...</p>;
+  }
+
+  return (
+    <section className={css.section}>
+      <div className={css.container}>
+        <div className={css.grid}>
+          {displayedLocations.length === 0 ? (
+            <p className={css.empty}>Нічого не знайдено</p>
+          ) : (
+            displayedLocations.map((location: Location) => (
+              <LocationCard
+                key={location._id}
+                _id={location._id}
+                image={location.image}
+                name={location.name}
+                locationType={location.locationType}
+                rate={location.rate}
+              />
+            ))
+          )}
+        </div>
+
+        {hasMore && (
+          <div className={css.wrapper}>
+            <button
+              className={css.button}
+              onClick={handleLoadMore}
+              disabled={isLoading}
+              type="button"
+            >
+              {isLoading ? 'Завантаження...' : 'Показати ще'}
+            </button>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+</file>
+
+<file path="public/company_logo.svg">
+<svg width="129" height="36" viewBox="0 0 129 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M7.29993 27.0937C6.96476 27.2635 6.63876 27.2502 6.32193 27.0537C6.0051 26.8572 5.84668 26.5644 5.84668 26.1752V12.2252C5.84668 11.9767 5.91818 11.7551 6.06118 11.5604C6.20401 11.3659 6.39143 11.223 6.62343 11.1317L11.1554 9.53769C11.3421 9.46702 11.5307 9.43586 11.7212 9.44419C11.9117 9.45252 12.1003 9.48369 12.2869 9.53769L18.2962 11.6447L22.6924 9.88169C23.0276 9.72852 23.3546 9.74602 23.6734 9.93419C23.9923 10.1224 24.1517 10.411 24.1517 10.8002V19.3327C24.1517 19.5814 24.0698 19.7823 23.9062 19.9354C23.7427 20.0888 23.5386 20.1654 23.2939 20.1654C23.0494 20.1654 22.8463 20.0846 22.6847 19.9229C22.5232 19.7614 22.4424 19.5564 22.4424 19.3077V11.7279L18.9462 13.0599V17.2702C18.9462 17.4869 18.8753 17.666 18.7337 17.8077C18.592 17.9494 18.4128 18.0202 18.1962 18.0202C17.9795 18.0202 17.8003 17.9494 17.6587 17.8077C17.517 17.666 17.4462 17.4869 17.4462 17.2702V13.0599L12.5462 11.4099V24.1289C12.5462 24.3943 12.4747 24.6357 12.3317 24.8532C12.1888 25.0707 11.9951 25.2271 11.7504 25.3224L7.29993 27.0937ZM7.54993 25.2414L11.0462 23.9094V11.4099L7.54993 12.5669V25.2414ZM19.4479 25.1344C20.0533 25.1344 20.5637 24.9238 20.9792 24.5024C21.3945 24.0809 21.6002 23.5774 21.5962 22.9919C21.5922 22.3866 21.3845 21.8772 20.9732 21.4637C20.5617 21.0504 20.0533 20.8437 19.4479 20.8437C18.8424 20.8437 18.3339 21.0504 17.9224 21.4637C17.5111 21.8772 17.3054 22.3866 17.3054 22.9919C17.3054 23.5974 17.5111 24.1059 17.9224 24.5172C18.3339 24.9287 18.8424 25.1344 19.4479 25.1344ZM19.4479 26.8437C18.3866 26.8437 17.4793 26.467 16.7262 25.7137C15.9728 24.9605 15.5962 24.0533 15.5962 22.9919C15.5962 21.9141 15.9728 21.0017 16.7262 20.2547C17.4793 19.5079 18.3866 19.1344 19.4479 19.1344C20.5258 19.1344 21.4381 19.5079 22.1849 20.2547C22.9319 21.0017 23.3054 21.9141 23.3054 22.9919C23.3054 23.3674 23.2543 23.7252 23.1519 24.0652C23.0496 24.4052 22.9024 24.7232 22.7104 25.0192L24.6944 27.0094C24.8478 27.1628 24.9254 27.345 24.9274 27.5562C24.9294 27.7674 24.8518 27.9496 24.6944 28.1029C24.5453 28.2561 24.365 28.3327 24.1537 28.3327C23.9425 28.3327 23.7583 28.2561 23.6012 28.1029L21.6229 26.1557C21.3063 26.385 20.9688 26.557 20.6104 26.6717C20.2521 26.7864 19.8646 26.8437 19.4479 26.8437Z" fill="black"/>
+<path d="M32.1912 24V11.4392H37.0899C38.1905 11.4392 39.1296 11.6127 39.9071 11.9596C40.6847 12.3065 41.2828 12.809 41.7015 13.4669C42.1202 14.1249 42.3296 14.9084 42.3296 15.8176C42.3296 16.7267 42.1202 17.5103 41.7015 18.1682C41.2828 18.8142 40.6847 19.3106 39.9071 19.6576C39.1296 20.0045 38.1905 20.1779 37.0899 20.1779H33.1782L33.9856 19.3525V24H32.1912ZM40.589 24L37.395 19.4422H39.315L42.5449 24H40.589ZM33.9856 19.532L33.1782 18.6527H37.0361C38.1845 18.6527 39.0518 18.4075 39.638 17.917C40.2361 17.4146 40.5352 16.7148 40.5352 15.8176C40.5352 14.9204 40.2361 14.2265 39.638 13.7361C39.0518 13.2456 38.1845 13.0004 37.0361 13.0004H33.1782L33.9856 12.1032V19.532ZM49.0328 24.1077C48.0159 24.1077 47.1187 23.8983 46.3412 23.4796C45.5756 23.0609 44.9774 22.4867 44.5468 21.757C44.1281 21.0273 43.9187 20.1899 43.9187 19.2449C43.9187 18.2998 44.1221 17.4624 44.5288 16.7327C44.9475 16.003 45.5157 15.4348 46.2335 15.028C46.9632 14.6093 47.7827 14.4 48.6918 14.4C49.6129 14.4 50.4264 14.6034 51.1322 15.0101C51.838 15.4168 52.3883 15.991 52.783 16.7327C53.1898 17.4624 53.3931 18.3178 53.3931 19.2987C53.3931 19.3705 53.3871 19.4542 53.3752 19.5499C53.3752 19.6456 53.3692 19.7353 53.3572 19.8191H45.2645V18.5809H52.46L51.7602 19.0116C51.7722 18.4015 51.6466 17.8572 51.3834 17.3787C51.1202 16.9002 50.7554 16.5293 50.2888 16.2662C49.8342 15.991 49.3019 15.8535 48.6918 15.8535C48.0937 15.8535 47.5613 15.991 47.0948 16.2662C46.6283 16.5293 46.2634 16.9062 46.0002 17.3966C45.737 17.8751 45.6055 18.4254 45.6055 19.0475V19.3346C45.6055 19.9686 45.749 20.5368 46.0361 21.0392C46.3352 21.5297 46.7479 21.9125 47.2742 22.1877C47.8006 22.4628 48.4047 22.6004 49.0866 22.6004C49.6488 22.6004 50.1572 22.5047 50.6118 22.3133C51.0784 22.1219 51.4851 21.8348 51.832 21.452L52.783 22.5645C52.3524 23.0669 51.8141 23.4497 51.1681 23.7129C50.5341 23.9761 49.8223 24.1077 49.0328 24.1077ZM55.6057 24V10.6856H57.3283V24H55.6057ZM66.3415 24V21.9903L66.2518 21.6135V18.1862C66.2518 17.4564 66.0365 16.8942 65.6058 16.4994C65.1871 16.0927 64.5531 15.8893 63.7037 15.8893C63.1415 15.8893 62.5912 15.985 62.0529 16.1764C61.5146 16.3559 61.06 16.6011 60.6892 16.9121L59.9714 15.6202C60.4619 15.2254 61.048 14.9263 61.7299 14.723C62.4237 14.5077 63.1475 14.4 63.9011 14.4C65.2051 14.4 66.2099 14.717 66.9157 15.351C67.6215 15.985 67.9744 16.954 67.9744 18.2579V24H66.3415ZM63.2193 24.1077C62.5135 24.1077 61.8914 23.988 61.3531 23.7488C60.8267 23.5095 60.42 23.1806 60.1329 22.7619C59.8458 22.3312 59.7022 21.8467 59.7022 21.3084C59.7022 20.794 59.8219 20.3275 60.0611 19.9088C60.3123 19.4901 60.7131 19.1551 61.2634 18.9039C61.8256 18.6527 62.5793 18.5271 63.5243 18.5271H66.5389V19.7652H63.5961C62.7348 19.7652 62.1546 19.9088 61.8555 20.1959C61.5565 20.483 61.4069 20.8299 61.4069 21.2366C61.4069 21.7032 61.5923 22.08 61.9632 22.3671C62.334 22.6422 62.8484 22.7798 63.5064 22.7798C64.1523 22.7798 64.7146 22.6363 65.1931 22.3492C65.6836 22.0621 66.0365 21.6434 66.2518 21.0931L66.5927 22.2774C66.3654 22.8396 65.9647 23.2882 65.3905 23.6232C64.8163 23.9462 64.0925 24.1077 63.2193 24.1077ZM69.6011 24L73.6924 18.6886L73.6744 19.5678L69.7806 14.4897H71.7006L74.6793 18.4015H73.9436L76.9223 14.4897H78.8064L74.8587 19.6037L74.8767 18.6886L79.0038 24H77.0479L73.9077 19.837L74.6075 19.9447L71.5211 24H69.6011ZM85.5948 24V11.4392H87.0662L92.7006 20.9316H91.9111L97.4737 11.4392H98.9451L98.963 24H97.2404L97.2225 14.1488H97.6352L92.6827 22.4748H91.8572L86.8688 14.1488H87.3174V24H85.5948ZM108.206 24V21.9903L108.116 21.6135V18.1862C108.116 17.4564 107.901 16.8942 107.47 16.4994C107.051 16.0927 106.417 15.8893 105.568 15.8893C105.006 15.8893 104.455 15.985 103.917 16.1764C103.379 16.3559 102.924 16.6011 102.553 16.9121L101.835 15.6202C102.326 15.2254 102.912 14.9263 103.594 14.723C104.288 14.5077 105.012 14.4 105.765 14.4C107.069 14.4 108.074 14.717 108.78 15.351C109.486 15.985 109.838 16.954 109.838 18.2579V24H108.206ZM105.083 24.1077C104.378 24.1077 103.755 23.988 103.217 23.7488C102.691 23.5095 102.284 23.1806 101.997 22.7619C101.71 22.3312 101.566 21.8467 101.566 21.3084C101.566 20.794 101.686 20.3275 101.925 19.9088C102.176 19.4901 102.577 19.1551 103.127 18.9039C103.69 18.6527 104.443 18.5271 105.388 18.5271H108.403V19.7652H105.46C104.599 19.7652 104.019 19.9088 103.72 20.1959C103.421 20.483 103.271 20.8299 103.271 21.2366C103.271 21.7032 103.456 22.08 103.827 22.3671C104.198 22.6422 104.712 22.7798 105.37 22.7798C106.016 22.7798 106.579 22.6363 107.057 22.3492C107.548 22.0621 107.901 21.6434 108.116 21.0931L108.457 22.2774C108.229 22.8396 107.829 23.2882 107.255 23.6232C106.68 23.9462 105.957 24.1077 105.083 24.1077ZM117.889 24.1077C117.1 24.1077 116.376 23.9282 115.718 23.5693C115.072 23.1985 114.552 22.6542 114.157 21.9364C113.774 21.2187 113.583 20.3215 113.583 19.2449C113.583 18.1682 113.768 17.271 114.139 16.5533C114.522 15.8355 115.036 15.2972 115.682 14.9383C116.34 14.5794 117.076 14.4 117.889 14.4C118.822 14.4 119.648 14.6034 120.365 15.0101C121.083 15.4168 121.651 15.985 122.07 16.7148C122.489 17.4325 122.698 18.2759 122.698 19.2449C122.698 20.2138 122.489 21.0632 122.07 21.7929C121.651 22.5226 121.083 23.0908 120.365 23.4976C119.648 23.9043 118.822 24.1077 117.889 24.1077ZM112.847 27.4811V14.4897H114.498V17.0557L114.39 19.2628L114.569 21.4699V27.4811H112.847ZM117.746 22.6004C118.356 22.6004 118.9 22.4628 119.378 22.1877C119.869 21.9125 120.252 21.5237 120.527 21.0213C120.814 20.5069 120.958 19.9148 120.958 19.2449C120.958 18.563 120.814 17.9768 120.527 17.4863C120.252 16.9839 119.869 16.5951 119.378 16.32C118.9 16.0449 118.356 15.9073 117.746 15.9073C117.147 15.9073 116.603 16.0449 116.113 16.32C115.634 16.5951 115.251 16.9839 114.964 17.4863C114.689 17.9768 114.552 18.563 114.552 19.2449C114.552 19.9148 114.689 20.5069 114.964 21.0213C115.251 21.5237 115.634 21.9125 116.113 22.1877C116.603 22.4628 117.147 22.6004 117.746 22.6004Z" fill="#4C2613"/>
+</svg>
+</file>
+
+<file path="public/map_search.svg">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M4.30384 20.5937C3.96867 20.7635 3.64267 20.7502 3.32584 20.5537C3.009 20.3572 2.85059 20.0644 2.85059 19.6752V5.72519C2.85059 5.47669 2.92209 5.25511 3.06509 5.06044C3.20792 4.86594 3.39534 4.72302 3.62734 4.63169L8.15934 3.03769C8.346 2.96702 8.53459 2.93586 8.72509 2.94419C8.91559 2.95252 9.10417 2.98369 9.29084 3.03769L15.3001 5.14469L19.6963 3.38169C20.0315 3.22852 20.3585 3.24602 20.6773 3.43419C20.9962 3.62236 21.1556 3.91102 21.1556 4.30019V12.8327C21.1556 13.0814 21.0738 13.2823 20.9101 13.4354C20.7466 13.5888 20.5425 13.6654 20.2978 13.6654C20.0533 13.6654 19.8503 13.5846 19.6886 13.4229C19.5271 13.2614 19.4463 13.0564 19.4463 12.8077V5.22794L15.9501 6.55994V10.7702C15.9501 10.9869 15.8793 11.166 15.7376 11.3077C15.5959 11.4494 15.4168 11.5202 15.2001 11.5202C14.9834 11.5202 14.8043 11.4494 14.6626 11.3077C14.5209 11.166 14.4501 10.9869 14.4501 10.7702V6.55994L9.55009 4.90994V17.6289C9.55009 17.8943 9.47859 18.1357 9.33559 18.3532C9.19275 18.5707 8.999 18.7271 8.75434 18.8224L4.30384 20.5937ZM4.55384 18.7414L8.05009 17.4094V4.90994L4.55384 6.06694V18.7414ZM16.4518 18.6344C17.0572 18.6344 17.5676 18.4238 17.9831 18.0024C18.3984 17.5809 18.6041 17.0774 18.6001 16.4919C18.5961 15.8866 18.3884 15.3772 17.9771 14.9637C17.5656 14.5504 17.0572 14.3437 16.4518 14.3437C15.8463 14.3437 15.3378 14.5504 14.9263 14.9637C14.515 15.3772 14.3093 15.8866 14.3093 16.4919C14.3093 17.0974 14.515 17.6059 14.9263 18.0172C15.3378 18.4287 15.8463 18.6344 16.4518 18.6344ZM16.4518 20.3437C15.3905 20.3437 14.4833 19.967 13.7301 19.2137C12.9768 18.4605 12.6001 17.5533 12.6001 16.4919C12.6001 15.4141 12.9768 14.5017 13.7301 13.7547C14.4833 13.0079 15.3905 12.6344 16.4518 12.6344C17.5297 12.6344 18.442 13.0079 19.1888 13.7547C19.9358 14.5017 20.3093 15.4141 20.3093 16.4919C20.3093 16.8674 20.2582 17.2252 20.1558 17.5652C20.0535 17.9052 19.9063 18.2232 19.7143 18.5192L21.6983 20.5094C21.8517 20.6628 21.9293 20.845 21.9313 21.0562C21.9333 21.2674 21.8557 21.4496 21.6983 21.6029C21.5492 21.7561 21.3689 21.8327 21.1576 21.8327C20.9464 21.8327 20.7623 21.7561 20.6051 21.6029L18.6268 19.6557C18.3102 19.885 17.9727 20.057 17.6143 20.1717C17.256 20.2864 16.8685 20.3437 16.4518 20.3437Z" fill="black"/>
+</svg>
+</file>
+
+<file path="public/relax_map.svg">
+<svg width="91" height="17" viewBox="0 0 91 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M-0.000163452 13.3145V0.753693H4.89853C5.99909 0.753693 6.93816 0.927152 7.71573 1.27407C8.4933 1.62098 9.09143 2.12341 9.51013 2.78136C9.92882 3.4393 10.1382 4.22286 10.1382 5.13202C10.1382 6.04118 9.92882 6.82473 9.51013 7.48267C9.09143 8.12865 8.4933 8.6251 7.71573 8.97202C6.93816 9.31894 5.99909 9.49239 4.89853 9.49239H0.986753L1.79423 8.66697V13.3145H-0.000163452ZM8.3976 13.3145L5.20358 8.75669H7.12358L10.3535 13.3145H8.3976ZM1.79423 8.84641L0.986753 7.96716H4.8447C5.99311 7.96716 6.8604 7.72192 7.44657 7.23146C8.0447 6.72903 8.34377 6.02921 8.34377 5.13202C8.34377 4.23482 8.0447 3.54099 7.44657 3.05052C6.8604 2.56005 5.99311 2.31482 4.8447 2.31482H0.986753L1.79423 1.41762V8.84641ZM16.8413 13.4221C15.8245 13.4221 14.9273 13.2128 14.1498 12.7941C13.3841 12.3754 12.786 11.8012 12.3554 11.0715C11.9367 10.3417 11.7273 9.50436 11.7273 8.55931C11.7273 7.61426 11.9307 6.77688 12.3374 6.04716C12.7561 5.31744 13.3243 4.74921 14.0421 4.34248C14.7718 3.92379 15.5913 3.71444 16.5004 3.71444C17.4215 3.71444 18.235 3.91781 18.9408 4.32454C19.6466 4.73127 20.1969 5.30547 20.5916 6.04716C20.9984 6.77688 21.2017 7.6322 21.2017 8.61314C21.2017 8.68492 21.1957 8.76865 21.1838 8.86436C21.1838 8.96006 21.1778 9.04978 21.1658 9.13351H13.0731V7.89538H20.2686L19.5688 8.32604C19.5808 7.71594 19.4552 7.17164 19.192 6.69314C18.9288 6.21463 18.564 5.84379 18.0974 5.58061C17.6428 5.30547 17.1105 5.1679 16.5004 5.1679C15.9023 5.1679 15.3699 5.30547 14.9034 5.58061C14.4369 5.84379 14.072 6.22061 13.8088 6.71108C13.5456 7.18959 13.4141 7.73987 13.4141 8.36192V8.64903C13.4141 9.28305 13.5576 9.85127 13.8447 10.3537C14.1438 10.8442 14.5565 11.227 15.0828 11.5021C15.6092 11.7773 16.2133 11.9148 16.8952 11.9148C17.4574 11.9148 17.9658 11.8191 18.4204 11.6277C18.887 11.4363 19.2937 11.1492 19.6406 10.7664L20.5916 11.8789C20.161 12.3814 19.6227 12.7642 18.9767 13.0274C18.3427 13.2905 17.6309 13.4221 16.8413 13.4221ZM23.4143 13.3145V4.80381e-05H25.1369V13.3145H23.4143ZM34.1501 13.3145V11.3047L34.0604 10.9279V7.50062C34.0604 6.7709 33.8451 6.20865 33.4144 5.81389C32.9957 5.40716 32.3617 5.20379 31.5123 5.20379C30.9501 5.20379 30.3998 5.29949 29.8615 5.49089C29.3232 5.67033 28.8686 5.91557 28.4978 6.2266L27.78 4.93463C28.2705 4.53987 28.8566 4.2408 29.5385 4.03744C30.2323 3.82211 30.9561 3.71444 31.7097 3.71444C33.0137 3.71444 34.0185 4.03145 34.7243 4.66547C35.4301 5.29949 35.783 6.26847 35.783 7.57239V13.3145H34.1501ZM31.0279 13.4221C30.3221 13.4221 29.7 13.3025 29.1617 13.0632C28.6353 12.824 28.2286 12.495 27.9415 12.0763C27.6544 11.6457 27.5108 11.1612 27.5108 10.6229C27.5108 10.1085 27.6305 9.64193 27.8697 9.22323C28.1209 8.80454 28.5217 8.46959 29.072 8.21837C29.6342 7.96716 30.3879 7.84155 31.3329 7.84155H34.3475V9.07968H31.4047C30.5434 9.07968 29.9632 9.22323 29.6641 9.51034C29.365 9.79744 29.2155 10.1444 29.2155 10.5511C29.2155 11.0176 29.4009 11.3945 29.7718 11.6816C30.1426 11.9567 30.657 12.0943 31.315 12.0943C31.9609 12.0943 32.5232 11.9507 33.0017 11.6636C33.4922 11.3765 33.8451 10.9578 34.0604 10.4075L34.4013 11.5918C34.174 12.1541 33.7733 12.6027 33.1991 12.9376C32.6249 13.2606 31.9011 13.4221 31.0279 13.4221ZM37.4097 13.3145L41.5009 8.00305L41.483 8.8823L37.5892 3.80416H39.5092L42.4879 7.71594H41.7522L44.7309 3.80416H46.615L42.6673 8.91819L42.6853 8.00305L46.8124 13.3145H44.8565L41.7163 9.15146L42.4161 9.25912L39.3297 13.3145H37.4097ZM53.4034 13.3145V0.753693H54.8748L60.5092 10.246H59.7197L65.2823 0.753693H66.7537L66.7716 13.3145H65.049L65.0311 3.46323H65.4438L60.4912 11.7892H59.6658L54.6774 3.46323H55.126V13.3145H53.4034ZM76.0142 13.3145V11.3047L75.9244 10.9279V7.50062C75.9244 6.7709 75.7091 6.20865 75.2785 5.81389C74.8598 5.40716 74.2257 5.20379 73.3764 5.20379C72.8142 5.20379 72.2639 5.29949 71.7256 5.49089C71.1872 5.67033 70.7327 5.91557 70.3618 6.2266L69.6441 4.93463C70.1345 4.53987 70.7207 4.2408 71.4026 4.03744C72.0964 3.82211 72.8201 3.71444 73.5738 3.71444C74.8777 3.71444 75.8826 4.03145 76.5884 4.66547C77.2942 5.29949 77.6471 6.26847 77.6471 7.57239V13.3145H76.0142ZM72.8919 13.4221C72.1861 13.4221 71.5641 13.3025 71.0257 13.0632C70.4994 12.824 70.0927 12.495 69.8056 12.0763C69.5184 11.6457 69.3749 11.1612 69.3749 10.6229C69.3749 10.1085 69.4945 9.64193 69.7338 9.22323C69.985 8.80454 70.3857 8.46959 70.936 8.21837C71.4983 7.96716 72.2519 7.84155 73.197 7.84155H76.2115V9.07968H73.2687C72.4074 9.07968 71.8272 9.22323 71.5282 9.51034C71.2291 9.79744 71.0796 10.1444 71.0796 10.5511C71.0796 11.0176 71.265 11.3945 71.6358 11.6816C72.0067 11.9567 72.5211 12.0943 73.179 12.0943C73.825 12.0943 74.3872 11.9507 74.8657 11.6636C75.3562 11.3765 75.7091 10.9578 75.9244 10.4075L76.2654 11.5918C76.0381 12.1541 75.6373 12.6027 75.0631 12.9376C74.4889 13.2606 73.7652 13.4221 72.8919 13.4221ZM85.6977 13.4221C84.9082 13.4221 84.1844 13.2427 83.5265 12.8838C82.8805 12.513 82.3601 11.9687 81.9654 11.2509C81.5826 10.5331 81.3912 9.63594 81.3912 8.55931C81.3912 7.48267 81.5766 6.58547 81.9474 5.86772C82.3302 5.14996 82.8446 4.61164 83.4906 4.25276C84.1486 3.89388 84.8843 3.71444 85.6977 3.71444C86.6308 3.71444 87.4562 3.91781 88.174 4.32454C88.8917 4.73127 89.46 5.29949 89.8787 6.02921C90.2973 6.74697 90.5067 7.59034 90.5067 8.55931C90.5067 9.52828 90.2973 10.3776 89.8787 11.1073C89.46 11.8371 88.8917 12.4053 88.174 12.812C87.4562 13.2188 86.6308 13.4221 85.6977 13.4221ZM80.6555 16.7956V3.80416H82.3063V6.37015L82.1986 8.57725L82.3781 10.7844V16.7956H80.6555ZM85.5542 11.9148C86.1643 11.9148 86.7086 11.7773 87.1871 11.5021C87.6775 11.227 88.0603 10.8382 88.3355 10.3358C88.6226 9.82137 88.7661 9.22922 88.7661 8.55931C88.7661 7.87744 88.6226 7.29127 88.3355 6.8008C88.0603 6.29837 87.6775 5.90959 87.1871 5.63445C86.7086 5.35931 86.1643 5.22174 85.5542 5.22174C84.956 5.22174 84.4117 5.35931 83.9213 5.63445C83.4428 5.90959 83.06 6.29837 82.7729 6.8008C82.4977 7.29127 82.3601 7.87744 82.3601 8.55931C82.3601 9.22922 82.4977 9.82137 82.7729 10.3358C83.06 10.8382 83.4428 11.227 83.9213 11.5021C84.4117 11.7773 84.956 11.9148 85.5542 11.9148Z" fill="#4C2613"/>
+</svg>
+</file>
+
+<file path="utils/labels.ts">
+export const locationTypeLabels: Record<string, string> = {
+    vodospad: "Водоспад",
+    hory: "Гори",
+    more: "Море",
+    "miskyi-vidpochynok": "Міський відпочинок",
+    ozero: "Озеро",
+    lis: "Ліс",
+    richka: "Річка",
+    plyazh: "Пляж",
+    "istorychne-mistse": "Історичне місце",
+    "termalni-dzherela": "Термальні джерела",
+    "spa-kurort": "Спа-курорт",
+    "hirskolyzhnyi-kurort": "Гірськолижний курорт",
+    zamok: "Замок",
+    "natsionalnyi-park": "Національний парк",
+    zapovidnyk: "Заповідник",
+    pechera: "Печера",
+};
+
+export const regionLabels: Record<string, string> = {
+    zakarpattya: "Закарпаття",
+    odeshchyna: "Одещина",
+    khersonshchyna: "Херсонщина",
+    "chornomorske-uzberezhzhya": "Чорноморське узбережжя",
+    kyyivshchyna: "Київщина",
+    "shatski-ozera": "Шацькі озера",
+    bukovyna: "Буковина",
+    mykolayivshchyna: "Миколаївщина",
+    zhytomyrshchyna: "Житомирщина",
+    "dnistrovskyi-kanyon": "Дністровський каньйон",
+    rivnenshchyna: "Рівненщина",
+    hutsulshchyna: "Гуцульщина",
+    chernihivshchyna: "Чернігівщина",
+    lvivshchyna: "Львівщина",
+    "ivano-frankivshchyna": "Івано-Франківщина",
+    "ukrainski-karpaty": "Українські Карпати",
+    ternopilshchyna: "Тернопільщина",
+    cherkashchyna: "Черкащина",
+    poltavshchyna: "Полтавщина",
+    khmelnychchyna: "Хмельниччина",
+};
+</file>
 
 <file path="app/(auth routes)/login/page.tsx">
 import AuthNav from '@/components/AuthComponent/AuthNav/AuthNav';
@@ -231,31 +1060,13 @@ export default function MainLayout({
 .page {
   width: min(100%, 1440px);
   margin: 0 auto;
-  padding: 24px 16px 56px;
-}
-
-.backLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 20px;
-  color: #8a5338;
-  font-size: 14px;
-  font-weight: 600;
-  transition: opacity 0.2s ease;
-}
-
-.backLink:hover {
-  opacity: 0.72;
-  cursor: pointer;
+  padding: 32px 20px
 }
 
 .card {
   display: grid;
   gap: 16px;
-  border-radius: 12px;
   overflow: hidden;
-  background: #ffe5d9;
 }
 
 .imageWrap {
@@ -269,15 +1080,21 @@ export default function MainLayout({
 
 .content {
   display: grid;
-  gap: 16px;
-  padding: 16px;
+  gap: 12px;
+  
 }
 
 .ratingRow {
+  
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: #4e2f21;
+  gap: 12px;
+  width: 160px;
+  color: #1B391B;
+  
+}
+.stars {
+display: flex;
 }
 
 .meta {
@@ -286,13 +1103,13 @@ export default function MainLayout({
 }
 
 .type {
-  color: #6d5147;
+  color: #1B391B;
   font-size: 14px;
   line-height: 1.2;
 }
 
 .title {
-  color: #4e2f21;
+  color: #1B391B;
   font-size: 32px;
   font-weight: 800;
   line-height: 1.05;
@@ -301,27 +1118,35 @@ export default function MainLayout({
 .details {
   display: grid;
   gap: 8px;
-  color: #6d5147;
+  color: #1B391B;
   font-size: 14px;
   line-height: 1.5;
 }
 
 .details strong {
-  color: #3d261c;
+  color: #1B391B;
+  font-size: 18px;
 }
 
+
 .description {
-  color: #4b352e;
+  color: #1B391B;
   font-size: 15px;
   line-height: 1.7;
+  padding-top: 20;
 }
 
 .notFound {
   padding: 40px 16px;
   text-align: center;
-  color: #4e2f21;
+  color: #1B391B;
 }
 
+.authorLink {
+    color: #6f8864;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
 @media (min-width: 375px) {
   .imageWrap {
     min-height: 280px;
@@ -330,55 +1155,161 @@ export default function MainLayout({
 
 @media (min-width: 768px) {
   .page {
-    padding: 32px 32px 64px;
+    padding: 32px;
   }
 
   .card {
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-    align-items: stretch;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    background: transparent;
+    border-radius: 0;
+    overflow: visible;
   }
 
   .imageWrap {
-    min-height: 100%;
+    min-height: 0;
+    height: 520px;
+    border-radius: 20px;
+    overflow: hidden;
   }
 
   .content {
-    gap: 20px;
-    padding: 24px;
+    gap: 18px;
+    padding: 0;
   }
 
   .title {
-    font-size: 42px;
+    color: #274628;
+    font-size: 58px;
+    font-weight: 800;
+    line-height: 1.06;
+    letter-spacing: -0.03em;
   }
 
   .details {
-    font-size: 15px;
+    gap: 8px;
+    font-size: 16px;
+    line-height: 1.45;
   }
 
   .description {
+    margin-top: 4px;
     font-size: 16px;
+    line-height: 1.7;
+  }
+
+  .ratingRow {
+    gap: 10px;
+    color: #2f261f;
+    font-size: 16px;
+  }
+
+  .details p {
+    margin: 0;
+  }
+
+  
+
+  .notFound {
+    padding: 72px 24px;
+    font-size: 18px;
   }
 }
 
 @media (min-width: 1440px) {
   .page {
-    padding: 48px 64px 72px;
+    width: min(100%, 1440px);
+    padding: 44px 80px 88px;
+  }
+
+  .card {
+    grid-template-columns: 440px 760px;
+    column-gap: 68px;
+    row-gap: 0;
+    align-items: start;
+    justify-content: center;
+    background: transparent;
+    border-radius: 0;
+    overflow: visible;
+  }
+
+  .imageWrap {
+    grid-column: 2;
+    grid-row: 1;
+    width: 100%;
+    min-height: 0;
+    height: 520px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(61, 38, 28, 0.08);
   }
 
   .content {
-    padding: 32px;
+    grid-column: 1;
+    grid-row: 1;
+    max-width: 440px;
+    width: 100%;
+    gap: 18px;
+    margin: 0 auto;
+    padding: 62px 0 0;
+    align-content: start;
+  }
+
+  .ratingRow {
+    gap: 10px;
+    color: #26210f;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
   }
 
   .title {
-    font-size: 52px;
-  }
-
-  .type {
-    font-size: 16px;
+    max-width: 420px;
+    color: #274628;
+    font-size: 56px;
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
   }
 
   .details {
+    gap: 10px;
+    color: #364133;
     font-size: 16px;
+    line-height: 1.45;
+  }
+
+  .details p {
+    margin: 0;
+  }
+
+  .details strong {
+    color: #1d241d;
+    font-weight: 700;
+  }
+
+  .authorLink {
+    color: #6f8864;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: opacity 0.2s ease;
+  }
+
+  .authorLink:hover {
+    opacity: 0.75;
+  }
+
+  .description {
+    margin-top: 122px;
+    max-width: 440px;
+    color: #5f564f;
+    font-size: 16px;
+    line-height: 1.72;
+  }
+
+  .notFound {
+    padding: 96px 0;
+    font-size: 18px;
   }
 }
 </file>
@@ -392,6 +1323,7 @@ import styles from "./page.module.css";
 import ReviewsSection from "@/components/ReviewsSection/ReviewsSection";
 import { Feedback } from "@/types/feedBackCard";
 import { api } from "@/lib/api/api";
+import { locationTypeLabels, regionLabels } from "@/utils/labels";
 
 type Owner = {
   _id?: string;
@@ -403,7 +1335,7 @@ type LocationDetails = {
   _id: string;
   image: string;
   name: string;
-  locationType: string;
+  locationType: string | { type: string; slug: string };  
   region: string;
   rate: number;
   description: string;
@@ -413,6 +1345,27 @@ type LocationDetails = {
 type PageProps = {
   params: Promise<{ locationId: string }>;
 };
+
+function StarIcon({ filled }: { filled: boolean }) {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path
+        d="M12 2.5L14.9363 8.45047L21.5 9.4042L16.75 14.0336L17.8713 20.5708L12 17.4842L6.12868 20.5708L7.25 14.0336L2.5 9.4042L9.06374 8.45047L12 2.5Z"
+        fill={filled ? "#1D241D" : "#F4D9CD"}
+        stroke="#1D241D"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
 function normalizeFeedbacks(payload: unknown): Feedback[] {
   if (Array.isArray(payload)) return payload as Feedback[];
@@ -502,6 +1455,7 @@ export default async function LocationPage({ params }: PageProps) {
     getLocationById(locationId),
     getIsAuthorized(),
   ]);
+
   if (!location) {
     notFound();
   }
@@ -518,12 +1472,10 @@ export default async function LocationPage({ params }: PageProps) {
   const roundedRate = Math.round(location.rate);
   const clampedRate = Math.max(0, Math.min(5, roundedRate));
   const stars = "★".repeat(clampedRate) + "☆".repeat(5 - clampedRate);
-  
+  void stars;
+
   return (
     <main className={styles.page}>
-      <Link href="/" className={styles.backLink}>
-        Назад до всіх локацій
-      </Link>
       <article className={styles.card}>
         <div className={styles.imageWrap}>
           <Image
@@ -537,22 +1489,25 @@ export default async function LocationPage({ params }: PageProps) {
         </div>
         <div className={styles.content}>
           <div className={styles.ratingRow}>
-            <span>{stars}</span>
+            <span className={styles.stars} aria-label={`Рейтинг: ${location.rate} з 5`}>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <StarIcon key={star} filled={star <= clampedRate} />
+              ))}
+            </span>
             <span>{location.rate}</span>
           </div>
           <div className={styles.meta}>
-            <p className={styles.type}>{location.locationType}</p>
             <h1 className={styles.title}>{location.name}</h1>
           </div>
           <div className={styles.details}>
             <p>
-              <strong>Регіон:</strong> {location.region}
+              <strong>Регіон:</strong> {regionLabels[location.region] ?? location.region}
             </p>
             <p>
-              <strong>Тип локації:</strong> {location.locationType}
+              <strong>Тип локації:</strong> {locationTypeLabels[location.locationType as string] ?? location.locationType}
             </p>
             <p>
-              <strong>Автор статті:</strong>{" "}
+              <strong >Автор статті:</strong>{" "}
               {ownerId ? (
                 <Link href={`/profile/${ownerId}`} className={styles.authorLink}>
                   {ownerName}
@@ -634,12 +1589,6 @@ export default async function Page({ params }: Props) {
       locationTypes={types}
     />
   );
-}
-</file>
-
-<file path="app/(private routes)/profile/[userId]/edit/page.tsx">
-export default function Page() {
-    return <div>Profile Page</div>;
 }
 </file>
 
@@ -2009,170 +2958,6 @@ next-env.d.ts
 .claude
 </file>
 
-<file path="app/(private routes)/locations/add/page.tsx">
-import LocationForm from "@/components/LocationForm/LocationForm";
-import { getRegionsServer, getLocationTypesServer } from "@/lib/api/serverApi";
-
-export default async function Page() {
-
-  const regions = await getRegionsServer();
-  const locationTypes = await getLocationTypesServer();
-
-  return <LocationForm regions={regions} locationTypes={locationTypes}  />;
-}
-</file>
-
-<file path="app/(private routes)/profile/[userId]/page.tsx">
-import { redirect } from 'next/navigation';
-import Image from 'next/image';
-import { getUserByIdServer, getUserLocationsServer } from '@/lib/api/serverApi';
-import css from './ProfilePage.module.css';
-
-type Props = {
-  params: Promise<{ userId: string }>;
-};
-
-export default async function Profile({ params }: Props) {
-  const { userId } = await params;
-
-  let user;
-  let locations: unknown[] = [];
-
-  try {
-    const [userData, locationsData] = await Promise.all([
-      getUserByIdServer(userId),
-      getUserLocationsServer(userId),
-    ]);
-    user = userData;
-    locations = locationsData.data;
-  } catch {
-    redirect('/login');
-  }
-
-  const avatarSrc = user.avatarUrl || user.avatar || null;
-
-  return (
-    <main className={css.mainContent}>
-      <div className={css.header}>
-        {avatarSrc ? (
-          <Image
-            src={avatarSrc}
-            alt={user.name}
-            width={145}
-            height={145}
-            className={css.avatar}
-          />
-        ) : (
-          <div className={css.avatarFallback}>
-            {user.name.charAt(0).toUpperCase()}
-          </div>
-        )}
-        <div className={css.profileInfo}>
-          <h2 className={css.userName}>{user.name}</h2>
-          <p className={css.articles}>Статей: {user.articlesAmount}</p>
-        </div>
-      </div>
-      <p className={css.locationsCount}>Локацій: {locations.length}</p>
-    </main>
-  );
-}
-</file>
-
-<file path="app/(private routes)/profile/[userId]/ProfilePage.module.css">
-.mainContent {
-  background-color: var(--color-bg-page);
-  min-height: 60vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  padding: 32px 20px 0;
-  gap: 16px;
-}
-
-.avatar {
-  width: 145px;
-  height: 145px;
-  border-radius: var(--radius-full);
-  object-fit: cover;
-  border: 3px solid var(--color-primary-light);
-}
-
-.avatarFallback {
-  width: 145px;
-  height: 145px;
-  border-radius: var(--radius-full);
-  background-color: var(--color-primary-light);
-  color: var(--color-primary);
-  font-size: 56px;
-  font-weight: var(--font-weight-bold);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.profileInfo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.userName {
-  font-family: var(--font-family);
-  font-weight: var(--font-weight-bold);
-  font-size: 20px;
-  line-height: 1.3;
-  color: var(--color-text-primary);
-}
-
-.articles {
-  font-family: var(--font-family);
-  font-weight: var(--font-weight-regular);
-  font-size: var(--font-size-base);
-  color: var(--color-text-muted);
-}
-
-.locationsCount {
-  padding: 16px 20px 0;
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
-}
-
-@media (min-width: 768px) {
-  .header {
-    flex-direction: row;
-    align-items: center;
-    gap: 24px;
-    padding: 40px 32px 0;
-  }
-
-  .profileInfo {
-    align-items: flex-start;
-  }
-}
-
-@media (min-width: 1280px) {
-  .header {
-    padding: 48px 64px 0;
-  }
-
-  .userName {
-    font-size: 32px;
-  }
-
-  .articles {
-    font-size: 20px;
-  }
-}
-</file>
-
 <file path="app/@modal/(.)add-review/page.tsx">
 import { redirect } from "next/navigation";
 import { getMeServer } from "@/lib/api/serverApi";
@@ -2887,51 +3672,25 @@ export default function RegistrationForm() {
 }
 </file>
 
-<file path="components/Logo/Logo.module.css">
-.logoContainer {
-    width: 129px;
-    height: 36px;
-}
-.logoLink {
-    display: flex;
-    align-items: center;
-    gap: 3px;
-}
-.logoImg {
-    width: 24px;
-    height: 24px;
-}
-.logoText {
-    font-weight: 500;
-    font-size: 21px;
-    line-height: 100%;
-    letter-spacing: -0.01em;
-    color: #4C2613;
-    margin: 0;
-}
-</file>
-
 <file path="components/Logo/Logo.tsx">
 import Link from "next/link";
-import css from "./Logo.module.css";
 import Image from "next/image";
 
-type LogoProps = {
-  onClick?: () => void;
-};
-
-export default function Logo({ onClick }: LogoProps) {
+// type LogoProps = {
+//   onClick?: () => void;
+// };
+// { onClick }: LogoProps
+export default function Logo() {
   return (
-    <div className={css.logoContainer}>
-      <Link href="/" onClick={onClick} className={css.logoLink}>
+    <div>
+      {/* onClick={onClick} */}
+      <Link href="/">
         <Image
-          src="/images/map_search.png"
+          src="/company_logo.svg"
           alt="Relax Map logo"
-          width={24}
-          height={24}
-          className={css.logoImg}
+          width={129}
+          height={36}
         />
-        <span className={css.logoText}>Relax Map</span>
       </Link>
     </div>
   );
@@ -3179,13 +3938,21 @@ export default function ConfirmationModal() {
 
 <file path="components/Footer/Footer.module.css">
 .footer {
-  background-color: var(--color-bg-page);
+  background-color: var(--color-scheme-2-foreground);
   border-top: 1px solid var(--color-border);
   margin-top: auto;
   width: 100%;
   padding-bottom: 80px;
 }
 
+.footerContainer{
+margin: 48px 20px;
+}
+
+.footer a {
+  color: var(--color-scheme-2-text);
+  text-decoration: none;
+}
 .inner {
   display: flex;
   flex-direction: column;
@@ -3205,7 +3972,7 @@ export default function ConfirmationModal() {
 
 .footerNav {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   list-style-type: none;
   padding-right: 0;
@@ -3214,32 +3981,24 @@ export default function ConfirmationModal() {
   font-weight: 400;
   font-size: 18px;
   line-height: 150%;
+}
+
+
+.copy{
+margin-top: 0;
+padding-top: 32px;
+text-align: center;
+font-family: var(--font-family);
+font-weight: 400;
+font-size: 16px;
+line-height: 150%;
+color: var(--color-scheme-2-text);
+border-top: 1px solid var(--color-scheme-2-border);
+}
+
+.itemsLink {
   color: var(--color-scheme-2-text);
 }
-
-.copy {
-  margin-top: 0;
-  text-align: center;
-  font-family: var(--font-family);
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 150%;
-  color: var(--color-scheme-2-text);
-  border-top: 1px solid var(--color-scheme-2-border);
-}
-
-/* .logo {
-  font-size: 20px;
-  font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
-  letter-spacing: -0.5px;
-  transition: color var(--transition-base);
-}
-
-.logo:hover {
-  color: var(--color-primary-hover);
-} */
-
 
 /* ─── Tablet ─── */
 @media (min-width: 768px) {
@@ -3247,10 +4006,13 @@ export default function ConfirmationModal() {
     flex-direction: row;
     justify-content: space-between;
     padding: 24px var(--container-padding-tablet);
+    flex-wrap: wrap;
   }
   .footerNav {
     flex-direction: row;
     gap: 24px;
+    width: 100%;
+    justify-content: center;
   }
 }
 
@@ -3258,7 +4020,18 @@ export default function ConfirmationModal() {
 @media (min-width: 1024px) {
   .inner {
     padding: 24px var(--container-padding-desktop);
+    flex-wrap: nowrap;
+    align-items: center;
   }
+  .footerNav {
+    flex-direction: row;
+          gap: 24px;
+          width: auto;
+          justify-content: flex-start;
+        }
+    .footerContainer {
+      margin: 80px 64px;
+    }
 }
 </file>
 
@@ -3383,19 +4156,17 @@ export default function Modal({ children }: ModalProps) {
 
 <file path="components/Pagination/Pagination.module.css">
 .wrapper {
-  display: flex;
-  justify-content: center;
   width: 100%;
   margin-top: 32px;
 }
 
 .button {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   min-width: 160px;
   min-height: 48px;
-  margin: 0 auto;
+  margin-inline: auto;
   padding: 12px 24px;
   border: 1px solid #e8845a;
   border-radius: 10px;
@@ -3567,28 +4338,25 @@ export default function Pagination({
 }
 
 .arrowBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   width: 44px;
   height: 44px;
-  border: 1px solid #e5cfc2;
   border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
   background: #ffe5d9;
   color: #4c2613;
+  padding: 12px;
   cursor: pointer;
-  transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease,
-    color 0.2s ease,
-    opacity 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
-.arrowBtn:hover:not(:disabled),
-.arrowBtn:focus-visible:not(:disabled) {
-  background: #f4d5c5;
-  border-color: #d9b9a8;
-  outline: none;
+.arrowBtn:hover:not(:disabled) {
+  background: #ffa57a;
+  border-color: #ffa57a;
+  color: #4c2613;
 }
 
 .arrowBtn:disabled {
@@ -3741,21 +4509,6 @@ export default function TanStackProvider({
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 }
-</file>
-
-<file path="types/feedBackCard.ts">
-export type Feedback = {
-  _id: string;
-  userName: string;
-  description: string;
-  rate: number;
-  locationType?: string;
-  author?: {
-    _id: string;
-    name: string;
-    avatar?: string;
-  };
-};
 </file>
 
 <file path="types/location.ts">
@@ -4264,14 +5017,12 @@ import { getLocations, getLocationTypes } from "@/lib/api/clientApi";
 import LocationCard from "@/components/LocationCard/LocationCard";
 import type { Location } from "@/types/location";
 import styles from "./PopularLocationsBlock.module.css";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
 
 export default function PopularLocationsBlock() {
-  const [isBeginning, setIsBeginning] = useState(true);
-  const [isEnd, setIsEnd] = useState(false);
   const swiperRef = useRef<SwiperType | null>(null);
 
   const { data, isLoading } = useQuery({
@@ -4314,6 +5065,7 @@ export default function PopularLocationsBlock() {
             <>
               <Swiper
                 modules={[Navigation]}
+                loop={true}
                 slidesPerView={1}
                 spaceBetween={24}
                 breakpoints={{
@@ -4322,12 +5074,6 @@ export default function PopularLocationsBlock() {
                 }}
                 onSwiper={(swiper) => {
                   swiperRef.current = swiper;
-                  setIsBeginning(swiper.isBeginning);
-                  setIsEnd(swiper.isEnd);
-                }}
-                onSlideChange={(swiper) => {
-                  setIsBeginning(swiper.isBeginning);
-                  setIsEnd(swiper.isEnd);
                 }}
               >
                 {locations.map((location: Location) => (
@@ -4351,7 +5097,6 @@ export default function PopularLocationsBlock() {
                   type="button"
                   className={styles.arrowBtn}
                   onClick={() => swiperRef.current?.slidePrev()}
-                  disabled={isBeginning}
                   aria-label="Попередня локація"
                 >
                   <svg
@@ -4360,11 +5105,11 @@ export default function PopularLocationsBlock() {
                     viewBox="0 0 16 16"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden="true"
                   >
                     <path
-                      d="M2.9855 8.6525L8.41825 14.1667C8.5885 14.3371 8.8005 14.4195 9.05425 14.4141C9.308 14.4087 9.52 14.3214 9.69025 14.1521C9.85958 13.982 9.94425 13.7723 9.94425 13.523C9.94425 13.2737 9.85958 13.064 9.69025 12.8939L5.714 8.861H12.3823C12.6221 8.861 12.8233 8.78017 12.986 8.6185C13.1487 8.45683 13.23 8.25708 13.23 8.01925C13.23 7.78142 13.1487 7.58167 12.986 7.42C12.8233 7.25833 12.6221 7.1775 12.3823 7.1775H5.714L9.69025 3.14458C9.86042 2.97442 9.94508 2.76296 9.94425 2.51021C9.94342 2.25746 9.85875 2.046 9.69025 1.87583C9.52 1.7065 9.30754 1.62183 9.05288 1.62183C8.79821 1.62183 8.58575 1.7065 8.4155 1.87583L2.9855 7.39C2.89467 7.48083 2.83017 7.57417 2.792 7.67C2.75383 7.76583 2.73475 7.88225 2.73475 8.01925C2.73475 8.15625 2.75383 8.27267 2.792 8.3685C2.83017 8.46433 2.89467 8.55833 2.9855 8.6525Z"
+                      d="M7.82129 0.5C7.90691 0.500059 7.98026 0.526325 8.0625 0.608398C8.1448 0.694341 8.1709 0.771445 8.1709 0.857422C8.17081 0.944261 8.14426 1.01826 8.0625 1.10059L1.70117 7.46191H15.1113C15.2328 7.46193 15.3079 7.49726 15.3721 7.56055C15.4342 7.6219 15.4687 7.69362 15.4688 7.81348C15.4688 7.93333 15.4342 8.00505 15.3721 8.06641C15.3079 8.12969 15.2328 8.16502 15.1113 8.16504H1.70117L8.05664 14.5205V14.5195C8.1389 14.602 8.16719 14.6788 8.16797 14.7705V14.7715C8.16849 14.838 8.15383 14.8964 8.1123 14.9561L8.06055 15.0176C7.9806 15.0985 7.90742 15.1248 7.81836 15.124C7.72391 15.1231 7.6456 15.0931 7.5625 15.0107L0.614258 8.0625C0.561096 8.00833 0.5354 7.9662 0.523438 7.9375V7.93652C0.50833 7.90019 0.5 7.8601 0.5 7.8125C0.50003 7.76491 0.508641 7.72576 0.523438 7.69043V7.68945C0.535302 7.66099 0.560769 7.61862 0.614258 7.56445L7.56445 0.614258C7.65485 0.527034 7.73453 0.5 7.82129 0.5Z"
                       fill="currentColor"
+                      stroke="currentColor"
                     />
                   </svg>
                 </button>
@@ -4373,7 +5118,6 @@ export default function PopularLocationsBlock() {
                   type="button"
                   className={styles.arrowBtn}
                   onClick={() => swiperRef.current?.slideNext()}
-                  disabled={isEnd}
                   aria-label="Наступна локація"
                 >
                   <svg
@@ -4382,12 +5126,11 @@ export default function PopularLocationsBlock() {
                     viewBox="0 0 16 16"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden="true"
-                    style={{ transform: "scaleX(-1)" }}
                   >
                     <path
-                      d="M2.9855 8.6525L8.41825 14.1667C8.5885 14.3371 8.8005 14.4195 9.05425 14.4141C9.308 14.4087 9.52 14.3214 9.69025 14.1521C9.85958 13.982 9.94425 13.7723 9.94425 13.523C9.94425 13.2737 9.85958 13.064 9.69025 12.8939L5.714 8.861H12.3823C12.6221 8.861 12.8233 8.78017 12.986 8.6185C13.1487 8.45683 13.23 8.25708 13.23 8.01925C13.23 7.78142 13.1487 7.58167 12.986 7.42C12.8233 7.25833 12.6221 7.1775 12.3823 7.1775H5.714L9.69025 3.14458C9.86042 2.97442 9.94508 2.76296 9.94425 2.51021C9.94342 2.25746 9.85875 2.046 9.69025 1.87583C9.52 1.7065 9.30754 1.62183 9.05288 1.62183C8.79821 1.62183 8.58575 1.7065 8.4155 1.87583L2.9855 7.39C2.89467 7.48083 2.83017 7.57417 2.792 7.67C2.75383 7.76583 2.73475 7.88225 2.73475 8.01925C2.73475 8.15625 2.75383 8.27267 2.792 8.3685C2.83017 8.46433 2.89467 8.55833 2.9855 8.6525Z"
+                      d="M8.14453 0.5C8.21548 0.500668 8.27733 0.517317 8.33887 0.560547L8.40039 0.613281L15.3486 7.56152C15.4018 7.61569 15.4275 7.65782 15.4395 7.68652V7.6875C15.4546 7.72385 15.4629 7.7639 15.4629 7.81152C15.4629 7.85913 15.4543 7.89825 15.4395 7.93359V7.93457C15.4276 7.96304 15.4022 8.00538 15.3486 8.05957L8.39453 15.0078C8.30318 15.0981 8.22456 15.124 8.1416 15.124C8.0609 15.1239 7.98874 15.0994 7.90527 15.0137L7.90039 15.0088L7.84863 14.9482C7.80653 14.8886 7.79201 14.8306 7.79199 14.7656C7.79199 14.701 7.80676 14.6433 7.84863 14.584L7.90039 14.5234L14.2617 8.16211H0.851562C0.729469 8.16207 0.657228 8.12693 0.59668 8.06641H0.595703C0.53483 8.0055 0.500002 7.93257 0.5 7.81055C0.5 7.68853 0.534835 7.6156 0.595703 7.55469H0.59668C0.657231 7.49416 0.729461 7.45902 0.851562 7.45898H14.2617L7.90625 1.10352C7.84494 1.04216 7.81315 0.983763 7.80078 0.918945L7.79492 0.851562C7.79401 0.761613 7.82017 0.688031 7.90039 0.607422L7.90137 0.606445C7.98151 0.525858 8.05487 0.499224 8.14453 0.5Z"
                       fill="currentColor"
+                      stroke="currentColor"
                     />
                   </svg>
                 </button>
@@ -4542,6 +5285,22 @@ export const useAuthStore = create<AuthState>()(
         }
     )
 );
+</file>
+
+<file path="types/feedBackCard.ts">
+export type Feedback = {
+  _id: string;
+  userName: string;
+  description: string;
+  rate: number;
+  locationType?: string;
+  createdAt?: string;   
+  author?: {
+    _id: string;
+    name: string;
+    avatar?: string;
+  };
+};
 </file>
 
 <file path="app/api/auth/session/route.ts">
@@ -4824,6 +5583,183 @@ main {
     font-weight: var(--font-weight-medium);
     color: var(--color-text-primary);
     transition: color var(--transition-base);
+}
+
+.profileLink:hover {
+    color: var(--color-primary);
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    object-fit: cover;
+    border: 2px solid var(--color-primary-light);
+}
+
+.avatarFallback {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    background-color: var(--color-primary-light);
+    color: var(--color-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.userName {
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.loginBtn {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    padding: 8px 16px;
+    border-radius: var(--radius-md);
+    transition: color var(--transition-base);
+}
+
+.loginBtn:hover {
+    color: var(--color-primary);
+}
+
+.registerBtn {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-white);
+    background-color: var(--color-primary);
+    padding: 8px 18px;
+    border-radius: var(--radius-md);
+    transition: background-color var(--transition-base);
+}
+
+.registerBtn:hover {
+    background-color: var(--color-primary-hover);
+}
+
+.logoutBtn {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-muted);
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+    transition: color var(--transition-base);
+}
+
+.logoutBtn:hover {
+    color: var(--color-error);
+}
+
+/* ─── Burger ─── */
+.burger {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 32px;
+    height: 32px;
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+}
+
+.burgerLine {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: var(--color-text-primary);
+    border-radius: 2px;
+    transition: transform var(--transition-base), opacity var(--transition-base);
+}
+
+/* ─── Mobile Menu ─── */
+.nav {
+    display: none;
+}
+
+.auth {
+    display: none;
+}
+.mobileMenu {
+    display: flex;
+    flex-direction: column;
+    padding: 16px var(--container-padding-mobile) 24px;
+    border-top: 1px solid var(--color-border);
+    background-color: var(--color-bg-white);
+}
+
+.mobileLink {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    padding: 12px 0;
+    border-bottom: 1px solid var(--color-border-light);
+    transition: color var(--transition-base);
+}
+
+.mobileLink:last-child {
+    border-bottom: none;
+}
+
+.mobileLink:hover,
+.mobileLink.active {
+    color: var(--color-primary);
+}
+
+.mobileDivider {
+    height: 1px;
+    background-color: var(--color-border);
+    margin: 8px 0;
+}
+
+/* ─── Tablet ─────────────────── */
+@media (min-width: 768px) {
+    .inner {
+        padding: 0 var(--container-padding-tablet);
+    }
+
+    .mobileMenu {
+        padding: 16px var(--container-padding-tablet) 24px;
+    }
+}
+
+/* ─── Desktop ────────────────── */
+@media (min-width: 1024px) {
+    .inner {
+        padding: 0 var(--container-padding-desktop);
+    }
+
+    .nav {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+    }
+
+}
+
+@media (min-width: 1024px) {
+    .auth {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .burger {
+        display: none;
+    }
+
+    .mobileMenu {
+        display: none;
+    }
 }
 
 .profileLink:hover {
@@ -5302,23 +6238,6 @@ export default function LocationList() {
     queryFn: getLocationTypes,
   });
 
-  const locations = useMemo(() => {
-    const allLocations =
-      data?.pages.flatMap((page) => page.locations as Location[]) ?? [];
-
-    if (filters.sort === "name") {
-      return [...allLocations].sort((a, b) =>
-        a.name.localeCompare(b.name, "uk"),
-      );
-    }
-
-    if (filters.sort === "rate") {
-      return [...allLocations].sort((a, b) => b.rate - a.rate);
-    }
-
-    return allLocations;
-  }, [data?.pages, filters.sort]);
-
   const locationTypeLabels = useMemo(
     () =>
       new Map(
@@ -5329,6 +6248,44 @@ export default function LocationList() {
       ),
     [locationTypes],
   );
+
+  const locations = useMemo(() => {
+    const allLocations =
+    data?.pages.flatMap((page) => page.locations as Location[]) ?? [];
+
+  const uniqueLocations = Array.from(
+    new Map(allLocations.map((loc) => [loc._id, loc])).values()
+  );
+
+  const normalizedSearch = filters.search.trim().toLowerCase();
+
+  const filteredLocations = normalizedSearch
+    ? uniqueLocations.filter((location) => {
+        const locationName = location.name.toLowerCase();
+        const locationTypeLabel =
+          locationTypeLabels.get(location.locationType)?.toLowerCase() ?? "";
+        const locationTypeSlug = location.locationType.toLowerCase();
+
+        return (
+          locationName.includes(normalizedSearch) ||
+          locationTypeLabel.includes(normalizedSearch) ||
+          locationTypeSlug.includes(normalizedSearch)
+        );
+      })
+    : uniqueLocations;
+
+    if (filters.sort === "name") {
+      return [...filteredLocations].sort((a, b) =>
+        a.name.localeCompare(b.name, "uk"),
+      );
+    }
+
+    if (filters.sort === "rate") {
+      return [...filteredLocations].sort((a, b) => b.rate - a.rate);
+    }
+
+    return filteredLocations;
+  }, [data?.pages, filters.sort, filters.search, locationTypeLabels]);
 
   return (
     <section className={styles.section}>
@@ -5651,8 +6608,8 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer>
-      <div className={css.footer}>
+    <footer className={css.footer}>
+      <div className={css.footerContainer}>
         <div className={css.inner}>
           <Logo />
           <ul className={css.socials}>
@@ -5701,18 +6658,24 @@ export default function Footer() {
               </Link>
             </li>
           </ul>
+
           <ul className={css.footerNav}>
             <li className={css.items}>
-              <Link href="/">Головна</Link>
+              <Link href="/" className={css.itemsLink}>
+                Головна
+              </Link>
             </li>
             <li className={css.items}>
-              <Link href="/locations">Місця відпочинку</Link>
+              <Link href="/locations" className={css.itemsLink}>
+                Місця відпочинку
+              </Link>
             </li>
           </ul>
         </div>
+        <hr className={css.line} />
         <div className={css.copy}>
           <p>
-            © <time dateTime="2025">2025</time> Природні Мандри. Усі права
+            &copy; {new Date().getFullYear()} Природні Мандри. Усі права
             захищені.
           </p>
         </div>
@@ -5990,11 +6953,11 @@ export default function RootLayout({
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import css from "./Header.module.css";
 import Logo from "../Logo/Logo";
+import Image from "next/image";
 
 export default function Header() {
   const pathname = usePathname();
@@ -6015,7 +6978,9 @@ export default function Header() {
         {/* <Link href="/" className={css.logo} onClick={closeMenu}>
           Relax Map
         </Link> */}
-        <Logo onClick={closeMenu} />
+
+        {/* onClick={closeMenu} */}
+        <Logo />
 
         {/* Desktop nav */}
         <nav className={css.nav}>
@@ -6458,6 +7423,67 @@ export default function Header() {
 }
 </file>
 
+<file path="app/api/locations/route.ts">
+import { NextRequest, NextResponse } from "next/server";
+import { isAxiosError } from "axios";
+import { api } from "../api";
+import { logErrorResponse } from "../_utils/utils";
+import { cookies } from "next/headers";
+
+export async function GET(req: NextRequest) {
+  try {
+    const params = Object.fromEntries(req.nextUrl.searchParams);
+    const { data } = await api.get("/locations", { params });
+    return NextResponse.json(data);
+  } catch (error) {
+    if (isAxiosError(error)) {
+      logErrorResponse(error.response?.data);
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.response?.status ?? 500 }
+      );
+    }
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const cookieStore = await cookies();
+
+const cookieHeader = cookieStore
+  .getAll()
+  .map((c) => `${c.name}=${c.value}`)
+  .join("; ");
+
+const { data } = await api.post("/locations", body, {
+  headers: {
+    Cookie: cookieHeader,
+  },
+});
+
+    return NextResponse.json(data);
+  } catch (error) {
+    console.log("ERROR:", error);
+
+    if (isAxiosError(error)) {
+      console.log("BACKEND ERROR:", error.response?.data);
+
+      return NextResponse.json(
+        { error: error.response?.data || error.message },
+        { status: error.response?.status ?? 500 }
+      );
+    }
+
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}
+</file>
+
 <file path="components/ReviewsBlock/ReviewsBlock.tsx">
 "use client";
 
@@ -6486,7 +7512,6 @@ export default function ReviewsBlock() {
       setLoading(true);
       setError(null);
 
-      // Fetch all locations, then collect their latest reviews
       const locRes = await clientApi.get("/locations", {
         params: { page: 1, limit: 20 },
       });
@@ -6502,15 +7527,18 @@ export default function ReviewsBlock() {
           });
           const feedbacks: Feedback[] = fbRes.data?.data ?? [];
           collected.push(...feedbacks);
-        } catch {
-          // skip locations with no reviews
-        }
+        } catch {}
       }
 
       const unique = Array.from(
         new Map(collected.map((r) => [r._id, r])).values(),
       );
-      setReviews(unique);
+      const sorted = unique.sort(
+        (a, b) =>
+          new Date(b.createdAt ?? 0).getTime() -
+          new Date(a.createdAt ?? 0).getTime(),
+      );
+      setReviews(sorted);
     } catch {
       setError("Не вдалося завантажити відгуки");
     } finally {
@@ -6518,12 +7546,10 @@ export default function ReviewsBlock() {
     }
   }, []);
 
-  // Initial load
   useEffect(() => {
     fetchReviews();
   }, [fetchReviews]);
 
-  // Re-fetch when a new review is submitted anywhere in the app
   useEffect(() => {
     const handler = () => fetchReviews();
     window.addEventListener("review-added", handler);
@@ -6621,71 +7647,10 @@ export default function ReviewsBlock() {
 }
 </file>
 
-<file path="app/api/locations/route.ts">
-import { NextRequest, NextResponse } from "next/server";
-import { isAxiosError } from "axios";
-import { api } from "../api";
-import { logErrorResponse } from "../_utils/utils";
-import { cookies } from "next/headers";
-
-export async function GET(req: NextRequest) {
-  try {
-    const params = Object.fromEntries(req.nextUrl.searchParams);
-    const { data } = await api.get("/locations", { params });
-    return NextResponse.json(data);
-  } catch (error) {
-    if (isAxiosError(error)) {
-      logErrorResponse(error.response?.data);
-      return NextResponse.json(
-        { error: error.message },
-        { status: error.response?.status ?? 500 }
-      );
-    }
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-  }
-}
-
-export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json();
-    const cookieStore = await cookies();
-
-const cookieHeader = cookieStore
-  .getAll()
-  .map((c) => `${c.name}=${c.value}`)
-  .join("; ");
-
-const { data } = await api.post("/locations", body, {
-  headers: {
-    Cookie: cookieHeader,
-  },
-});
-
-    return NextResponse.json(data);
-  } catch (error) {
-    console.log("ERROR:", error);
-
-    if (isAxiosError(error)) {
-      console.log("BACKEND ERROR:", error.response?.data);
-
-      return NextResponse.json(
-        { error: error.response?.data || error.message },
-        { status: error.response?.status ?? 500 }
-      );
-    }
-
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    );
-  }
-}
-</file>
-
 <file path="components/ReviewsSection/ReviewsSection.tsx">
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
@@ -6693,7 +7658,7 @@ import type { Swiper as SwiperType } from "swiper";
 
 import { FeedBackCard } from "@/components/FeedBackCard/FeedBackCard";
 import { Feedback } from "@/types/feedBackCard";
-import clientApi from "@/lib/api/clientApi";
+import { getFeedbacks } from "@/lib/api/feedbacks";
 import styles from "./ReviewsSection.module.css";
 
 const LIMIT = 3;
@@ -6704,53 +7669,154 @@ type Props = {
   initialReviews?: Feedback[];
 };
 
+function dedupeReviews(reviews: Feedback[]): Feedback[] {
+  const uniqueReviews = new Map<string, Feedback>();
+
+  reviews.forEach((review) => {
+    uniqueReviews.set(review._id, review);
+  });
+
+  return Array.from(uniqueReviews.values());
+}
+
+function extractPageReviews(payload: unknown): Feedback[] {
+  if (Array.isArray(payload)) return dedupeReviews(payload as Feedback[]);
+
+  if (payload && typeof payload === "object") {
+    const record = payload as Record<string, unknown>;
+
+    if (Array.isArray(record.data)) {
+      return dedupeReviews(record.data as Feedback[]);
+    }
+  }
+
+  return [];
+}
+
+function extractTotalPages(payload: unknown): number | null {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return null;
+  }
+
+  const pagination = (payload as { pagination?: { totalPages?: number } }).pagination;
+
+  return typeof pagination?.totalPages === "number" ? pagination.totalPages : null;
+}
+
 export default function ReviewsSection({
   locationId,
   isAuthenticated = false,
   initialReviews = [],
 }: Props) {
-  const [reviews, setReviews] = useState<Feedback[]>(initialReviews);
-  const [loadedPages, setLoadedPages] = useState<number[]>([1]);
-  const [totalPages, setTotalPages] = useState(1);
-  const [isFetching, setIsFetching] = useState(false);
+  const initialUniqueReviews = useMemo(
+    () => dedupeReviews(initialReviews),
+    [initialReviews]
+  );
+  const [reviews, setReviews] = useState<Feedback[]>(initialUniqueReviews);
+  const [loadedPages, setLoadedPages] = useState<number[]>(
+    initialUniqueReviews.length > 0 ? [1] : []
+  );
+  const [totalPages, setTotalPages] = useState<number | null>(
+    initialUniqueReviews.length > 0 && initialUniqueReviews.length < LIMIT ? 1 : null
+  );
+  const [, setIsFetching] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [ready, setReady] = useState(initialReviews.length > 0);
+  const [ready, setReady] = useState(initialUniqueReviews.length > 0);
   const [isBeginning, setIsBeginning] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
   const swiperRef = useRef<SwiperType | null>(null);
+  const isFetchingRef = useRef(false);
+  const loadedPagesRef = useRef<number[]>(
+    initialUniqueReviews.length > 0 ? [1] : []
+  );
+  const totalPagesRef = useRef<number | null>(
+    initialUniqueReviews.length > 0 && initialUniqueReviews.length < LIMIT ? 1 : null
+  );
   const router = useRouter();
 
+<<<<<<< HEAD
+=======
+  const resetWithInitialReviews = useCallback((nextInitialReviews: Feedback[]) => {
+    const nextReviews = dedupeReviews(nextInitialReviews);
+    const nextLoadedPages = nextReviews.length > 0 ? [1] : [];
+    const nextTotalPages = nextReviews.length > 0 && nextReviews.length < LIMIT ? 1 : null;
+
+    setReviews(nextReviews);
+    setLoadedPages(nextLoadedPages);
+    setTotalPages(nextTotalPages);
+    setError(null);
+    setReady(nextReviews.length > 0);
+    loadedPagesRef.current = nextLoadedPages;
+    totalPagesRef.current = nextTotalPages;
+
+    if (swiperRef.current) {
+      swiperRef.current.slideTo(0, 0);
+      setIsBeginning(true);
+      setIsEnd(swiperRef.current.isEnd);
+    }
+  }, []);
+
+>>>>>>> 8586ddad022602647792004eaac33f4b4fc4d90b
   const fetchPage = useCallback(
-    async (pageNum: number) => {
-      if (isFetching) return;
+    async (pageNum: number, options?: { replace?: boolean }) => {
+      const replace = options?.replace ?? false;
+
+      if (isFetchingRef.current) return;
+      if (!replace && loadedPagesRef.current.includes(pageNum)) return;
+      if (totalPagesRef.current !== null && pageNum > totalPagesRef.current) {
+        return;
+      }
       try {
+        isFetchingRef.current = true;
         setIsFetching(true);
         setError(null);
-        const { data } = await clientApi.get(
-          `/locations/${locationId}/feedbacks`,
-          { params: { page: pageNum, limit: LIMIT } },
-        );
-        const newReviews: Feedback[] = data.data || data;
-        if (data.pagination) {
-          setTotalPages(data.pagination.totalPages ?? 1);
+
+        const data = await getFeedbacks(locationId, pageNum);
+        const nextPageReviews = extractPageReviews(data);
+        const nextTotalPages =
+          extractTotalPages(data) ??
+          (nextPageReviews.length < LIMIT ? pageNum : totalPagesRef.current);
+
+        setTotalPages(nextTotalPages);
+        totalPagesRef.current = nextTotalPages;
+
+        if (replace) {
+          const dedupedPage = dedupeReviews(nextPageReviews);
+          setReviews(dedupedPage);
+          setLoadedPages([pageNum]);
+          loadedPagesRef.current = [pageNum];
+        } else {
+          setReviews((prev) => dedupeReviews([...prev, ...nextPageReviews]));
+          setLoadedPages((prev) => {
+            if (prev.includes(pageNum)) return prev;
+
+            const nextLoadedPages = [...prev, pageNum].sort((a, b) => a - b);
+            loadedPagesRef.current = nextLoadedPages;
+            return nextLoadedPages;
+          });
         }
+<<<<<<< HEAD
         setReviews((prev) => {
           const existingIds = new Set(prev.map((r) => r._id));
           const unique = newReviews.filter((r) => !existingIds.has(r._id));
           return [...prev, ...unique];
         });
         setLoadedPages((prev) => [...prev, pageNum]);
+=======
+>>>>>>> 8586ddad022602647792004eaac33f4b4fc4d90b
       } catch {
         setError("Не вдалося завантажити відгуки");
       } finally {
+        isFetchingRef.current = false;
         setIsFetching(false);
         setReady(true);
       }
     },
-    [locationId, isFetching],
+    [locationId],
   );
 
   const refreshReviews = useCallback(async () => {
+<<<<<<< HEAD
     try {
       setError(null);
       const { data } = await clientApi.get(
@@ -6787,9 +7853,27 @@ export default function ReviewsSection({
         .catch(() => {});
     }
   }, [locationId]);
+=======
+    await fetchPage(1, { replace: true });
+
+    setTimeout(() => {
+      swiperRef.current?.slideTo(0, 300);
+    }, 50);
+  }, [fetchPage]);
+>>>>>>> 8586ddad022602647792004eaac33f4b4fc4d90b
 
   useEffect(() => {
-    const handler = () => refreshReviews();
+    resetWithInitialReviews(initialUniqueReviews);
+
+    if (initialUniqueReviews.length === 0) {
+      void fetchPage(1);
+    }
+  }, [locationId, initialUniqueReviews, resetWithInitialReviews, fetchPage]);
+
+  useEffect(() => {
+    const handler = () => {
+      void refreshReviews();
+    };
     window.addEventListener("review-added", handler);
     return () => window.removeEventListener("review-added", handler);
   }, [refreshReviews]);
@@ -6805,8 +7889,21 @@ export default function ReviewsSection({
       swiper.slideNext();
       return;
     }
+<<<<<<< HEAD
     const nextPage = loadedPages.length + 1;
     if (nextPage <= totalPages) {
+=======
+
+    const currentMaxLoadedPage =
+      loadedPagesRef.current.length > 0
+        ? Math.max(...loadedPagesRef.current)
+        : 0;
+    const nextPage = currentMaxLoadedPage + 1;
+    const hasMorePages =
+      totalPagesRef.current === null || nextPage <= totalPagesRef.current;
+
+    if (hasMorePages) {
+>>>>>>> 8586ddad022602647792004eaac33f4b4fc4d90b
       await fetchPage(nextPage);
       setTimeout(() => swiper.slideNext(), 50);
     }
@@ -6814,11 +7911,16 @@ export default function ReviewsSection({
 
   const handleAddReview = () => {
     if (!isAuthenticated) {
-      router.push("/auth-prompt");
+      router.push("/login");
     } else {
       router.push(`/add-review?locationId=${locationId}`);
     }
   };
+
+  const currentMaxLoadedPage =
+    loadedPages.length > 0 ? Math.max(...loadedPages) : 0;
+  const hasMorePages =
+    totalPages === null || currentMaxLoadedPage < totalPages;
 
   return (
     <section className={styles.section}>
@@ -6894,7 +7996,7 @@ export default function ReviewsSection({
             <button
               className={styles.arrowBtn}
               onClick={handleNext}
-              disabled={isEnd && loadedPages.length >= totalPages}
+              disabled={isEnd && !hasMorePages}
               aria-label="Наступний відгук"
             >
               <svg

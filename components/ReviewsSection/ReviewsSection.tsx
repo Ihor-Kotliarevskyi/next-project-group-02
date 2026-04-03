@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
@@ -8,7 +8,7 @@ import type { Swiper as SwiperType } from "swiper";
 
 import { FeedBackCard } from "@/components/FeedBackCard/FeedBackCard";
 import { Feedback } from "@/types/feedBackCard";
-import clientApi from "@/lib/api/clientApi";
+import { getFeedbacks } from "@/lib/api/feedbacks";
 import styles from "./ReviewsSection.module.css";
 
 const LIMIT = 3;
@@ -19,92 +19,181 @@ type Props = {
   initialReviews?: Feedback[];
 };
 
+function dedupeReviews(reviews: Feedback[]): Feedback[] {
+  const uniqueReviews = new Map<string, Feedback>();
+
+  reviews.forEach((review) => {
+    uniqueReviews.set(review._id, review);
+  });
+
+  return Array.from(uniqueReviews.values());
+}
+
+function sortByNewest(reviews: Feedback[]): Feedback[] {
+  return [...reviews].sort(
+    (a, b) =>
+      new Date(b.createdAt ?? 0).getTime() -
+      new Date(a.createdAt ?? 0).getTime(),
+  );
+}
+
+function extractPageReviews(payload: unknown): Feedback[] {
+  if (Array.isArray(payload)) return dedupeReviews(payload as Feedback[]);
+
+  if (payload && typeof payload === "object") {
+    const record = payload as Record<string, unknown>;
+
+    if (Array.isArray(record.data)) {
+      return dedupeReviews(record.data as Feedback[]);
+    }
+  }
+
+  return [];
+}
+
+function extractTotalPages(payload: unknown): number | null {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return null;
+  }
+
+  const pagination = (payload as { pagination?: { totalPages?: number } })
+    .pagination;
+
+  return typeof pagination?.totalPages === "number"
+    ? pagination.totalPages
+    : null;
+}
+
 export default function ReviewsSection({
   locationId,
   isAuthenticated = false,
   initialReviews = [],
 }: Props) {
-  const [reviews, setReviews] = useState<Feedback[]>(initialReviews);
-  const [loadedPages, setLoadedPages] = useState<number[]>([1]);
-  const [totalPages, setTotalPages] = useState(1);
-  const [isFetching, setIsFetching] = useState(false);
+  const initialUniqueReviews = useMemo(
+    () => sortByNewest(dedupeReviews(initialReviews)),
+    [initialReviews],
+  );
+  const [reviews, setReviews] = useState<Feedback[]>(initialUniqueReviews);
+  const [loadedPages, setLoadedPages] = useState<number[]>(
+    initialUniqueReviews.length > 0 ? [1] : [],
+  );
+  const [totalPages, setTotalPages] = useState<number | null>(
+    initialUniqueReviews.length > 0 && initialUniqueReviews.length < LIMIT
+      ? 1
+      : null,
+  );
+  const [, setIsFetching] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [ready, setReady] = useState(initialReviews.length > 0);
+  const [ready, setReady] = useState(initialUniqueReviews.length > 0);
   const [isBeginning, setIsBeginning] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
   const swiperRef = useRef<SwiperType | null>(null);
+  const isFetchingRef = useRef(false);
+  const loadedPagesRef = useRef<number[]>(
+    initialUniqueReviews.length > 0 ? [1] : [],
+  );
+  const totalPagesRef = useRef<number | null>(
+    initialUniqueReviews.length > 0 && initialUniqueReviews.length < LIMIT
+      ? 1
+      : null,
+  );
   const router = useRouter();
 
+  const resetWithInitialReviews = useCallback(
+    (nextInitialReviews: Feedback[]) => {
+      const nextReviews = sortByNewest(dedupeReviews(nextInitialReviews));
+      const nextLoadedPages = nextReviews.length > 0 ? [1] : [];
+      const nextTotalPages =
+        nextReviews.length > 0 && nextReviews.length < LIMIT ? 1 : null;
+
+      setReviews(nextReviews);
+      setLoadedPages(nextLoadedPages);
+      setTotalPages(nextTotalPages);
+      setError(null);
+      setReady(nextReviews.length > 0);
+      loadedPagesRef.current = nextLoadedPages;
+      totalPagesRef.current = nextTotalPages;
+
+      if (swiperRef.current) {
+        swiperRef.current.slideTo(0, 0);
+        setIsBeginning(true);
+        setIsEnd(swiperRef.current.isEnd);
+      }
+    },
+    [],
+  );
+
   const fetchPage = useCallback(
-    async (pageNum: number) => {
-      if (isFetching) return;
+    async (pageNum: number, options?: { replace?: boolean }) => {
+      const replace = options?.replace ?? false;
+
+      if (isFetchingRef.current) return;
+      if (!replace && loadedPagesRef.current.includes(pageNum)) return;
+      if (totalPagesRef.current !== null && pageNum > totalPagesRef.current) {
+        return;
+      }
       try {
+        isFetchingRef.current = true;
         setIsFetching(true);
         setError(null);
-        const { data } = await clientApi.get(
-          `/locations/${locationId}/feedbacks`,
-          { params: { page: pageNum, limit: LIMIT } },
-        );
-        const newReviews: Feedback[] = data.data || data;
-        if (data.pagination) {
-          setTotalPages(data.pagination.totalPages ?? 1);
+
+        const data = await getFeedbacks(locationId, pageNum);
+        const nextPageReviews = extractPageReviews(data);
+        const nextTotalPages =
+          extractTotalPages(data) ??
+          (nextPageReviews.length < LIMIT ? pageNum : totalPagesRef.current);
+
+        setTotalPages(nextTotalPages);
+        totalPagesRef.current = nextTotalPages;
+
+        if (replace) {
+          const dedupedPage = sortByNewest(dedupeReviews(nextPageReviews));
+          setReviews(dedupedPage);
+          setLoadedPages([pageNum]);
+          loadedPagesRef.current = [pageNum];
+        } else {
+          setReviews((prev) =>
+            sortByNewest(dedupeReviews([...prev, ...nextPageReviews])),
+          );
+          setLoadedPages((prev) => {
+            if (prev.includes(pageNum)) return prev;
+
+            const nextLoadedPages = [...prev, pageNum].sort((a, b) => a - b);
+            loadedPagesRef.current = nextLoadedPages;
+            return nextLoadedPages;
+          });
         }
-        setReviews((prev) => {
-          const existingIds = new Set(prev.map((r) => r._id));
-          const unique = newReviews.filter((r) => !existingIds.has(r._id));
-          return [...prev, ...unique];
-        });
-        setLoadedPages((prev) => [...prev, pageNum]);
       } catch {
         setError("Не вдалося завантажити відгуки");
       } finally {
+        isFetchingRef.current = false;
         setIsFetching(false);
         setReady(true);
       }
     },
-    [locationId, isFetching],
+    [locationId],
   );
 
   const refreshReviews = useCallback(async () => {
-    try {
-      setError(null);
-      const { data } = await clientApi.get(
-        `/locations/${locationId}/feedbacks`,
-        { params: { page: 1, limit: LIMIT } },
-      );
-      const fresh: Feedback[] = data.data || data;
-      if (data.pagination) {
-        setTotalPages(data.pagination.totalPages ?? 1);
-      }
-      setReviews(fresh);
-      setLoadedPages([1]);
-      setTimeout(() => {
-        swiperRef.current?.slideTo(0, 300);
-      }, 50);
-    } catch {}
-  }, [locationId]);
+    await fetchPage(1, { replace: true });
+
+    setTimeout(() => {
+      swiperRef.current?.slideTo(0, 300);
+    }, 50);
+  }, [fetchPage]);
 
   useEffect(() => {
-    if (initialReviews.length === 0) {
-      fetchPage(1);
-    } else {
-      clientApi
-        .get(`/locations/${locationId}/feedbacks`, {
-          params: { page: 1, limit: LIMIT },
-        })
-        .then(({ data }) => {
-          if (data.pagination) {
-            setTotalPages(data.pagination.totalPages ?? 1);
-          }
-          const fresh: Feedback[] = data.data || data;
-          setReviews(fresh);
-        })
-        .catch(() => {});
+    resetWithInitialReviews(initialUniqueReviews);
+
+    if (initialUniqueReviews.length === 0) {
+      void fetchPage(1);
     }
-  }, [locationId]);
+  }, [locationId, initialUniqueReviews, resetWithInitialReviews, fetchPage]);
 
   useEffect(() => {
-    const handler = () => refreshReviews();
+    const handler = () => {
+      void refreshReviews();
+    };
     window.addEventListener("review-added", handler);
     return () => window.removeEventListener("review-added", handler);
   }, [refreshReviews]);
@@ -120,8 +209,16 @@ export default function ReviewsSection({
       swiper.slideNext();
       return;
     }
-    const nextPage = loadedPages.length + 1;
-    if (nextPage <= totalPages) {
+
+    const currentMaxLoadedPage =
+      loadedPagesRef.current.length > 0
+        ? Math.max(...loadedPagesRef.current)
+        : 0;
+    const nextPage = currentMaxLoadedPage + 1;
+    const hasMorePages =
+      totalPagesRef.current === null || nextPage <= totalPagesRef.current;
+
+    if (hasMorePages) {
       await fetchPage(nextPage);
       setTimeout(() => swiper.slideNext(), 50);
     }
@@ -129,11 +226,15 @@ export default function ReviewsSection({
 
   const handleAddReview = () => {
     if (!isAuthenticated) {
-      router.push("/auth-prompt");
+      router.push("/login");
     } else {
       router.push(`/add-review?locationId=${locationId}`);
     }
   };
+
+  const currentMaxLoadedPage =
+    loadedPages.length > 0 ? Math.max(...loadedPages) : 0;
+  const hasMorePages = totalPages === null || currentMaxLoadedPage < totalPages;
 
   return (
     <section className={styles.section}>
@@ -209,7 +310,7 @@ export default function ReviewsSection({
             <button
               className={styles.arrowBtn}
               onClick={handleNext}
-              disabled={isEnd && loadedPages.length >= totalPages}
+              disabled={isEnd && !hasMorePages}
               aria-label="Наступний відгук"
             >
               <svg

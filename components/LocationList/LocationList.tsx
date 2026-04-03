@@ -47,23 +47,6 @@ export default function LocationList() {
     queryFn: getLocationTypes,
   });
 
-  const locations = useMemo(() => {
-    const allLocations =
-      data?.pages.flatMap((page) => page.locations as Location[]) ?? [];
-
-    if (filters.sort === "name") {
-      return [...allLocations].sort((a, b) =>
-        a.name.localeCompare(b.name, "uk"),
-      );
-    }
-
-    if (filters.sort === "rate") {
-      return [...allLocations].sort((a, b) => b.rate - a.rate);
-    }
-
-    return allLocations;
-  }, [data?.pages, filters.sort]);
-
   const locationTypeLabels = useMemo(
     () =>
       new Map(
@@ -74,6 +57,44 @@ export default function LocationList() {
       ),
     [locationTypes],
   );
+
+  const locations = useMemo(() => {
+    const allLocations =
+    data?.pages.flatMap((page) => page.locations as Location[]) ?? [];
+
+  const uniqueLocations = Array.from(
+    new Map(allLocations.map((loc) => [loc._id, loc])).values()
+  );
+
+  const normalizedSearch = filters.search.trim().toLowerCase();
+
+  const filteredLocations = normalizedSearch
+    ? uniqueLocations.filter((location) => {
+        const locationName = location.name.toLowerCase();
+        const locationTypeLabel =
+          locationTypeLabels.get(location.locationType)?.toLowerCase() ?? "";
+        const locationTypeSlug = location.locationType.toLowerCase();
+
+        return (
+          locationName.includes(normalizedSearch) ||
+          locationTypeLabel.includes(normalizedSearch) ||
+          locationTypeSlug.includes(normalizedSearch)
+        );
+      })
+    : uniqueLocations;
+
+    if (filters.sort === "name") {
+      return [...filteredLocations].sort((a, b) =>
+        a.name.localeCompare(b.name, "uk"),
+      );
+    }
+
+    if (filters.sort === "rate") {
+      return [...filteredLocations].sort((a, b) => b.rate - a.rate);
+    }
+
+    return filteredLocations;
+  }, [data?.pages, filters.sort, filters.search, locationTypeLabels]);
 
   return (
     <section className={styles.section}>
