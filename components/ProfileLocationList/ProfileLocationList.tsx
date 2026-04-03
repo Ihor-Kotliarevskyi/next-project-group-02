@@ -3,8 +3,7 @@
 import { useMemo, useState } from 'react';
 import { useLocationStore } from '@/lib/store/locationStore';
 import LocationCard from '@/components/LocationCard/LocationCard';
-import Pagination from '@/components/Pagination/Pagination';
-import styles from './ProfileLocationList.module.css';
+import css from './ProfileLocationList.module.css';
 import { Location } from '@/types/location';
 
 interface ProfileLocationListProps {
@@ -42,15 +41,15 @@ export default function ProfileLocationList({
   const hasMore = visibleCount < sortedLocations.length;
 
   if (isLoading) {
-    return <p className={styles.loader}>Завантаження...</p>;
+    return <p className={css.loader}>Завантаження...</p>;
   }
 
   return (
-    <section className={styles.section}>
-      <div className={styles.container}>
-        <div className={styles.grid}>
+    <section className={css.section}>
+      <div className={css.container}>
+        <div className={css.grid}>
           {displayedLocations.length === 0 ? (
-            <p className={styles.empty}>Нічого не знайдено</p>
+            <p className={css.empty}>Нічого не знайдено</p>
           ) : (
             displayedLocations.map((location: Location) => (
               <LocationCard
@@ -65,7 +64,18 @@ export default function ProfileLocationList({
           )}
         </div>
 
-        {hasMore && <Pagination onLoadMore={handleLoadMore} isLoading={false} />}
+        {hasMore && (
+          <div className={css.wrapper}>
+            <button
+              className={css.button}
+              onClick={handleLoadMore}
+              disabled={isLoading}
+              type="button"
+            >
+              {isLoading ? 'Завантаження...' : 'Показати ще'}
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );

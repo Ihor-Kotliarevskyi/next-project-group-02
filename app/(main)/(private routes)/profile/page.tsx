@@ -1,20 +1,16 @@
 import Image from 'next/image';
-import { getUserByIdServer, getUserLocationsServer } from '@/lib/api/serverApi';
+import Link from 'next/link';
+import { getMeServer, getUserLocationsServer } from '@/lib/api/serverApi';
 import ProfileLocationList from '@/components/ProfileLocationList/ProfileLocationList';
-
 import css from './ProfilePage.module.css';
 
 async function Profile() {
-  // Тестовий ID користувача
-  const userId = '6881563901add19ee16fcff5';
+  const user = await getMeServer();
 
-  // Отримуємо дані паралельно для кращої продуктивності
-  const [user, data] = await Promise.all([
-    getUserByIdServer(userId),
-    getUserLocationsServer(userId),
-  ]);
-
+  const data = await getUserLocationsServer(user._id);
   const locations = data.data;
+  const isLocations = locations.length !== 0 ? true : false;
+  const isEditable = true;
 
   return (
     <main className={css.mainContent}>
@@ -33,8 +29,23 @@ async function Profile() {
           </div>
         </div>
 
-        <div>
-          <ProfileLocationList locations={locations} isLoading={false} />
+        <div className={css.locations}>
+          {isLocations ? (
+            <ProfileLocationList locations={locations} isLoading={false} />
+          ) : (
+            <div className={css.wraper}>
+              <div className={css.noLocationsMessage}>
+                <p className={css.text}>
+                  Ви ще нічого не публікували, поділіться своєю першою локацією!
+                </p>
+                <button type="button" className={css.buttonAdd}>
+                  <Link href="/locations/add" className={css.locationAddLink}>
+                    Поділитися локацією
+                  </Link>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </main>
