@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useMemo } from "react";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
@@ -126,7 +126,10 @@ export default function LocationList() {
                   _id={location._id}
                   image={location.image}
                   name={location.name}
-                  locationType={location.locationType}
+                  locationType={
+                    locationTypeLabels.get(location.locationType) ??
+                    location.locationType
+                  }
                   rate={location.rate}
                 />
               ))

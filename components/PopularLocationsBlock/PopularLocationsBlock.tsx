@@ -71,7 +71,10 @@ export default function PopularLocationsBlock() {
                       _id={location._id}
                       image={location.image}
                       name={location.name}
-                      locationType={location.locationType}
+                      locationType={
+                        locationTypeLabels.get(location.locationType) ??
+                        location.locationType
+                      }
                       rate={location.rate}
                     />
                   </SwiperSlide>
