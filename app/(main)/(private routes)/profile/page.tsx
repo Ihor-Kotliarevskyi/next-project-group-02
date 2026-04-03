@@ -17,7 +17,7 @@ async function Profile() {
       <div className={css.profile}>
         <div className={css.header}>
           <Image
-            src={user.avatarUrl ? user.avatarUrl : user.avatar}
+            src={user.avatarUrl || user.avatar}
             alt="User Avatar"
             width={120}
             height={120}
