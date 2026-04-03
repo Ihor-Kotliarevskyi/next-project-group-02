@@ -39,11 +39,7 @@ const { data } = await api.post("/locations", body, {
 
     return NextResponse.json(data);
   } catch (error) {
-    console.log("ERROR:", error);
-
     if (isAxiosError(error)) {
-      console.log("BACKEND ERROR:", error.response?.data);
-
       return NextResponse.json(
         { error: error.response?.data || error.message },
         { status: error.response?.status ?? 500 }

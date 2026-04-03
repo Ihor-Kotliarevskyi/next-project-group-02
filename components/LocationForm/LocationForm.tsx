@@ -70,7 +70,6 @@ const initialValues: LocationFormValues = {
   values: LocationFormValues,
   { setSubmitting }: FormikHelpers<LocationFormValues>
   ) => {
-     console.log("Submit");
    try {
     let imageUrl = initialData?.image || "https://picsum.photos/300";
     if (values.imageFile) {
