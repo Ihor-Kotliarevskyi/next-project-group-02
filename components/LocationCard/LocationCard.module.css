@@ -53,7 +53,15 @@
   font-weight: 700;
 }
 
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+}
+
 .button {
+  flex: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -64,22 +72,38 @@
   background-color: #f7ddd0;
   color: #4c2613;
   font-weight: 500;
-  font-size: 20px;
+  font-size: 18px; /* Трохи зменшив, щоб влізло на малих екранах */
   line-height: 1.5;
   text-decoration: none;
-  transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease,
-    color 0.2s ease;
+  transition: all 0.2s ease;
+}
+
+.editLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border: 1px solid #e7c7b5;
+  border-radius: 8px;
+  background-color: #f7ddd0;
+  transition: all 0.2s ease;
 }
 
 .button:hover,
-.button:focus-visible {
-  cursor: pointer;
+.editLink:hover {
   background-color: #e8845a;
   border-color: #e8845a;
+  cursor: pointer;
+}
+
+.editLink:hover img {
+  filter: brightness(0) invert(1);
+}
+
+.button:hover {
   color: #fff7f2;
-  outline: none;
 }
 
 @media (min-width: 375px) {
@@ -95,6 +119,10 @@
 
   .title {
     font-size: 26px;
+  }
+
+  .button {
+    font-size: 16px;
   }
 }
 

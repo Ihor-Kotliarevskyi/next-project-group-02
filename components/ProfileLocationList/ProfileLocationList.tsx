@@ -11,15 +11,21 @@ import { useQuery } from '@tanstack/react-query';
 interface ProfileLocationListProps {
   locations: Location[];
   isLoading?: boolean;
+  isEditable?: boolean;
 }
 
 export default function ProfileLocationList({
   locations = [],
   isLoading = false,
+  isEditable = false,
 }: ProfileLocationListProps) {
   const { filters } = useLocationStore();
-
   const [visibleCount, setVisibleCount] = useState(6);
+
+  const { data: locationTypes = [] } = useQuery<{ slug: string; type: string }[]>({
+    queryKey: ['locationTypes'],
+    queryFn: getLocationTypes,
+  });
 
   const sortedLocations = useMemo(() => {
     const list = [...locations];
@@ -36,6 +42,11 @@ export default function ProfileLocationList({
     return sortedLocations.slice(0, visibleCount);
   }, [sortedLocations, visibleCount]);
 
+  const locationTypeLabels = useMemo(
+    () => new Map(locationTypes.map(item => [item.slug, item.type])),
+    [locationTypes],
+  );
+
   const handleLoadMore = () => {
     setVisibleCount(prev => prev + 6);
   };
@@ -45,27 +56,6 @@ export default function ProfileLocationList({
   if (isLoading) {
     return <p className={css.loader}>Завантаження...</p>;
   }
-
-  const { data: locationTypes = [] } = useQuery<
-    {
-      slug: string;
-      type: string;
-    }[]
-  >({
-    queryKey: ['locationTypes'],
-    queryFn: getLocationTypes,
-  });
-
-  const locationTypeLabels = useMemo(
-    () =>
-      new Map(
-        locationTypes.map((locationType: { slug: string; type: string }) => [
-          locationType.slug,
-          locationType.type,
-        ]),
-      ),
-    [locationTypes],
-  );
 
   return (
     <section className={css.section}>
@@ -81,10 +71,10 @@ export default function ProfileLocationList({
                 image={location.image}
                 name={location.name}
                 locationType={
-                    locationTypeLabels.get(location.locationType) ??
-                    location.locationType
-                  }
+                  locationTypeLabels.get(location.locationType) ?? location.locationType
+                }
                 rate={location.rate}
+                isEditable={isEditable}
               />
             ))
           )}

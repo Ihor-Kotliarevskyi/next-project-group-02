@@ -10,7 +10,6 @@ async function Profile() {
   const data = await getUserLocationsServer(user._id);
   const locations = data.data;
   const isLocations = locations.length !== 0 ? true : false;
-  const isEditable = true;
 
   return (
     <main className={css.mainContent}>
@@ -31,7 +30,7 @@ async function Profile() {
 
         <div className={css.locations}>
           {isLocations ? (
-            <ProfileLocationList locations={locations} isLoading={false} />
+            <ProfileLocationList locations={locations} isLoading={false} isEditable={true} />
           ) : (
             <div className={css.wraper}>
               <div className={css.noLocationsMessage}>
