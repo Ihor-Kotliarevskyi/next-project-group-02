@@ -29,7 +29,10 @@ type PageProps = {
   params: Promise<{ locationId: string }>;
 };
 
-function StarIcon({ filled }: { filled: boolean }) {
+function StarIcon({ type }: { type: "full" | "half" | "empty" }) {
+  const starPath =
+    "M12 2.5L14.9363 8.45047L21.5 9.4042L16.75 14.0336L17.8713 20.5708L12 17.4842L6.12868 20.5708L7.25 14.0336L2.5 9.4042L9.06374 8.45047L12 2.5Z";
+
   return (
     <svg
       width="24"
@@ -39,13 +42,37 @@ function StarIcon({ filled }: { filled: boolean }) {
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
+      <defs>
+        <clipPath id={`half-star-${type}`}>
+          <rect x="0" y="0" width="12" height="24" />
+        </clipPath>
+      </defs>
       <path
-        d="M12 2.5L14.9363 8.45047L21.5 9.4042L16.75 14.0336L17.8713 20.5708L12 17.4842L6.12868 20.5708L7.25 14.0336L2.5 9.4042L9.06374 8.45047L12 2.5Z"
-        fill={filled ? "#1D241D" : "#F4D9CD"}
+        d={starPath}
+        fill="#F4D9CD"
         stroke="#1D241D"
         strokeWidth="1.5"
         strokeLinejoin="round"
       />
+      {type === "full" && (
+        <path
+          d={starPath}
+          fill="#1D241D"
+          stroke="#1D241D"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+        />
+      )}
+      {type === "half" && (
+        <path
+          d={starPath}
+          fill="#1D241D"
+          stroke="#1D241D"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+          clipPath={`url(#half-star-${type})`}
+        />
+      )}
     </svg>
   );
 }
@@ -152,11 +179,8 @@ export default async function LocationPage({ params }: PageProps) {
     typeof location.ownerId === "object"
       ? location.ownerId?._id
       : location.ownerId;
-  const roundedRate = Math.round(location.rate);
-  const clampedRate = Math.max(0, Math.min(5, roundedRate));
-  const stars = "★".repeat(clampedRate) + "☆".repeat(5 - clampedRate);
-  void stars;
-
+  const clampedRate = Math.max(0, Math.min(5, location.rate));
+  
   return (
     <main className={styles.page}>
       <article className={styles.card}>
@@ -166,7 +190,8 @@ export default async function LocationPage({ params }: PageProps) {
             alt={location.name}
             fill
             priority
-            sizes="(max-width: 767px) 100vw, (max-width: 1439px) 50vw, 640px"
+            quality={90}
+            sizes="(min-width: 1440px) 760px, (min-width: 768px) calc(100vw - 20px), calc(100vw - 40px)"
             className={styles.image}
           />
         </div>
@@ -174,9 +199,19 @@ export default async function LocationPage({ params }: PageProps) {
           <div className={styles.ratingRow}>
             <span className={styles.stars} aria-label={`Рейтинг: ${location.rate} з 5`}>
               {[1, 2, 3, 4, 5].map((star) => (
-                <StarIcon key={star} filled={star <= clampedRate} />
+                <StarIcon
+                  key={star}
+                  type={
+                    clampedRate >= star
+                      ? "full"
+                      : clampedRate >= star - 0.5
+                        ? "half"
+                        : "empty"
+                  }
+                />
               ))}
             </span>
+            <span className={styles.ratingDot} aria-hidden="true" />
             <span>{location.rate}</span>
           </div>
           <div className={styles.meta}>
