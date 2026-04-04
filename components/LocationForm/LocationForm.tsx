@@ -1,13 +1,14 @@
 "use client";
 
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
-import * as Yup from "yup";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { LocationFormValues } from "@/types/location";
 import { createLocation, updateLocation } from "@/lib/api/clientApi";
 import css from "./LocationForm.module.css";
+import { getLocationValidationSchema } from "@/lib/validation/locationSchema";
+import { uploadImage } from "@/utils/uploadImage";
 
 type Props = {
   id?: string;
@@ -18,21 +19,20 @@ type Props = {
     description: string;
     image?: string;
   };
-  regions: string[];
-  locationTypes: string[];
+  regions: { slug: string; region: string }[];
+  locationTypes: { slug: string; type: string }[];
 };
 
 export default function LocationForm({ initialData, id, regions, locationTypes }: Props) {
   
-  const isEdit = !!initialData;
+  const isEdit = !!id;
   const router = useRouter();
   const placeholder = "/images/location-form-placeholder-image.jpg";
+  const validationSchema = getLocationValidationSchema(isEdit);
+  
   
 
- const [imagePreview, setImagePreview] = useState<string>(
-  initialData?.image || placeholder
-  );
-  
+  const [imagePreview, setImagePreview] = useState<string>(placeholder);
   useEffect(() => { 
     setImagePreview(initialData?.image || placeholder);
   }, [initialData]);
@@ -56,76 +56,17 @@ const initialValues: LocationFormValues = {
   imageFile: null,
 };
 
-  const validationSchema = Yup.object({
-   imageFile: Yup.mixed<File>()
-  .test("required", "Додайте фото", (value) => {
-    if (isEdit) return true; 
-    return !!value;
-  })
-  .test("fileType", "Тільки JPG або PNG", (value) => {
-    if (!value) return true;
-    return ["image/jpeg", "image/png"].includes(value.type);
-  })
-  .test("fileSize", "Максимум 1MB", (value) => {
-    if (!value) return true;
-    return value.size <= 1024 * 1024;
-  }),
-
-    name: Yup.string()
-      .min(3, "Мінімум 3 символи")
-      .max(96, "Максимум 96 символів")
-      .required("Введіть назву"),
-
-    locationType: Yup.string()
-      .max(64, "Максимум 64 символи")
-      .required("Оберіть тип"),
-
-    region: Yup.string()
-      .max(64, "Максимум 64 символи")
-      .required("Оберіть регіон"),
-
-    description: Yup.string()
-      .min(20, "Мінімум 20 символів")
-      .max(6000, "Максимум 6000символів")
-      .required("Введіть опис"),
-  });
-  
-
   useEffect(() => {
     if (isEdit && !id) {
       router.push("/");
     }
   }, [isEdit, id, router]);
 
-    const uploadImage = async (file: File) => {
-  try {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "bym9862n");
 
-    const res = await fetch(
-      "https://api.cloudinary.com/v1_1/drr2wc5rr/image/upload",
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
-
-    const data = await res.json();
-    console.log("Cloudinary response:", data);
-
-    return data.secure_url;
-  } catch (error) {
-    console.log("UPLOAD ERROR:", error);
-    return "https://picsum.photos/300";
-  }
-};
-  
-
- const handleSubmit = async (
+  const handleSubmit = async (
   values: LocationFormValues,
   { setSubmitting }: FormikHelpers<LocationFormValues>
-) => {
+  ) => {
    try {
     let imageUrl = initialData?.image || "https://picsum.photos/300";
     if (values.imageFile) {
@@ -157,7 +98,7 @@ const payload = {
   
   return (
     <main>
-    <div className={css.locationForm}>
+      <div className={css.container}>
 
       <h1 className={css.locationFormTitle}>
         {isEdit ? "Редагування місця" : "Додавання нового місця"}
@@ -167,118 +108,125 @@ const payload = {
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
-          enableReinitialize
-
+        enableReinitialize
       >
-        {({ resetForm, setFieldValue, isSubmitting }) => (
-          <Form className={css.locationFormWrapper}>
-            {/* Фото */}
-            <div className={css.formGroup}>
-              <p className="location-form__label">Обкладинка</p>
+        
 
-              <input
-                id="fileInput"
-                type="file"
-                accept="image/jpeg, image/png"
-                hidden
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    setFieldValue("imageFile", file);
-                    setImagePreview(URL.createObjectURL(file));
-                  }
-                }}
-              />
+      {({ resetForm, setFieldValue, isSubmitting, errors, touched }) => (
+            <Form>
+              <div className={css.locationFormWrapper}>
+          {/* Фото */}
+          <div className={css.formGroup}>
+            <p className={css.label}>Обкладинка</p>
 
-              <button
-                type="button"
-                className="location-form_upload-btn"
-                onClick={() =>
-                  document.getElementById("fileInput")?.click()
+            <input
+              id="fileInput"
+              type="file"
+              accept="image/jpeg, image/png"
+              hidden
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  setFieldValue("imageFile", file);
+                  setImagePreview(URL.createObjectURL(file));
                 }
-              >           
-               Завантажте фото
-              </button>
-
-              {imagePreview && (
-                <img
-                  src={imagePreview}
-                  className="location-form_preview"
-                  alt="preview"
-                  width={120}
-                  style={{ display: "block", marginTop: 10 }}
-                />
-              )}
-
-              <ErrorMessage className="location-form__error" name="imageFile" component="div" />
-            </div>
-
-            {/* Назва */}
-            <div>
-              <label className="location-form__label" htmlFor="name">Назва місця</label>
-              <Field
-                id="name"
-                name="name"
-                placeholder="Введіть назву місця"
-                className="location-form__input"
+              }}
+            />
+                
+            {imagePreview && (
+              <img
+                src={imagePreview}
+                className={css.photoPreview}
+                alt="preview"
+                width={120}
+                style={{ display: "block", marginTop: 10 }}
               />
-              <ErrorMessage className="location-form__error" name="name" component="div" />
-            </div>
+            )}
 
-            {/* Тип */}
-            <div>
-              <label className="location-form__label" htmlFor="locationType">Тип місця</label>
-              <Field className="location-form__input" as="select" id="locationType" name="locationType">
-                <option value="">Оберіть тип місця</option>
+            <button
+              type="button"
+              className={css.uploadBtn}
+              onClick={() =>
+                document.getElementById("fileInput")?.click()
+              }
+              >
+                Завантажте фото
+            </button>
+
+           
+            <ErrorMessage className={css.errorMessage} name="imageFile" component="div" />
+          </div>
+
+          {/* Назва */}
+          <div className={css.formGroup}>
+            <label className={css.label} htmlFor="name">Назва місця</label>
+            <Field
+              id="name"
+              name="name"
+              placeholder="Введіть назву місця"
+              className={`
+                ${css.locationInput}
+                ${errors.name && touched.name ? css.inputError : ""}
+              `}
+            />
+            <ErrorMessage className={css.errorMessage} name="name" component="div" />
+          </div>
+
+          {/* Тип */}
+          <div className={css.formGroup}>
+            <label className={css.label} htmlFor="locationType">Тип місця</label>
+                <Field
+                  className={`
+                    ${css.locationInput}
+                    ${errors.locationType && touched.locationType ? css.inputError : ""}
+                `}
+                  as="select" id="locationType" name="locationType">
+              <option value="">Оберіть тип місця</option>
                 {locationTypes.map((location, index) => (
-                 <option key={index} value={location}>
-                  {location}
+                 <option key={index} value={location.slug}>
+                  {location.type}
                 </option>
      ))}
               </Field>
-              <ErrorMessage className="location-form__error" name="locationType" component="div" />
+              <ErrorMessage className={css.errorMessage} name="locationType" component="div" />
             </div>
 
             {/* Регіон */}
-            <div>
-              <label className="location-form__label" htmlFor="region">Регіон</label>
-              <Field className="location-form__input" as="select" id="region" name="region">
+            <div className={css.formGroup}>
+              <label className={css.label} htmlFor="region">Регіон</label>
+              <Field className={`
+                ${css.locationInput}
+                ${errors.region && touched.region ? css.inputError : ""}
+              `} as="select" id="region" name="region">
                 <option value="">Оберіть регіон</option>
                 {regions.map((region, index) => (
-                  <option key={index} value={region}>
-                    {region} 
+                  <option key={index} value={region.slug}>
+                    {region.region}
                   </option>
               ))}
               </Field>
-              <ErrorMessage className="location-form__error" name="region" component="div" />
+              <ErrorMessage className={css.errorMessage} name="region" component="div" />
             </div>
 
             {/* Опис */}
-            <div>
-              <label className="location-form__label" htmlFor="description">Опис</label>
+            <div className={css.formGroup}>
+              <label className={css.label} htmlFor="description">Детальний опис</label>
               <Field
-                className="location-form__textarea"
+                className={`${css.locationInput}  ${errors.description && touched.description  ? css.inputError : ""} ${css.textarea}`}
                 as="textarea"
                 id="description"
                 name="description"
                 placeholder="Детальний опис локації"
                 maxLength={600}
               />
-              <ErrorMessage className="location-form__error" name="description" component="div" />
+              <ErrorMessage className={css.errorMessage} name="description" component="div" />
             </div>
 
             {/* Кнопки */}
-            <div style={{ marginTop: 20 }}>
-              <button className="location-form__actions" type="submit" disabled={isSubmitting}>
-                {isSubmitting
-                  ? "Завантаження..."
-                  : isEdit
-                  ? "Зберегти"
-                  : "Опублікувати"}
-              </button>
+            <div className={css.buttonGroup}>
 
               <button
-                className="location-form__cancel"
+                className={css.locationCancel}
                 type="button"
                 onClick={() => {
                   resetForm();
@@ -289,12 +237,21 @@ const payload = {
                 }}
               >
                 {isEdit ? "Відмінити зміни" : "Відмінити"}
+                </button>
+                
+                <button className={css.locationSubmit} type="submit" disabled={isSubmitting}>
+                {isSubmitting
+                  ? "Завантаження..."
+                  : isEdit
+                  ? "Зберегти"
+                  : "Опублікувати"}
               </button>
-            </div>
+                </div>
+                </div>
           </Form>
         )}
       </Formik>
-      </div>
-      </main>
+    </div>
+    </main>
   );
 }

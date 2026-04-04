@@ -6,6 +6,7 @@ import styles from "./page.module.css";
 import ReviewsSection from "@/components/ReviewsSection/ReviewsSection";
 import { Feedback } from "@/types/feedBackCard";
 import { api } from "@/lib/api/api";
+import { locationTypeLabels, regionLabels } from "@/utils/labels";
 
 type Owner = {
   _id?: string;
@@ -17,7 +18,7 @@ type LocationDetails = {
   _id: string;
   image: string;
   name: string;
-  locationType: string;
+  locationType: string | { type: string; slug: string };  
   region: string;
   rate: number;
   description: string;
@@ -27,6 +28,27 @@ type LocationDetails = {
 type PageProps = {
   params: Promise<{ locationId: string }>;
 };
+
+function StarIcon({ filled }: { filled: boolean }) {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path
+        d="M12 2.5L14.9363 8.45047L21.5 9.4042L16.75 14.0336L17.8713 20.5708L12 17.4842L6.12868 20.5708L7.25 14.0336L2.5 9.4042L9.06374 8.45047L12 2.5Z"
+        fill={filled ? "#1D241D" : "#F4D9CD"}
+        stroke="#1D241D"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
 function normalizeFeedbacks(payload: unknown): Feedback[] {
   if (Array.isArray(payload)) return payload as Feedback[];
@@ -116,6 +138,7 @@ export default async function LocationPage({ params }: PageProps) {
     getLocationById(locationId),
     getIsAuthorized(),
   ]);
+
   if (!location) {
     notFound();
   }
@@ -132,12 +155,10 @@ export default async function LocationPage({ params }: PageProps) {
   const roundedRate = Math.round(location.rate);
   const clampedRate = Math.max(0, Math.min(5, roundedRate));
   const stars = "★".repeat(clampedRate) + "☆".repeat(5 - clampedRate);
-  
+  void stars;
+
   return (
     <main className={styles.page}>
-      <Link href="/" className={styles.backLink}>
-        Назад до всіх локацій
-      </Link>
       <article className={styles.card}>
         <div className={styles.imageWrap}>
           <Image
@@ -151,19 +172,22 @@ export default async function LocationPage({ params }: PageProps) {
         </div>
         <div className={styles.content}>
           <div className={styles.ratingRow}>
-            <span>{stars}</span>
+            <span className={styles.stars} aria-label={`Рейтинг: ${location.rate} з 5`}>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <StarIcon key={star} filled={star <= clampedRate} />
+              ))}
+            </span>
             <span>{location.rate}</span>
           </div>
           <div className={styles.meta}>
-            <p className={styles.type}>{location.locationType}</p>
             <h1 className={styles.title}>{location.name}</h1>
           </div>
           <div className={styles.details}>
             <p>
-              <strong>Регіон:</strong> {location.region}
+              <strong>Регіон:</strong> {regionLabels[location.region] ?? location.region}
             </p>
             <p>
-              <strong>Тип локації:</strong> {location.locationType}
+              <strong>Тип локації:</strong> {locationTypeLabels[location.locationType as string] ?? location.locationType}
             </p>
             <p>
               <strong>Автор статті:</strong>{" "}
