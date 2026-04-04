@@ -30,11 +30,9 @@ export default function LocationForm({ initialData, id, regions, locationTypes }
   const placeholder = "/images/location-form-placeholder-image.jpg";
   const validationSchema = getLocationValidationSchema(isEdit);
   
-
- const [imagePreview, setImagePreview] = useState<string>(
-  initialData?.image || placeholder
-  );
   
+
+  const [imagePreview, setImagePreview] = useState<string>(placeholder);
   useEffect(() => { 
     setImagePreview(initialData?.image || placeholder);
   }, [initialData]);
@@ -114,11 +112,12 @@ const payload = {
       >
         
 
-      {({ resetForm, setFieldValue, isSubmitting }) => (
-        <Form className={css.locationForm}>
+      {({ resetForm, setFieldValue, isSubmitting, errors, touched }) => (
+            <Form>
+              <div className={css.locationFormWrapper}>
           {/* Фото */}
           <div className={css.formGroup}>
-            <p className="location-form__label">Обкладинка</p>
+            <p className={css.label}>Обкладинка</p>
 
             <input
               id="fileInput"
@@ -133,10 +132,20 @@ const payload = {
                 }
               }}
             />
+                
+            {imagePreview && (
+              <img
+                src={imagePreview}
+                className={css.photoPreview}
+                alt="preview"
+                width={120}
+                style={{ display: "block", marginTop: 10 }}
+              />
+            )}
 
             <button
               type="button"
-              className="location-form_upload-btn"
+              className={css.uploadBtn}
               onClick={() =>
                 document.getElementById("fileInput")?.click()
               }
@@ -144,34 +153,34 @@ const payload = {
                 Завантажте фото
             </button>
 
-            {imagePreview && (
-              <img
-                src={imagePreview}
-                className="location-form_preview"
-                alt="preview"
-                width={120}
-                style={{ display: "block", marginTop: 10 }}
-              />
-            )}
-            <ErrorMessage className="location-form__error" name="imageFile" component="div" />
+           
+            <ErrorMessage className={css.errorMessage} name="imageFile" component="div" />
           </div>
 
           {/* Назва */}
           <div className={css.formGroup}>
-            <label className="location-form__label" htmlFor="name">Назва місця</label>
+            <label className={css.label} htmlFor="name">Назва місця</label>
             <Field
               id="name"
               name="name"
               placeholder="Введіть назву місця"
-              className={css.input}
+              className={`
+                ${css.locationInput}
+                ${errors.name && touched.name ? css.inputError : ""}
+              `}
             />
-            <ErrorMessage className="location-form__error" name="name" component="div" />
+            <ErrorMessage className={css.errorMessage} name="name" component="div" />
           </div>
 
           {/* Тип */}
-          <div>
-            <label className="location-form__label" htmlFor="locationType">Тип місця</label>
-            <Field className="location-form__input" as="select" id="locationType" name="locationType">
+          <div className={css.formGroup}>
+            <label className={css.label} htmlFor="locationType">Тип місця</label>
+                <Field
+                  className={`
+                    ${css.locationInput}
+                    ${errors.locationType && touched.locationType ? css.inputError : ""}
+                `}
+                  as="select" id="locationType" name="locationType">
               <option value="">Оберіть тип місця</option>
                 {locationTypes.map((location, index) => (
                  <option key={index} value={location.slug}>
@@ -179,13 +188,16 @@ const payload = {
                 </option>
      ))}
               </Field>
-              <ErrorMessage className="location-form__error" name="locationType" component="div" />
+              <ErrorMessage className={css.errorMessage} name="locationType" component="div" />
             </div>
 
             {/* Регіон */}
-            <div>
-              <label className="location-form__label" htmlFor="region">Регіон</label>
-              <Field className="location-form__input" as="select" id="region" name="region">
+            <div className={css.formGroup}>
+              <label className={css.label} htmlFor="region">Регіон</label>
+              <Field className={`
+                ${css.locationInput}
+                ${errors.region && touched.region ? css.inputError : ""}
+              `} as="select" id="region" name="region">
                 <option value="">Оберіть регіон</option>
                 {regions.map((region, index) => (
                   <option key={index} value={region.slug}>
@@ -193,35 +205,28 @@ const payload = {
                   </option>
               ))}
               </Field>
-              <ErrorMessage className="location-form__error" name="region" component="div" />
+              <ErrorMessage className={css.errorMessage} name="region" component="div" />
             </div>
 
             {/* Опис */}
-            <div>
-              <label className="location-form__label" htmlFor="description">Опис</label>
+            <div className={css.formGroup}>
+              <label className={css.label} htmlFor="description">Детальний опис</label>
               <Field
-                className="location-form__textarea"
+                className={`${css.locationInput}  ${errors.description && touched.description  ? css.inputError : ""} ${css.textarea}`}
                 as="textarea"
                 id="description"
                 name="description"
                 placeholder="Детальний опис локації"
                 maxLength={600}
               />
-              <ErrorMessage className="location-form__error" name="description" component="div" />
+              <ErrorMessage className={css.errorMessage} name="description" component="div" />
             </div>
 
             {/* Кнопки */}
-            <div style={{ marginTop: 20 }}>
-              <button className="location-form__actions" type="submit" disabled={isSubmitting}>
-                {isSubmitting
-                  ? "Завантаження..."
-                  : isEdit
-                  ? "Зберегти"
-                  : "Опублікувати"}
-              </button>
+            <div className={css.buttonGroup}>
 
               <button
-                className="location-form__cancel"
+                className={css.locationCancel}
                 type="button"
                 onClick={() => {
                   resetForm();
@@ -232,8 +237,17 @@ const payload = {
                 }}
               >
                 {isEdit ? "Відмінити зміни" : "Відмінити"}
+                </button>
+                
+                <button className={css.locationSubmit} type="submit" disabled={isSubmitting}>
+                {isSubmitting
+                  ? "Завантаження..."
+                  : isEdit
+                  ? "Зберегти"
+                  : "Опублікувати"}
               </button>
-            </div>
+                </div>
+                </div>
           </Form>
         )}
       </Formik>
