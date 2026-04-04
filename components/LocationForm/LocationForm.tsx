@@ -9,6 +9,7 @@ import { createLocation, updateLocation } from "@/lib/api/clientApi";
 import css from "./LocationForm.module.css";
 import { getLocationValidationSchema } from "@/lib/validation/locationSchema";
 import { uploadImage } from "@/utils/uploadImage";
+import { useMemo } from "react";
 
 type Props = {
   id?: string;
@@ -48,30 +49,27 @@ export default function LocationForm({ initialData, id, regions, locationTypes }
     };
   }, [imagePreview]);
 
-const initialValues: LocationFormValues = {
+ const initialValues = useMemo(() => ({
   name: initialData?.name ?? "",
-  locationType: initialData?.locationType || "",
-  region: initialData?.region || "",
+  locationType:
+    locationTypes.find(t => t.slug === initialData?.locationType)?.slug || "",
+  region:
+    regions.find(r => r.slug === initialData?.region)?.slug || "",
   description: initialData?.description || "",
   imageFile: null,
-};
-
-  useEffect(() => {
-    if (isEdit && !id) {
-      router.push("/");
-    }
-  }, [isEdit, id, router]);
+}), [initialData, locationTypes, regions]);
 
 
   const handleSubmit = async (
   values: LocationFormValues,
   { setSubmitting }: FormikHelpers<LocationFormValues>
   ) => {
-   try {
-    let imageUrl = initialData?.image || "https://picsum.photos/300";
-    if (values.imageFile) {
-      imageUrl = await uploadImage(values.imageFile);
-    }
+    try {
+      let imageUrl = initialData?.image || "https://picsum.photos/300";
+      if (values.imageFile) {
+        imageUrl = await uploadImage(values.imageFile);
+      }
+    
 
 const payload = {
   name: values.name,
@@ -94,8 +92,6 @@ const payload = {
   }
   };
   
-
-  
   return (
     <main className={css.main}>
       <div className={css.container}>
@@ -104,13 +100,13 @@ const payload = {
         {isEdit ? "Редагування місця" : "Додавання нового місця"}
       </h1>
 
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-          enableReinitialize
-          validateOnMount
-      >
+      <Formik<LocationFormValues>
+  initialValues={initialValues}
+  validationSchema={validationSchema}
+  onSubmit={handleSubmit}
+  enableReinitialize
+  validateOnMount
+>
         
 
      {({ resetForm, setFieldValue, isSubmitting, errors, touched, isValid, dirty }) => (
@@ -184,7 +180,7 @@ const payload = {
                   as="select" id="locationType" name="locationType">
               <option value="">Оберіть тип місця</option>
                 {locationTypes.map((location, index) => (
-                 <option key={index} value={location.slug}>
+                 <option className={css.optional} key={index} value={location.slug}>
                   {location.type}
                 </option>
      ))}
@@ -227,31 +223,35 @@ const payload = {
             <div className={css.buttonGroup}>
 
               <button
-                className={`${css.locationCancel} ${css.buttonGeneral}`}
-                    type="button"
-                    
-                onClick={() => {
-                  resetForm();
-                  setImagePreview(initialData?.image || placeholder);
+  className={`${css.locationCancel} ${css.buttonGeneral}`}
+  type="button"
+  onClick={() => {
+    if (!dirty) {
+      router.push("/locations"); 
+      return;
+    }
 
-                  const input = document.getElementById("fileInput") as HTMLInputElement;
-                  if (input) input.value = "";
-                }}
-              >
-                {isEdit ? "Відмінити зміни" : "Відмінити"}
-                </button>
+    resetForm();
+    setImagePreview(initialData?.image || placeholder);
+
+    const input = document.getElementById("fileInput") as HTMLInputElement;
+    if (input) input.value = "";
+  }}
+>
+  {isEdit ? "Відмінити зміни" : "Відмінити"}
+</button>
                 
               <button
                 className={`${css.locationSubmit} ${css.buttonGeneral}`}
                 type="submit"
-                disabled={!isValid || !dirty || isSubmitting}
+                disabled={!isValid || isSubmitting  || !dirty}
               >
               {isSubmitting ? (
                  <span className={css.loader}></span>
                 ) : isEdit ? (
-                  "Зберегти"
+                  "Зберегти зміни"
                  ) : (
-                  "Опублікувати"
+                  "Зберегти"
              )}
             </button>
           </div>

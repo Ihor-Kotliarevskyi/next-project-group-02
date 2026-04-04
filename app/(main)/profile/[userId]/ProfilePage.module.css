@@ -11,41 +11,9 @@
   padding: 32px 20px 64px;
 }
 
-.header {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
+.locations {
   width: 100%;
-}
-
-.avatar {
-  width: 145px;
-  height: 145px;
-  margin-bottom: 24px;
-  border-radius: 50%;
-}
-
-.profileInfo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.userName {
-  font-family: var(--font-family);
-  font-weight: 700;
-  font-size: 20px;
-  line-height: 130%;
-  letter-spacing: -0.01em;
-  color: #000;
-}
-
-.articles {
-  font-family: var(--font-family);
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 150%;
-  color: #000;
+  margin-top: 32px;
 }
 
 .title {
@@ -55,61 +23,7 @@
   line-height: 120%;
   letter-spacing: -0.01em;
   color: #000;
-  margin-top: 32px;
-}
-
-.locations {
-  width: 100%;
-  margin-top: 32px;
-}
-
-.wraper {
-  max-width: 335px;
-  width: 100%;
-  background-color: var(--color-slider-normal);
-  border-radius: 24px;
-  padding: 20px;
-}
-
-.text {
-  font-family: var(--font-family);
-  font-weight: 700;
-  font-size: 18px;
-  line-height: 140%;
-  letter-spacing: -0.01em;
-  color: #000;
-  margin-bottom: 32px;
-}
-
-.buttonAdd {
-  border: 1px solid var(--color-button-primary);
-  border-radius: 6px;
-  background: var(--color-button-primary);
-  padding: 6px 12px;
-  min-height: 48px;
-  width: 100%;
-  transition:
-    background-color 0.3s ease,
-    border-color 0.3s ease;
-  cursor: pointer;
-}
-
-.buttonAdd:hover {
-  background: var(--color-slider-normal);
-}
-
-.locationAddLink {
-  font-family: var(--font-family);
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 150%;
-  color: #fff7f2;
-  transition: color 0.3s ease;
-  display: block;
-}
-
-.buttonAdd:hover .locationAddLink {
-  color: black;
+  margin-bottom: 24px;
 }
 
 @media (min-width: 768px) {
@@ -117,31 +31,8 @@
     max-width: 768px;
     padding: 32px 32px 64px;
   }
-
   .title {
     font-size: 44px;
-  }
-
-  .header {
-    flex-direction: row;
-    gap: 24px;
-  }
-
-  .avatar {
-    margin-bottom: 0;
-  }
-
-  .profileInfo {
-    align-items: flex-start;
-  }
-
-  .wraper {
-    padding: 40px 32px;
-    max-width: 533px;
-  }
-
-  .buttonAdd {
-    max-width: 204px;
   }
 }
 
@@ -150,29 +41,10 @@
     max-width: 1440px;
     padding: 48px 64px 72px;
   }
-
-  .title {
-    margin-top: 48px;
-    font-size: 52px;
-  }
-
   .locations {
     margin-top: 48px;
   }
-
-  .userName {
-    font-size: 32px;
-  }
-
-  .articles {
-    font-size: 20px;
-  }
-
-  .text {
-    font-size: 26px;
-  }
-
-  .buttonAdd {
-    max-width: 249px;
+  .title {
+    font-size: 52px;
   }
 }

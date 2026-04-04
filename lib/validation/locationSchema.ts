@@ -3,7 +3,7 @@ import * as Yup from "yup";
 export const getLocationValidationSchema = (isEdit: boolean) =>
   Yup.object({
    imageFile: isEdit
-  ? Yup.mixed<File>()
+  ? Yup.mixed<File>().nullable().notRequired()
   : Yup.mixed<File>()
       .required("Додайте фото")
       .test("fileType", "Тільки JPG або PNG", (value) => {

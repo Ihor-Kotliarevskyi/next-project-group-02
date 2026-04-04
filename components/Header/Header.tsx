@@ -50,6 +50,9 @@ export default function Header() {
           <div className={css.auth}>
             {user ? (
               <>
+                <Link href="/pro" className={css.profilePage}>
+                  Мій Профіль
+                </Link>
                 <Link href="/locations/add" className={css.locationAdd}>
                   Поділитись локацією
                 </Link>
