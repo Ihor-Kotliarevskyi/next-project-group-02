@@ -1,72 +1,55 @@
 import { redirect } from 'next/navigation';
-import Image from 'next/image';
 import { getMeServer, getUserByIdServer, getUserLocationsServer } from '@/lib/api/serverApi';
-import css from './ProfilePage.module.css';
-import Link from 'next/link';
+import ProfileInfo from '@/components/ProfileInfo/ProfileInfo';
+import ProfilePlaceholder from '@/components/ProfilePlaceholder/ProfilePlaceholder';
 import ProfileLocationList from '@/components/ProfileLocationList/ProfileLocationList';
-import { Location } from '@/types/location';
+import css from './ProfilePage.module.css';
 
 type Props = {
   params: Promise<{ userId: string }>;
 };
 
-export default async function Profile({ params }: Props) {
+export default async function ProfilePage({ params }: Props) {
   const { userId } = await params;
 
   let user;
   let currentUser;
-  let locations: Location[] = [];
+  let locations = [];
 
   try {
     const [userData, currentUserData, locationsData] = await Promise.all([
       getUserByIdServer(userId),
-      getMeServer(),
+      getMeServer().catch(() => null),
       getUserLocationsServer(userId),
     ]);
+
     user = userData;
     currentUser = currentUserData;
     locations = locationsData.data;
-  } catch {
-    redirect('/login');
+  } catch (error) {
+    redirect('/locations');
   }
 
-  if (currentUser && currentUser._id === userId) {
-    redirect('/profile');
-  }
-
-  const isLocations = locations.length !== 0 ? true : false;
+  const isOwnProfile = currentUser?._id === userId;
+  const hasLocations = locations.length > 0;
 
   return (
     <main className={css.mainContent}>
       <div className={css.profile}>
-        <div className={css.header}>
-          <Image
-            src={user.avatarUrl ? user.avatarUrl : user.avatar}
-            alt="User Avatar"
-            width={120}
-            height={120}
-            className={css.avatar}
-          />
-          <div className={css.profileInfo}>
-            <h2 className={css.userName}>{user.name}</h2>
-            <p className={css.articles}>Статей: {user.articlesAmount}</p>
-          </div>
-        </div>
-        <h2 className={css.title}>Локації</h2>
+        <ProfileInfo user={user} />
+
         <div className={css.locations}>
-          {isLocations ? (
-            <ProfileLocationList locations={locations} isLoading={false} />
+          {hasLocations ? (
+            <>
+              <h2 className={css.title}>{isOwnProfile ? 'Мої локації' : 'Локації'}</h2>
+              <ProfileLocationList
+                locations={locations}
+                isEditable={isOwnProfile}
+                isLoading={false}
+              />
+            </>
           ) : (
-            <div className={css.wraper}>
-              <div className={css.noLocationsMessage}>
-                <p className={css.text}>Цей користувач ще не ділився локаціями </p>
-                <button type="button" className={css.buttonAdd}>
-                  <Link href="/locations" className={css.locationAddLink}>
-                    Назад до локацій
-                  </Link>
-                </button>
-              </div>
-            </div>
+            <ProfilePlaceholder isOwnProfile={isOwnProfile} />
           )}
         </div>
       </div>
