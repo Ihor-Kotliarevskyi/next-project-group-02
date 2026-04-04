@@ -157,7 +157,7 @@ const payload = {
           </div>
 
           {/* Назва */}
-          <div>
+          <div className={css.formGroup}>
             <label className="location-form__label" htmlFor="name">Назва місця</label>
             <Field
               id="name"
