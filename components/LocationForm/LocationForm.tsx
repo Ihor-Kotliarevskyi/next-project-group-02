@@ -163,7 +163,7 @@ const payload = {
               id="name"
               name="name"
               placeholder="Введіть назву місця"
-              className="location-form__input"
+              className={css.input}
             />
             <ErrorMessage className="location-form__error" name="name" component="div" />
           </div>
