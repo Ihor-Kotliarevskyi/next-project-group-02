@@ -30,7 +30,7 @@ export default function AddReviewForm({ locationId }: { locationId: string }) {
     onSuccess: () => {
       window.dispatchEvent(new Event("review-added"));
       toast.success("Відгук додано!");
-      router.back();
+      setTimeout(() => router.back(), 100);
     },
     onError: () => toast.error("Помилка. Спробуйте ще раз."),
   });
