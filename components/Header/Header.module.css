@@ -88,16 +88,28 @@
     color: var(--color-primary);
 }
 
+.profilePage {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        color: var(--color-text-muted);
+}
+
 .locationAdd{
     border: 1px solid var(--color-coral-dark);
     border-radius: 6px;
     padding: 4px 10px;
-    font-size: 16px;
+    font-size: 14px;
     text-align: center;
     font-weight: var(--font-weight-medium);
     color: var(--color-bg-white);
     background-color: var(--color-button-primary);
     transition: var(--transition-base);
+}
+
+.locationAdd:hover {
+    color: var(--color-text-main);
+    background-color: var(--color-button-primary-hover);
+    border: 1px solid var(--color-button-primary);
 }
 
 .avatar {
@@ -142,10 +154,10 @@
     transition: color var(--transition-base);
 }
 
-/* .loginBtn:hover {
-    color: var(--color-text-main);
-    background-color: var(--color-button-primary-hover);
-} */
+.loginBtn:hover {
+    color: var(--color-bg-white);
+    background-color: var(--color-button-primary);
+}
 
 .registerBtn {
     border: 1px solid var(--color-coral-dark);

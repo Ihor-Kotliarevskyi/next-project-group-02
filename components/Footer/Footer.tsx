@@ -11,9 +11,9 @@ export default function Footer() {
           <Logo />
           <ul className={css.socials}>
             <li className={css.facebook}>
-              <Link href="https://www.facebook.com">
+              <Link href="https://www.facebook.com" target="_blank">
                 <Image
-                  src="/images/facebook.png"
+                  src="/facebook.svg"
                   alt="Facebook logo"
                   width={24}
                   height={24}
@@ -22,9 +22,9 @@ export default function Footer() {
               </Link>
             </li>
             <li className={css.instagram}>
-              <Link href="https://www.instagram.com">
+              <Link href="https://www.instagram.com" target="_blank">
                 <Image
-                  src="/images/instagram.png"
+                  src="/instagram.svg"
                   alt="Instagram logo"
                   width={24}
                   height={24}
@@ -33,9 +33,9 @@ export default function Footer() {
               </Link>
             </li>
             <li className={css.x}>
-              <Link href="https://x.com">
+              <Link href="https://x.com" target="_blank">
                 <Image
-                  src="/images/x.png"
+                  src="/x.svg"
                   alt="X logo"
                   width={24}
                   height={24}
@@ -44,9 +44,9 @@ export default function Footer() {
               </Link>
             </li>
             <li className={css.youtube}>
-              <Link href="https://www.youtube.com">
+              <Link href="https://www.youtube.com" target="_blank">
                 <Image
-                  src="/images/youtube.png"
+                  src="/youtube.svg"
                   alt="YouTube logo"
                   width={24}
                   height={24}
