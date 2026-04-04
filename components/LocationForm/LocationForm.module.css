@@ -1,17 +1,33 @@
-.locationForm {
-  background-color: #fff2ec;
-  width: 100%;
-  height: 100%;
+body {
+  font-family: var(--font-family);
+}
+
+.main {
+  background-color: var(--color-bg-page);
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  font-family: var(--font-family);
 }
 
 @media (min-width: 375px) {
-  .content {
-    padding: 0 24px;
+  .container {
+    padding: 32px 20px;
   }
 
-  .location-form__title {
-    text-align: right;
-    margin: 48px 64px;
+  .locationForm {
+    width: 100%;
+    max-width: 600px;
+    border-radius: 12px;
+  }
+
+  .locationFormTitle {
+    color: var(--color-text-input);
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: column;
+    gap: 24px;
   }
 
   .header {

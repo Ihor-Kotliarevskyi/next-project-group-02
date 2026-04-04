@@ -99,7 +99,7 @@
 }
 
 /* Tablet */
-@media (min-width: 704px) {
+@media (min-width: 768px) {
     .section {
         padding: 64px 0px;
     }
@@ -114,7 +114,7 @@
 }
 
 /* Desktop */
-@media (min-width: 1312px) {
+@media (min-width: 1440px) {
     .section {
         padding: 72px 0px;
     }
