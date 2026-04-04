@@ -32,54 +32,57 @@ export default function Header() {
         <Logo />
 
         {/* Desktop nav */}
-        <nav className={css.nav}>
-          {navLinks.map(({ href, label }) => (
-            <Link
-              key={href}
-              href={href}
-              className={`${css.navLink} ${pathname === href ? css.active : ""}`}
-            >
-              {label}
-            </Link>
-          ))}
-        </nav>
+        <div className={css.rightSide}>
+          <nav className={css.nav}>
+            {navLinks.map(({ href, label }) => (
+              <Link
+                key={href}
+                href={href}
+                className={`${css.navLink} ${pathname === href ? css.active : ""}`}
+              >
+                {label}
+              </Link>
+            ))}
+          </nav>
 
-        {/* Desktop auth */}
-        <div className={css.auth}>
-          {user ? (
-            <>
-              <Link href={`/profile/${user._id}`} className={css.profileLink}>
-                {user.avatarUrl ? (
-                  <Image
-                    src={user.avatarUrl}
-                    alt={user.name}
-                    className={css.avatar}
-                    width={32}
-                    height={32}
-                  />
-                ) : (
-                  <span className={css.avatarFallback}>
-                    {user.name.charAt(0).toUpperCase()}
-                  </span>
-                )}
-                <span className={css.userName}>{user.name}</span>
-              </Link>
-              <Link href="/logout-confirm" className={css.logoutBtn}>
-                Вийти
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link href="/login" className={css.loginBtn}>
-                Увійти
-              </Link>
-              <Link href="/register" className={css.registerBtn}>
-                Реєстрація
-              </Link>
-            </>
-          )}
+          {/* Desktop auth */}
+          <div className={css.auth}>
+            {user ? (
+              <>
+                <Link href={`/pro`} className={css.profileLink}>
+                  {/* file/${user._id} */}
+                  {user.avatarUrl ? (
+                    <Image
+                      src={user.avatarUrl}
+                      alt={user.name}
+                      className={css.avatar}
+                      width={32}
+                      height={32}
+                    />
+                  ) : (
+                    <span className={css.avatarFallback}>
+                      {user.name.charAt(0).toUpperCase()}
+                    </span>
+                  )}
+                  <span className={css.userName}>{user.name}</span>
+                </Link>
+                <Link href="/logout-confirm" className={css.logoutBtn}>
+                  Вийти
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link href="/login" className={css.loginBtn}>
+                  Вхід
+                </Link>
+                <Link href="/register" className={css.registerBtn}>
+                  Реєстрація
+                </Link>
+              </>
+            )}
+          </div>
         </div>
-        {/* </div> */}
+
         {/* Burger button */}
         <button
           type="button"
@@ -119,7 +122,8 @@ export default function Header() {
           {user ? (
             <>
               <Link
-                href={`/profile/${user._id}`}
+                href={`/pro`}
+                // file/${user._id}
                 className={css.mobileLink}
                 onClick={closeMenu}
               >
