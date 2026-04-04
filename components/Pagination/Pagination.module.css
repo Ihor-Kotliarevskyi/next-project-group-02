@@ -1,17 +1,15 @@
 ﻿.wrapper {
-  display: flex;
-  justify-content: center;
   width: 100%;
   margin-top: 32px;
 }
 
 .button {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   min-width: 160px;
   min-height: 48px;
-  margin: 0 auto;
+  margin-inline: auto;
   padding: 12px 24px;
   border: 1px solid #e8845a;
   border-radius: 10px;

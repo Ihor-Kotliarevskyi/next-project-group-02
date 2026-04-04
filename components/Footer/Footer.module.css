@@ -1,11 +1,19 @@
 .footer {
-  background-color: var(--color-bg-page);
+  background-color: var(--color-scheme-2-foreground);
   border-top: 1px solid var(--color-border);
   margin-top: auto;
   width: 100%;
   padding-bottom: 80px;
 }
 
+.footerContainer{
+margin: 48px 20px;
+}
+
+.footer a {
+  color: var(--color-scheme-2-text);
+  text-decoration: none;
+}
 .inner {
   display: flex;
   flex-direction: column;
@@ -25,7 +33,7 @@
 
 .footerNav {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   list-style-type: none;
   padding-right: 0;
@@ -34,32 +42,24 @@
   font-weight: 400;
   font-size: 18px;
   line-height: 150%;
+}
+
+
+.copy{
+margin-top: 0;
+padding-top: 32px;
+text-align: center;
+font-family: var(--font-family);
+font-weight: 400;
+font-size: 16px;
+line-height: 150%;
+color: var(--color-scheme-2-text);
+border-top: 1px solid var(--color-scheme-2-border);
+}
+
+.itemsLink {
   color: var(--color-scheme-2-text);
 }
-
-.copy {
-  margin-top: 0;
-  text-align: center;
-  font-family: var(--font-family);
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 150%;
-  color: var(--color-scheme-2-text);
-  border-top: 1px solid var(--color-scheme-2-border);
-}
-
-/* .logo {
-  font-size: 20px;
-  font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
-  letter-spacing: -0.5px;
-  transition: color var(--transition-base);
-}
-
-.logo:hover {
-  color: var(--color-primary-hover);
-} */
-
 
 /* ─── Tablet ─── */
 @media (min-width: 768px) {
@@ -67,10 +67,13 @@
     flex-direction: row;
     justify-content: space-between;
     padding: 24px var(--container-padding-tablet);
+    flex-wrap: wrap;
   }
   .footerNav {
     flex-direction: row;
     gap: 24px;
+    width: 100%;
+    justify-content: center;
   }
 }
 
@@ -78,5 +81,18 @@
 @media (min-width: 1024px) {
   .inner {
     padding: 24px var(--container-padding-desktop);
+    flex-wrap: nowrap;
+    align-items: center;
   }
+  .footerNav {
+    flex-direction: row;
+          gap: 24px;
+          width: auto;
+          justify-content: flex-start;
+        }
+    .footerContainer {
+      margin: 80px 64px;
+    }
 }
+
+

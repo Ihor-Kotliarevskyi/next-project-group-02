@@ -1,3 +1,4 @@
+@import "swiper/swiper.css";
 :root {
   /* ─── Buttons ─── */
   --color-button-primary: #cc6534;
@@ -81,7 +82,7 @@ body {
   flex-direction: column;
   color: var(--color-text-primary);
   background-color: var(--color-bg-page);
-  font-family: var(--font-family);
+  font-family: var(--font-montserrat);
   font-size: var(--font-size-base);
   line-height: var(--line-height-normal);
   -webkit-font-smoothing: antialiased;

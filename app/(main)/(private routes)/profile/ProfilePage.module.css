@@ -1,0 +1,177 @@
+.mainContent {
+  background: var(--color-bg-page);
+  display: flex;
+  justify-content: center;
+}
+
+.profile,
+.header,
+.locations {
+  width: 100%;
+  max-width: 375px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 32px 20px 0px;
+}
+
+.avatar {
+  width: 145px;
+  height: 145px;
+  margin-bottom: 24px;
+  border-radius: 50%;
+}
+
+.profileInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.userName {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 130%;
+  letter-spacing: -0.01em;
+  color: #000;
+}
+
+.articles {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 150%;
+  color: #000;
+}
+
+.locations {
+  padding: 32px 20px 64px;
+}
+
+.wraper {
+  max-width: 335px;
+  max-height: 195px;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-bg-locationCard);
+  border-radius: 24px;
+  padding: 20px;
+}
+
+.text {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 140%;
+  letter-spacing: -0.01em;
+  color: #000;
+  margin-bottom: 32px;
+}
+
+.buttonAdd {
+  border: 1px solid var(--color-button-primary);
+  border-radius: 6px;
+  background: var(--color-button-primary);
+  padding: 6px 12px;
+  max-height: 48px;
+  width: 100%;
+  height: 100%;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+  cursor: pointer;
+}
+
+.buttonAdd:hover {
+  background: var(--color-slider-normal);
+}
+
+.buttonAdd:hover .locationAddLink {
+  color: black;
+}
+
+.locationAddLink {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 150%;
+  color: #fff7f2;
+  transition: color 0.3s ease;
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .profile,
+  .header,
+  .locations {
+    max-width: 768px;
+  }
+
+  .header {
+    flex-direction: row;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .avatar {
+    margin: 0;
+  }
+
+  .profileInfo {
+    align-items: start;
+  }
+
+  .locations {
+    padding: 32px 32px 64px;
+  }
+
+  .wraper {
+    padding: 40px 32px;
+    max-width: 533px;
+    max-height: 210px;
+  }
+
+  .buttonAdd {
+    max-width: 204px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .profile,
+  .header,
+  .locations {
+    max-width: 1440px;
+  }
+
+  .header {
+    padding: 48px 64px 0px;
+  }
+
+  .userName {
+    font-size: 32px;
+  }
+
+  .articles {
+    font-size: 20px;
+  }
+
+  .locations {
+    padding: 48px 64px 72px;
+  }
+
+  .wraper {
+    max-height: 268px;
+  }
+
+  .text {
+    font-size: 26px;
+  }
+
+  .buttonAdd {
+    max-width: 249px;
+  }
+}
