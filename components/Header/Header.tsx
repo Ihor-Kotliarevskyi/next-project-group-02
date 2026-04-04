@@ -49,7 +49,7 @@ export default function Header() {
           <div className={css.auth}>
             {user ? (
               <>
-                <Link href={`/pro`} className={css.profileLink}>
+                <Link href={"/profile/" + user._id} className={css.profileLink}>
                   {/* file/${user._id} */}
                   {user.avatarUrl ? (
                     <Image
