@@ -1,5 +1,5 @@
 .footer {
-  background-color: var(--color-scheme-2-foreground);
+  background-color: var(--color-bg-footer);
   border-top: 1px solid var(--color-border);
   margin-top: auto;
   width: 100%;
@@ -10,7 +10,7 @@
 margin: 48px 20px;
 }
 
-.footer a {
+.footer Link {
   color: var(--color-scheme-2-text);
   text-decoration: none;
 }
@@ -54,11 +54,14 @@ font-weight: 400;
 font-size: 16px;
 line-height: 150%;
 color: var(--color-scheme-2-text);
-border-top: 1px solid var(--color-scheme-2-border);
+border-top: 1px solid var(--color-scheme-2-border) ;
 }
 
 .itemsLink {
   color: var(--color-scheme-2-text);
+}
+.line {
+  border: 1px solid var(--color-overlay-light);
 }
 
 /* ─── Tablet ─── */
