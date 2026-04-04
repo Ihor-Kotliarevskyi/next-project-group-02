@@ -97,7 +97,7 @@ const payload = {
 
   
   return (
-    <main>
+    <main className={css.main}>
       <div className={css.container}>
 
       <h1 className={css.locationFormTitle}>
@@ -108,11 +108,12 @@ const payload = {
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
-        enableReinitialize
+          enableReinitialize
+          validateOnMount
       >
         
 
-      {({ resetForm, setFieldValue, isSubmitting, errors, touched }) => (
+     {({ resetForm, setFieldValue, isSubmitting, errors, touched, isValid, dirty }) => (
             <Form>
               <div className={css.locationFormWrapper}>
           {/* Фото */}
@@ -143,9 +144,9 @@ const payload = {
               />
             )}
 
-            <button
-              type="button"
-              className={css.uploadBtn}
+                  <button
+                    type="button"
+                    className={`${css.uploadBtn} ${css.buttonGeneral}`}
               onClick={() =>
                 document.getElementById("fileInput")?.click()
               }
@@ -226,8 +227,9 @@ const payload = {
             <div className={css.buttonGroup}>
 
               <button
-                className={css.locationCancel}
-                type="button"
+                className={`${css.locationCancel} ${css.buttonGeneral}`}
+                    type="button"
+                    
                 onClick={() => {
                   resetForm();
                   setImagePreview(initialData?.image || placeholder);
@@ -239,16 +241,22 @@ const payload = {
                 {isEdit ? "Відмінити зміни" : "Відмінити"}
                 </button>
                 
-                <button className={css.locationSubmit} type="submit" disabled={isSubmitting}>
-                {isSubmitting
-                  ? "Завантаження..."
-                  : isEdit
-                  ? "Зберегти"
-                  : "Опублікувати"}
-              </button>
-                </div>
-                </div>
-          </Form>
+              <button
+                className={`${css.locationSubmit} ${css.buttonGeneral}`}
+                type="submit"
+                disabled={!isValid || !dirty || isSubmitting}
+              >
+              {isSubmitting ? (
+                 <span className={css.loader}></span>
+                ) : isEdit ? (
+                  "Зберегти"
+                 ) : (
+                  "Опублікувати"
+             )}
+            </button>
+          </div>
+        </div>
+      </Form>
         )}
       </Formik>
     </div>
