@@ -1,86 +1,234 @@
-.section {
-  background: #fff2ec;
-  padding: 32px 0 56px;
+body {
+  font-family: var(--font-family);
 }
 
-.container {
-  width: 100%;
-  min-width: 320px;
-  padding: 0 16px;
-  margin: 0 auto;
-}
-
-.title {
-  margin: 0 0 24px;
-  color: #1f1f1f;
-  font-size: 36px;
-  line-height: 1.08;
-  font-weight: 700;
-  text-align: center;
-}
-
-.loader,
-.empty {
-  width: 100%;
-  padding: 48px 0;
-  text-align: center;
-  color: #6b5d56;
-  font-size: 16px;
-  line-height: 1.5;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
+.main {
+  background-color: var(--color-bg-page);
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  font-family: var(--font-family);
 }
 
 @media (min-width: 375px) {
-  .section {
-    padding: 40px 0 64px;
+  .container {
+    padding: 32px 20px;
+  }
+
+  .locationForm {
+    width: 100%;
+    max-width: 600px;
+    border-radius: 12px;
+  }
+
+  .locationFormTitle {
+    color: var(--color-text-input);
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .header {
+    height: 72px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+  }
+
+  .buttonsBlock {
+    display: flex;
+    width: 100%;
+    max-width: 335px;
+    margin: 64px auto 32px;
+  }
+
+  .authBtn {
+    width: 50%;
+    text-align: center;
+    padding: 12px 0 8px;
+    cursor: pointer;
+    position: relative;
+    color: #8f8178;
+    transition: 0.2s;
+  }
+
+  .authBtn:hover,
+  .authBtn.active {
+    color: #000;
   }
 
   .title {
-    font-size: 42px;
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  .formGroup label {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .input {
+    width: 100%;
+    height: 40px;
+    padding: 0 16px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background-color: #ffe5d9;
+    font-size: 14px;
+  }
+
+  .input::placeholder {
+    color: #9a8f88;
+  }
+
+  .input:hover {
+    background-color: #fdd9c9;
+  }
+
+  .input:focus {
+    outline: none;
+    border-color: #c7642f;
+    background-color: #fff;
+  }
+
+  .input.inputError {
+    border-color: red;
+  }
+
+  .error {
+    font-size: 12px;
+    color: red;
+  }
+
+  .submitBtn {
+    width: 100%;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    background-color: #c7642f;
+    border: none;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .submitBtn:hover {
+    background-color: #a95325;
+  }
+
+  .submitBtn:active {
+    background-color: #8e471f;
+  }
+
+  .submitBtn:disabled {
+    opacity: 0.5;
+  }
+
+  .footer {
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-top: auto;
+  }
+  .footer p {
+    font-size: 12px;
+    color: #555;
+  }
+
+  .authBtn.active::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 1px;
+    background-color: #c5b5aa;
+    width: 70%;
   }
 }
 
 @media (min-width: 768px) {
-  .section {
-    padding: 48px 0 72px;
-  }
-
-  .container {
+  .header,
+  .content,
+  .footer {
+    max-width: 704px;
+    width: 100%;
+    margin: 0 auto;
     padding: 0 32px;
   }
 
-  .title {
-    margin-bottom: 40px;
-    font-size: 56px;
+  .form {
+    max-width: 644px;
   }
 
-  .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .buttonsBlock {
+    max-width: 704px;
+    align-items: center;
+  }
+
+  .input {
+    max-width: 644px;
+  }
+
+  .title {
+    font-size: 32px;
+  }
+
+  .authBtn.active::after {
+    width: 80%;
   }
 }
 
 @media (min-width: 1440px) {
-  .section {
-    padding: 48px 0 72px;
-  }
-
-  .container {
-    max-width: 1568px;
+  .header,
+  .content,
+  .footer {
+    max-width: 1312px;
+    width: 100%;
+    margin: 0 auto;
     padding: 0 64px;
   }
 
-  .title {
-    margin-bottom: 24px;
-    font-size: 64px;
+  .location form {
+    display: flex;
+    flex-direction: column;
   }
 
-  .grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 24px;
+  .location-form__title {
+    text-align: right;
+    margin: 48px 64px;
+  }
+
+  .form,
+  .buttonsBlock {
+    max-width: 644px;
+  }
+
+  .title {
+    font-size: 36px;
+    margin-bottom: 40px;
+  }
+
+  .input {
+    height: 44px;
+  }
+
+  .authBtn.active::after {
+    width: 100%;
   }
 }

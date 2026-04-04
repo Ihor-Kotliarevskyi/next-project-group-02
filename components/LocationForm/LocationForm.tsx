@@ -1,7 +1,6 @@
 "use client";
 
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
-import * as Yup from "yup";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -101,7 +100,7 @@ const payload = {
 
   
   return (
-    <section className={css.section}>
+    <main>
       <div className={css.container}>
 
       <h1 className={css.locationFormTitle}>
