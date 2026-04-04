@@ -88,10 +88,22 @@
     color: var(--color-primary);
 }
 
+.locationAdd{
+    border: 1px solid var(--color-coral-dark);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 16px;
+    text-align: center;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-bg-white);
+    background-color: var(--color-button-primary);
+    transition: var(--transition-base);
+}
+
 .avatar {
     width: 32px;
     height: 32px;
-    border-radius: var(--radius-full);
+    border-radius: 50%;
     object-fit: cover;
     border: 2px solid var(--color-primary-light);
 }
@@ -115,6 +127,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    font-size: 12px;
 }
 
 .loginBtn {
@@ -153,18 +166,6 @@
 
 }
 
-.logoutBtn {
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-text-muted);
-    padding: 8px 12px;
-    border-radius: var(--radius-md);
-    transition: color var(--transition-base);
-}
-
-.logoutBtn:hover {
-    color: var(--color-error);
-}
 
 /* ─── Burger ─── */
 .burger {

@@ -7,6 +7,7 @@ import { useAuthStore } from "@/lib/store/authStore";
 import css from "./Header.module.css";
 import Logo from "../Logo/Logo";
 import Image from "next/image";
+import Logout from "../Logout/Logout";
 
 export default function Header() {
   const pathname = usePathname();
@@ -49,6 +50,9 @@ export default function Header() {
           <div className={css.auth}>
             {user ? (
               <>
+                <Link href="/locations/add" className={css.locationAdd}>
+                  Поділитись локацією
+                </Link>
                 <Link href={`/pro`} className={css.profileLink}>
                   {/* file/${user._id} */}
                   {user.avatarUrl ? (
@@ -66,9 +70,10 @@ export default function Header() {
                   )}
                   <span className={css.userName}>{user.name}</span>
                 </Link>
-                <Link href="/logout-confirm" className={css.logoutBtn}>
+                {/* <Link href="/logout-confirm" className={css.logoutBtn}>
                   Вийти
-                </Link>
+                </Link> */}
+                <Logout />
               </>
             ) : (
               <>
