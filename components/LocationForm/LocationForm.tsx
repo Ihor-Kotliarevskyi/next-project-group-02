@@ -115,7 +115,7 @@ const payload = {
         
 
       {({ resetForm, setFieldValue, isSubmitting }) => (
-        <Form className={css.locationFormWrapper}>
+        <Form className={css.locationForm}>
           {/* Фото */}
           <div className={css.formGroup}>
             <p className="location-form__label">Обкладинка</p>
