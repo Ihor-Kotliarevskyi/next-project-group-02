@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import Image from 'next/image';
-import { getUserByIdServer, getUserLocationsServer } from '@/lib/api/serverApi';
+import { getMeServer, getUserByIdServer, getUserLocationsServer } from '@/lib/api/serverApi';
 import css from './ProfilePage.module.css';
 import Link from 'next/link';
 import ProfileLocationList from '@/components/ProfileLocationList/ProfileLocationList';
@@ -14,17 +14,24 @@ export default async function Profile({ params }: Props) {
   const { userId } = await params;
 
   let user;
+  let currentUser;
   let locations: Location[] = [];
 
   try {
-    const [userData, locationsData] = await Promise.all([
+    const [userData, currentUserData, locationsData] = await Promise.all([
       getUserByIdServer(userId),
+      getMeServer(),
       getUserLocationsServer(userId),
     ]);
     user = userData;
+    currentUser = currentUserData;
     locations = locationsData.data;
   } catch {
     redirect('/login');
+  }
+
+  if (currentUser && currentUser._id === userId) {
+    redirect('/profile');
   }
 
   const isLocations = locations.length !== 0 ? true : false;
@@ -45,29 +52,17 @@ export default async function Profile({ params }: Props) {
             <p className={css.articles}>Статей: {user.articlesAmount}</p>
           </div>
         </div>
-
+        <h2 className={css.title}>Локації</h2>
         <div className={css.locations}>
           {isLocations ? (
-            <>
             <ProfileLocationList locations={locations} isLoading={false} />
-            <div className={css.wraper}>
-              <div className={css.noLocationsMessage}>
-                <p className={css.text}>Поділіться своєю локацією!</p>
-                <button type="button" className={css.buttonAdd}>
-                  <Link href="/locations/add" className={css.locationAddLink}>
-                    Додати локацію
-                  </Link>
-                </button>
-              </div>
-            </div>
-            </>
           ) : (
             <div className={css.wraper}>
               <div className={css.noLocationsMessage}>
-                <p className={css.text}>Ви ще нічого не публікували, поділіться своєю першою локацією!</p>
+                <p className={css.text}>Цей користувач ще не ділився локаціями </p>
                 <button type="button" className={css.buttonAdd}>
-                  <Link href="/locations/add" className={css.locationAddLink}>
-                    Додати локацію
+                  <Link href="/locations" className={css.locationAddLink}>
+                    Назад до локацій
                   </Link>
                 </button>
               </div>
