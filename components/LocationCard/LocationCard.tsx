@@ -1,14 +1,13 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import Image from "next/image";
-import styles from "./LocationCard.module.css";
-import { Location } from "@/types/location";
+import Link from 'next/link';
+import Image from 'next/image';
+import styles from './LocationCard.module.css';
+import { Location } from '@/types/location';
 
-type LocationCardProps = Pick<
-  Location,
-  "_id" | "image" | "name" | "locationType" | "rate"
->;
+type LocationCardProps = Pick<Location, '_id' | 'image' | 'name' | 'locationType' | 'rate'> & {
+  isEditable?: boolean;
+};
 
 export default function LocationCard({
   _id,
@@ -16,6 +15,7 @@ export default function LocationCard({
   name,
   locationType,
   rate,
+  isEditable,
 }: LocationCardProps) {
   const roundedRate = Math.round(rate);
 
@@ -36,14 +36,23 @@ export default function LocationCard({
         <div className={styles.rating} aria-label={`Рейтинг: ${rate} з 5`}>
           {Array.from({ length: 5 }, (_, index) => (
             <span key={index} className={styles.star}>
-              {index < roundedRate ? "★" : "☆"}
+              {index < roundedRate ? '★' : '☆'}
             </span>
           ))}
         </div>
         <h3 className={styles.title}>{name}</h3>
-        <Link href={`/locations/${_id}`} className={styles.button}>
-          Переглянути локацію
-        </Link>
+
+        <div className={styles.actions}>
+          <Link href={`/locations/${_id}`} className={styles.button}>
+            Переглянути локацію
+          </Link>
+
+          {isEditable && (
+            <Link href={`/locations/${_id}/edit`} className={styles.editLink}>
+              <Image src="/edit.svg" alt="Редагувати" width={24} height={24} />
+            </Link>
+          )}
+        </div>
       </div>
     </article>
   );
