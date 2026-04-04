@@ -1,10 +1,10 @@
 @import "swiper/swiper.css";
 :root {
   /* ─── Buttons ─── */
-  --color-button-primary: #CC6534;
+  --color-button-primary: #cc6534;
   --color-button-secondary: rgba(0, 0, 0, 0.05);
-  --color-button-primary-hover: #FFE5D9;
-  --color-button-secondary-hover: #A95325;
+  --color-button-primary-hover: #ffe5d9;
+  --color-button-secondary-hover: #a95325;
   --color-button-secondary-active: #254c24;
 
   /* ─── Slider ─── */
@@ -20,11 +20,11 @@
   --color-text-input-placeholder: rgba(0, 0, 0, 0.6);
 
   /* ─── Backgrounds ─── */
-  --color-bg-page: #FFF2EC;
-  --color-bg-white: #FFFFFF;
-  --color-bg-input: #FFE5D9;
-  --color-bg-footer: #FFE5D9;
-  --color-bg-disabled: #F2F2F2;
+  --color-bg-page: #fff2ec;
+  --color-bg-white: #ffffff;
+  --color-bg-input: #ffe5d9;
+  --color-bg-footer: #ffe5d9;
+  --color-bg-disabled: #f2f2f2;
 
   /* ─── Overlays ─── */
   --color-overlay: rgba(0, 0, 0, 0.6);
