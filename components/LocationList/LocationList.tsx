@@ -1,15 +1,13 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
-import { useLocationStore } from "@/lib/store/locationStore";
 import {
   getLocations,
   getRegions,
   getLocationTypes,
 } from "@/lib/api/clientApi";
-import { ScaleLoader } from "react-spinners";
 import LocationCard from "@/components/LocationCard/LocationCard";
 import SearchBox from "@/components/SearchBox/SearchBox";
 import Pagination from "@/components/Pagination/Pagination";
@@ -18,62 +16,23 @@ import { Location } from "@/types/location";
 
 export default function LocationList() {
   const searchParams = useSearchParams();
-  const { filters, setSearch, setRegion, setLocationType, setSort } =
-    useLocationStore();
 
-  const effectiveFilters = useMemo(
-    () => ({
-      search: searchParams.get("search") ?? filters.search,
-      region: searchParams.get("region") ?? filters.region,
-      locationType:
-        searchParams.get("locationType") ?? filters.locationType,
-      sort: searchParams.get("sort") ?? filters.sort,
-    }),
-    [filters, searchParams],
-  );
+  const search = searchParams.get("search") ?? "";
+  const region = searchParams.get("region") ?? "";
+  const locationType = searchParams.get("locationType") ?? "";
+  const sort = searchParams.get("sort") ?? "";
 
-  useEffect(() => {
-    if (filters.search !== effectiveFilters.search) {
-      setSearch(effectiveFilters.search);
-    }
-
-    if (filters.region !== effectiveFilters.region) {
-      setRegion(effectiveFilters.region);
-    }
-
-    if (filters.locationType !== effectiveFilters.locationType) {
-      setLocationType(effectiveFilters.locationType);
-    }
-
-    if (filters.sort !== effectiveFilters.sort) {
-      setSort(effectiveFilters.sort);
-    }
-  }, [
-    effectiveFilters.locationType,
-    effectiveFilters.region,
-    effectiveFilters.search,
-    effectiveFilters.sort,
-    filters.locationType,
-    filters.region,
-    filters.search,
-    filters.sort,
-    setLocationType,
-    setRegion,
-    setSearch,
-    setSort,
-  ]);
-
-  const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } =
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: ["locations", effectiveFilters],
+      queryKey: ["locations", search, region, locationType, sort],
       initialPageParam: 1,
       queryFn: ({ pageParam }) =>
         getLocations({
           page: pageParam,
           limit: 9,
-          region: effectiveFilters.region,
-          locationType: effectiveFilters.locationType,
-          search: effectiveFilters.search,
+          region,
+          locationType,
+          search,
         }),
       getNextPageParam: (lastPage) =>
         lastPage.pagination.page < lastPage.pagination.totalPages
@@ -99,9 +58,9 @@ export default function LocationList() {
         locationTypes.map((locationType: { slug: string; type: string }) => [
           locationType.slug,
           locationType.type,
-        ])
+        ]),
       ),
-    [locationTypes]
+    [locationTypes],
   );
 
   const locations = useMemo(() => {
@@ -112,42 +71,39 @@ export default function LocationList() {
       new Map(allLocations.map((loc) => [loc._id, loc])).values(),
     );
 
-    if (effectiveFilters.sort === "name") {
+    if (sort === "name") {
       return [...uniqueLocations].sort((a, b) =>
         a.name.localeCompare(b.name, "uk"),
       );
     }
 
-    if (effectiveFilters.sort === "rate") {
+    if (sort === "rate") {
       return [...uniqueLocations].sort((a, b) => b.rate - a.rate);
     }
 
     return uniqueLocations;
-  }, [data?.pages, effectiveFilters.sort]);
+  }, [data?.pages, sort]);
 
   return (
     <section className={styles.section}>
       <div className={styles.container}>
         <h2 className={styles.title}>Усі місця відпочинку</h2>
+
         <SearchBox
-          regions={regions.map((region) => ({
-            value: region.slug,
-            label: region.region,
+          regions={regions.map((regionOption) => ({
+            value: regionOption.slug,
+            label: regionOption.region,
           }))}
           locationTypes={locationTypes.map(
-            (locationType: { slug: string; type: string }) => ({
-              value: locationType.slug,
-              label: locationType.type,
-            })
+            (locationTypeOption: { slug: string; type: string }) => ({
+              value: locationTypeOption.slug,
+              label: locationTypeOption.type,
+            }),
           )}
         />
 
         {isLoading ? (
-          <div className={styles.loader}>
-            <ScaleLoader color="#E76F51" aria-label="Завантаження" />
-          </div>
-        ) : isError ? (
-          <p className={styles.empty}>Не вдалося завантажити локації. Спробуйте пізніше.</p>
+          <p className={styles.loader}>Завантаження...</p>
         ) : (
           <div className={styles.grid}>
             {locations.length === 0 ? (
@@ -161,7 +117,7 @@ export default function LocationList() {
                   name={location.name}
                   locationType={
                     locationTypeLabels.get(location.locationType) ??
-                    location.locationType
+                    "Тип не вказано"
                   }
                   rate={location.rate}
                 />
