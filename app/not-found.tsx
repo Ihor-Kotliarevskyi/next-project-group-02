@@ -1,12 +1,21 @@
-function NotFound() {
+import Link from "next/link";
+
+export default function NotFound() {
   return (
-    <div>
-      <h1 className="not-found">404 - Page not found</h1>
-      <p className="not-found">
-        Sorry, the page you are looking for does not exist.
-      </p>
-    </div>
+    <main
+      style={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "16px",
+        minHeight: "50vh",
+      }}
+    >
+      <h1>404 — Сторінку не знайдено</h1>
+      <p>На жаль, сторінка, яку ви шукаєте, не існує.</p>
+      <Link href="/">Повернутися на головну</Link>
+    </main>
   );
 }
-
-export default NotFound;

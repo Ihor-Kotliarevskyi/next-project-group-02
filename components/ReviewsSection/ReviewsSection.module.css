@@ -1,0 +1,144 @@
+/* Mobile */
+.section {
+  padding: 64px 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1b391b;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-align: center;
+  color: #4c2613;
+  font-family: "Montserrat", sans-serif;
+}
+
+.addButton {
+  background: #cc6534;
+  color: #fff;
+  border: 1px solid #cc6534;
+  border-radius: 8px;
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 500;
+  font-family: "Montserrat", sans-serif;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+  white-space: nowrap;
+  width: 167px;
+  height: 48px;
+}
+
+.addButton:hover {
+  background: #b5572c;
+  transform: translateY(-2px);
+}
+
+.controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.arrowBtn {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: #ffe5d9;
+  color: #4c2613;
+  padding: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.arrowBtn:hover:not(:disabled) {
+  background: #ffa57a;
+  border-color: #ffa57a;
+  color: #4c2613;
+}
+
+.arrowBtn:disabled {
+  background: #f2f2f2;
+  border-color: #ffa57a;
+  color: #4c2613;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;
+}
+
+.loading,
+.error,
+.empty {
+  text-align: center;
+  color: #888;
+  padding: 24px 0;
+  font-size: 15px;
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  .section {
+    padding: 64px 0px;
+  }
+
+  .title {
+    font-size: 44px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Desktop */
+@media (min-width: 1440px) {
+  .section {
+    padding: 72px 0px;
+  }
+
+  .title {
+    font-size: 52px;
+  }
+
+  .addButton {
+    width: 202px;
+    border-radius: 6px;
+    font-size: 20px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.swiperContainer {
+  position: relative;
+}
+
+:global(.swiper-button-next),
+:global(.swiper-button-prev) {
+  display: none;
+}

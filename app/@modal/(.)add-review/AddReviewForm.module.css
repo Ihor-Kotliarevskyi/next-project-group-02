@@ -1,0 +1,138 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.title {
+  font-size: 48px;
+  font-weight: 700;
+  color: #000000;
+  font-style: bold;
+  letter-spacing: -1%;
+  line-height: 120%;
+  text-align: center;
+  margin: 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 18px;
+  font-weight: 400;
+  color: #000000;
+}
+
+.stars {
+  display: flex;
+}
+
+.starOn,
+.starOff,
+.starHalf {
+  background: none;
+  border: none;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.star {
+  width: 22.55px;
+  height: 22.65px;
+  font-size: 22.5px;
+  line-height: 22.65px;
+  color: transparent;
+  -webkit-text-stroke: 3px black;
+  -webkit-text-stroke-linejoin: round;
+}
+
+/* повне заповнення */
+.starOn .star {
+  color: black;
+  -webkit-text-stroke: 3px black;
+}
+
+/* пів-зірочка */
+.starHalf .star {
+  background: linear-gradient(to right, black 50%, transparent 50%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+
+.textarea {
+  background-color: #FFE5D9;
+  padding: 10px 12px;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  line-height: 1.6;
+  resize: vertical;
+  transition: border-color 0.2s;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: #c96a3a;
+}
+
+.error {
+  font-size: 12px;
+  color: #d00;
+}
+
+.actions {
+  display: flex;
+  gap: 24px;
+justify-content: center;
+}
+
+.submit {
+  width: 203px;
+  height: 48px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #CC6534;
+  background-color: #CC6534;
+  color: white;
+  font-size: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  opacity: 1;
+}
+
+.cancel {
+  width: 203px;
+  height: 48px;
+  padding: 6px 12px;
+  border: 1px;
+    border: 1px solid var(--color-overlay-light);
+    background-color: var(--color-button-secondary);
+  border-radius: 6px;
+  color: #4C2613;
+  font-size: 20px;
+  font-weight: 500;
+  opacity: 1;
+  cursor: pointer;
+}
+
+.submit:hover:not(:disabled) {
+  background: #a0522d;
+  border-color: #a0522d;
+}
+
+.submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

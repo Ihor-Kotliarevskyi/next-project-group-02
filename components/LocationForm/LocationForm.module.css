@@ -1,0 +1,303 @@
+.mainLocationForm {
+  background-color: var(--color-bg-page);
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  font-family: var(--font-family);
+}
+
+.selectWrapper {
+  position: relative;
+}
+
+.select {
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  padding: 8px;
+  min-height: 40px;
+  background: var(--color-slider-normal);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--color-button-primary);
+}
+
+.placeholder {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 100%;
+  background: var(--color-slider-normal);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  overflow: hidden;
+  z-index: 10;
+}
+
+.option {
+  padding: 10px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.option:hover {
+  background: var(--color-slider-active);
+}
+
+.active {
+  background: var(--color-slider-active);
+  color: white;
+}
+
+.photoPreview {
+  border-radius: 12px;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.locationFormTitle {
+  color: var(--color-text-input);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-direction: column;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.locationFormWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.label {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-text-input);
+}
+
+.uploadBtn {
+  align-self: flex-start;
+  color: var(--color-text-main);
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  padding: 4px 10px;
+  min-height: 32px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.locationInput {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: row;
+  gap: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  padding: 8px;
+  min-height: 40px;
+  background: var(--color-slider-normal);
+}
+
+.locationInput:focus {
+  outline: none;
+  border-color: var(--color-button-primary);
+}
+
+.textarea {
+  min-height: 180px;
+  resize: vertical;
+}
+
+.inputError {
+  border-color: #b00101;
+  color: #b00101;
+}
+
+.inputError::placeholder {
+  color: rgba(176, 1, 1, 0.6);
+}
+
+.errorMessage {
+  color: var(--color-text-input-error);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+}
+
+.locationSubmit {
+  border: 1px solid var(--color-coral-primary);
+  background: var(--color-button-primary);
+  color: var(--color-bg-white);
+  min-height: 48px;
+}
+
+.locationSubmit:active,
+.locationCancel:hover,
+.locationCancel:focus,
+.uploadBtn:hover,
+.uploadBtn:focus {
+  border: 1px solid var(--color-coral-primary);
+  background: var(--color-button-primary);
+  color: var(--color-bg-white);
+}
+
+.loader {
+  width: 16px;
+  height: 16px;
+  border: 2px solid white;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.locationCancel {
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--color-text-main);
+  min-height: 48px;
+}
+
+.locationSubmit:not(:disabled):hover,
+.locationSubmit:not(:disabled):focus {
+  background: var(--color-button-primary-hover);
+  border: 1px solid var(--color-button-primary);
+  color: var(--color-text-input);
+}
+
+.locationCancel:active,
+.uploadBtn:active {
+  transform: scale(0.98);
+  background-color: var(--color-button-secondary-active);
+  color: var(--color-bg-white);
+  border-radius: 6px;
+}
+
+.locationSubmit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.buttonGeneral {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  cursor: pointer;
+  gap: 8px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.buttonGeneral:disabled {
+  cursor: not-allowed;
+}
+
+@media (min-width: 375px) {
+  .containerLocationForm {
+    margin: 0px 20px;
+  }
+
+  .locationFormTitle {
+    gap: 24px;
+    font-size: 32px;
+    margin: 32px 0;
+  }
+
+  .buttonGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-bottom: 64px;
+    margin-top: 60px;
+  }
+
+  .locationSubmit,
+  .locationCancel {
+    width: 100%;
+  }
+
+  /* .buttonGroup {
+    flex-direction: column;
+    align-items: center;
+    justify-content: stretch;
+    padding: 36px 0px 0px;
+    margin-bottom: 64px;
+  } */
+}
+
+@media (min-width: 768px) {
+  .containerLocationForm {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+
+  .locationFormTitle {
+    gap: 80px;
+    font-weight: 700;
+    font-size: 48px;
+    margin: 32px 0;
+  }
+
+  .buttonGroup {
+    align-items: stretch;
+    flex-direction: row;
+    margin-bottom: 72px;
+    max-width: 423px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .containerLocationForm {
+    padding-left: 64px;
+    padding-right: 285px;
+  }
+
+  .locationFormTitle {
+    gap: 80px;
+    font-weight: 700;
+    font-size: 56px;
+    margin: 48px 0;
+  }
+
+  .buttonGroup {
+    align-items: flex-start;
+    flex-direction: row;
+    min-height: 84px;
+    margin-bottom: 72px;
+  }
+
+  .label {
+    font-size: 18px;
+  }
+}
