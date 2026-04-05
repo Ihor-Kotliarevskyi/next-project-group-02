@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import Image from "next/image";
 import { useLocationStore } from "@/lib/store/locationStore";
 import styles from "./HeroBlock.module.css";
@@ -11,19 +11,18 @@ export default function HeroBlock() {
   const router = useRouter();
   const { setSearch } = useLocationStore();
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const trimmedQuery = query.trim();
     if (!trimmedQuery) return;
-
     setSearch(trimmedQuery);
     router.push(`/locations?search=${encodeURIComponent(trimmedQuery)}`);
   }, [query, router, setSearch]);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleSearch();
     }
-  };
+  }, [handleSearch]);
 
   return (
     <section className={styles.hero}>
