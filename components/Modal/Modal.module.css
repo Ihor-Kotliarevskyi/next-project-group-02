@@ -32,6 +32,11 @@
   line-height: 1;
   cursor: pointer;
   color: #101828;
+  transition: color var(--transition-base);
+}
+
+.closeBtn:hover {
+  color: var(--color-button-primary);
 }
 
 @media screen and (min-width: 768px) {

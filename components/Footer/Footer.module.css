@@ -83,7 +83,7 @@
 }
 
 /* ─── Desktop ─── */
-@media (min-width: 1024px) {
+@media (min-width: 1440px) {
   .inner {
     padding: 24px var(--container-padding-desktop);
     flex-wrap: nowrap;

@@ -3,6 +3,7 @@
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Formik, Form, Field, ErrorMessage } from "formik";
+import { ScaleLoader } from "react-spinners";
 import { signUpSchema } from "@/utils/validationSchemas";
 import { useAuth } from "@/hooks/useAuth";
 import css from "../../AuthComponent/AuthNav/Auth.module.css";
@@ -72,7 +73,7 @@ function RegistrationFormInner() {
                         type="submit"
                         disabled={isSubmitting}
                     >
-                        {isSubmitting ? "..." : "Зареєструватись"}
+                        {isSubmitting ? <ScaleLoader color="#fff" height={16} width={2} /> : "Зареєструватись"}
                     </button>
                 </Form>
             )}

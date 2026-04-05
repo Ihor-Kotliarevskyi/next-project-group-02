@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import LocationForm from "@/components/LocationForm/LocationForm";
 import {
   getRegionsServer,
@@ -7,6 +8,11 @@ import {
 
 type Props = {
   params: Promise<{ locationId: string }>;
+};
+
+export const metadata: Metadata = {
+  title: "Редагування локації",
+  description: "Редагуйте інформацію про місце відпочинку на Relax Map",
 };
 
 export default async function Page({ params }: Props) {

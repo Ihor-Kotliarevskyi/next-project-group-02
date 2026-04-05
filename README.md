@@ -1,5 +1,3 @@
-<div align="center">
-
 # 🗺️ RelaxMap — Frontend
 
 **Next.js застосунок для платформи пошуку місць відпочинку в Україні**
@@ -291,8 +289,4 @@ npm run lint
 
 ---
 
-<div align="center">
-
 Розроблено командою **Group 02** · [GitHub](https://github.com/Ihor-Kotliarevskyi/next-project-group-02)
-
-</div>

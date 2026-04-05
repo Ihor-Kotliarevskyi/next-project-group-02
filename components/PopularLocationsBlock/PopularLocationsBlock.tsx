@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { getLocations, getLocationTypes } from "@/lib/api/clientApi";
+import { ScaleLoader } from "react-spinners";
 import LocationCard from "@/components/LocationCard/LocationCard";
 import type { Location } from "@/types/location";
 import styles from "./PopularLocationsBlock.module.css";
@@ -14,7 +15,7 @@ import type { Swiper as SwiperType } from "swiper";
 export default function PopularLocationsBlock() {
   const swiperRef = useRef<SwiperType | null>(null);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["popularLocations"],
     queryFn: () => getLocations({ page: 1, limit: 6 }),
   });
@@ -49,7 +50,11 @@ export default function PopularLocationsBlock() {
 
         <div className={styles.swiperWrap}>
           {isLoading ? (
-            <p className={styles.loader}>Завантаження...</p>
+            <div className={styles.loader}>
+              <ScaleLoader color="#E76F51" aria-label="Завантаження" />
+            </div>
+          ) : isError ? (
+            <p className={styles.loader}>Не вдалося завантажити локації.</p>
           ) : (
             <>
               <Swiper

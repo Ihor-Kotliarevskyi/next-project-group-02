@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import {
   getMeServer,
@@ -12,6 +13,23 @@ import css from "./ProfilePage.module.css";
 type Props = {
   params: Promise<{ userId: string }>;
 };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { userId } = await params;
+  try {
+    const user = await getUserByIdServer(userId);
+    return {
+      title: `${user.name} — профіль`,
+      description: `Профіль користувача ${user.name} на Relax Map`,
+      openGraph: {
+        title: `${user.name} — профіль`,
+        description: `Профіль користувача ${user.name} на Relax Map`,
+      },
+    };
+  } catch {
+    return { title: "Профіль користувача" };
+  }
+}
 
 export default async function ProfilePage({ params }: Props) {
   const { userId } = await params;

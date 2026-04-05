@@ -9,6 +9,7 @@ import {
   getRegions,
   getLocationTypes,
 } from "@/lib/api/clientApi";
+import { ScaleLoader } from "react-spinners";
 import LocationCard from "@/components/LocationCard/LocationCard";
 import SearchBox from "@/components/SearchBox/SearchBox";
 import Pagination from "@/components/Pagination/Pagination";
@@ -62,7 +63,7 @@ export default function LocationList() {
     setSort,
   ]);
 
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+  const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
       queryKey: ["locations", effectiveFilters],
       initialPageParam: 1,
@@ -142,7 +143,11 @@ export default function LocationList() {
         />
 
         {isLoading ? (
-          <p className={styles.loader}>Завантаження...</p>
+          <div className={styles.loader}>
+            <ScaleLoader color="#E76F51" aria-label="Завантаження" />
+          </div>
+        ) : isError ? (
+          <p className={styles.empty}>Не вдалося завантажити локації. Спробуйте пізніше.</p>
         ) : (
           <div className={styles.grid}>
             {locations.length === 0 ? (

@@ -91,8 +91,10 @@
 }
 
 .photoPreview {
+  display: block;
   border-radius: 12px;
   width: 100%;
+  margin-top: 10px;
   margin-bottom: 16px;
 }
 
