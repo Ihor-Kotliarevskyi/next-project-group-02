@@ -13,8 +13,19 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Relax Map",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000"),
+  title: {
+    default: "Relax Map",
+    template: "%s | Relax Map",
+  },
   description: "Знаходьте та діліться місцями для відпочинку в Україні",
+  openGraph: {
+    type: "website",
+    siteName: "Relax Map",
+    title: "Relax Map",
+    description: "Знаходьте та діліться місцями для відпочинку в Україні",
+    locale: "uk_UA",
+  },
 };
 
 export default function RootLayout({

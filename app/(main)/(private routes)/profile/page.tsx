@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import { getMeServer, getUserLocationsServer } from "@/lib/api/serverApi";
 import ProfileInfo from "@/components/ProfileInfo/ProfileInfo";
 import ProfilePlaceholder from "@/components/ProfilePlaceholder/ProfilePlaceholder";
 import ProfileLocationList from "@/components/ProfileLocationList/ProfileLocationList";
 import css from "./ProfilePage.module.css";
+
+export const metadata: Metadata = {
+  title: "Мій профіль",
+  description: "Ваш профіль на Relax Map",
+};
 
 export default async function Profile() {
   const user = await getMeServer();
