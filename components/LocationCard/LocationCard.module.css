@@ -93,9 +93,9 @@
 
 .button:hover,
 .editLink:hover {
-  background-color: #a95325;
-  border-color: #a95325;
-  color: #fff;
+  background-color: var(--color-button-secondary-hover);
+  border-color: var(--color-button-secondary-hover);
+  color: var(--color-bg-white);
   cursor: pointer;
 }
 
