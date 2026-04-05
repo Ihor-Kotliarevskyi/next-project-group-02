@@ -78,7 +78,7 @@ export default function ReviewsSection({
     initialUniqueReviews.length > 0 ? [1] : [],
   );
   const [totalPages, setTotalPages] = useState<number | null>(
-    initialUniqueReviews.length > 0 && initialUniqueReviews.length < LIMIT
+    initialUniqueReviews.length > 0 && initialUniqueReviews.length <= LIMIT
       ? 1
       : null,
   );
@@ -93,7 +93,7 @@ export default function ReviewsSection({
     initialUniqueReviews.length > 0 ? [1] : [],
   );
   const totalPagesRef = useRef<number | null>(
-    initialUniqueReviews.length > 0 && initialUniqueReviews.length < LIMIT
+    initialUniqueReviews.length > 0 && initialUniqueReviews.length <= LIMIT
       ? 1
       : null,
   );
@@ -104,7 +104,7 @@ export default function ReviewsSection({
       const nextReviews = sortByNewest(dedupeReviews(nextInitialReviews));
       const nextLoadedPages = nextReviews.length > 0 ? [1] : [];
       const nextTotalPages =
-        nextReviews.length > 0 && nextReviews.length < LIMIT ? 1 : null;
+        nextReviews.length > 0 && nextReviews.length <= LIMIT ? 1 : null;
 
       setReviews(nextReviews);
       setLoadedPages(nextLoadedPages);
