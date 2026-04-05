@@ -1,9 +1,9 @@
-
- .header {
+.header {
     position: sticky;
     top: 0;
-    z-index: 9999;
-    background-color: var(--color-scheme-2-background);
+    left: 0;
+    z-index: 999;
+    background-color: var(--color-bg-page);
     /* border-bottom: 1px solid var(--color-border); */
     /* padding: 0px 64px; */
     width: 100%;
@@ -11,9 +11,9 @@
     margin-bottom: 0;
     font-family: var(--font-manrope);
     font-weight: var(--font-weight-regular);
-} 
+}
 
-.inner {
+.inner {    
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -24,10 +24,10 @@
 }
 
 .rightSide {
-     display: flex;
-     align-items: center;
-     gap: 32px;
-     margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    margin-left: auto;
 }
 
 /* ─── Desktop Nav ─── */
@@ -65,7 +65,7 @@
 .navLink.active::after,
 .navLink:hover::after {
     width: 100%;
-} 
+}
 
 /* ─── Desktop Auth ─── */
 .auth {
@@ -89,13 +89,13 @@
 }
 
 .profilePage {
-        font-size: var(--font-size-sm);
-        font-weight: var(--font-weight-medium);
-        color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-muted);
 }
 
-.locationAdd{
-    border: 1px solid var(--color-coral-dark);
+.locationAdd {
+    border: 1px solid var(--color-button-primary);
     border-radius: 6px;
     padding: 4px 10px;
     font-size: 14px;
@@ -109,7 +109,6 @@
 .locationAdd:hover {
     color: var(--color-text-main);
     background-color: var(--color-button-primary-hover);
-    border: 1px solid var(--color-button-primary);
 }
 
 .avatar {
@@ -160,7 +159,7 @@
 }
 
 .registerBtn {
-    border: 1px solid var(--color-coral-dark);
+    border: 1px solid var(--color-button-primary);
     border-radius: 6px;
     padding: 4px 10px;
     font-size: 16px;
@@ -174,8 +173,6 @@
 .registerBtn:hover {
     color: var(--color-text-main);
     background-color: var(--color-button-primary-hover);
-    border: 1px solid var(--color-button-primary);
-
 }
 
 
@@ -276,6 +273,7 @@
     .mobileMenu {
         padding: 16px var(--container-padding-tablet) 24px;
     }
+
     .auth {
         display: flex;
     }
@@ -283,7 +281,7 @@
 }
 
 /* ─── Desktop ────────────────── */
- @media (min-width: 1024px) {
+@media (min-width: 1024px) {
     .inner {
         padding: 0 var(--container-padding-desktop);
     }
@@ -293,22 +291,21 @@
         align-items: center;
         gap: 32px;
 
-                
+
     }
-     .auth {
-            display: flex;
-           align-items: center;
-            gap: 12px;
-                }
-        
+
+    .auth {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
     .burger {
-            display: none;
-                }
-        
+        display: none;
+    }
+
     .mobileMenu {
-                 display: none;
-                }
+        display: none;
+    }
 
-} 
-
-
+}

@@ -1,14 +1,21 @@
+"use client";
+
 import Image from "next/image";
 import Logo from "../Logo/Logo";
 import css from "./Footer.module.css";
 import Link from "next/link";
 
 export default function Footer() {
+  const handleScrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
   return (
     <footer className={css.footer}>
       <div className={css.footerContainer}>
         <div className={css.inner}>
-          <Logo />
+          <div onClick={handleScrollToTop} className={css.logoWrapper}>
+            <Logo />
+          </div>
           <ul className={css.socials}>
             <li className={css.facebook}>
               <Link href="https://www.facebook.com" target="_blank">

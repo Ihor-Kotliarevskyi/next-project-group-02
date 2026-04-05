@@ -9,11 +9,13 @@ export default function MainLayout({
     modal: React.ReactNode;
 }) {
     return (
-        <>
-        <Header />
-            {children}
-            {modal}
-        <Footer />
-        </>
+        <div className="mainLayout">
+            <Header />
+            <div className="mainContent">
+                {children}
+                {modal}
+            </div>
+            <Footer />
+        </div>
     );
 }

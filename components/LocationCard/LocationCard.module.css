@@ -93,17 +93,14 @@
 
 .button:hover,
 .editLink:hover {
-  background-color: #e8845a;
-  border-color: #e8845a;
+  background-color: #a95325;
+  border-color: #a95325;
+  color: #fff;
   cursor: pointer;
 }
 
 .editLink:hover img {
   filter: brightness(0) invert(1);
-}
-
-.button:hover {
-  color: #fff7f2;
 }
 
 @media (min-width: 375px) {
