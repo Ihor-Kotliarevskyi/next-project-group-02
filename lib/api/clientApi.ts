@@ -37,14 +37,6 @@ export const getRegions = () =>
 export const getLocationTypes = () =>
   clientApi.get("/categories/types").then((r) => r.data.data ?? r.data);
 
-export const getFeedbacks = (
-  locationId: string,
-  params?: { page?: number; limit?: number }
-) =>
-  clientApi
-    .get(`/locations/${locationId}/feedbacks`, { params })
-    .then((r) => r.data);
-
 export const createFeedback = (
   locationId: string,
   data: { rating: number; comment: string; userName: string }
