@@ -10,6 +10,8 @@ import css from "./LocationForm.module.css";
 import { getLocationValidationSchema } from "@/lib/validation/locationSchema";
 import { uploadImage } from "@/utils/uploadImage";
 import { useMemo } from "react";
+import { useRef } from "react";
+
 
 type Props = {
   id?: string;
@@ -96,6 +98,34 @@ export default function LocationForm({
 
   const [isTypeOpen, setIsTypeOpen] = useState(false);
   const [isRegionOpen, setIsRegionOpen] = useState(false);
+
+  const typeRef = useRef<HTMLDivElement>(null);
+  const regionRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+  const handleClickOutside = (e: MouseEvent) => {
+    if (
+      typeRef.current &&
+      !typeRef.current.contains(e.target as Node)
+    ) {
+      setIsTypeOpen(false);
+    }
+
+    if (
+      regionRef.current &&
+      !regionRef.current.contains(e.target as Node)
+    ) {
+      setIsRegionOpen(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+  }, []);
+  
 
   return (
     <main className={css.mainLocationForm}>
@@ -216,11 +246,14 @@ export default function LocationForm({
                   <div className={css.formGroup}>
                     <label className={css.label}>Тип місця</label>
 
-                    <div className={css.selectWrapper}>
+                    <div className={css.selectWrapper} ref={typeRef}>
                       <div
-                        className={`${css.select} ${
+                        className={`${css.select} ${isTypeOpen ? css.selectOpen : ""} ${
+     
                           !values.locationType ? css.placeholder : ""
-                        }`}
+  
+                          }`}
+
                         onClick={() => {
                           setIsTypeOpen((prev) => !prev);
                           setIsRegionOpen(false);
@@ -278,13 +311,15 @@ export default function LocationForm({
                   <div className={css.formGroup}>
                     <label className={css.label}>Регіон</label>
 
-                    <div className={css.selectWrapper}>
-                      <div
-                        className={`${css.select} ${
+                    <div className={css.selectWrapper} ref={regionRef}>
+                        <div
+                        className={`${css.select} ${isRegionOpen ? css.selectOpen : ""} ${
+     
                           !values.region ? css.placeholder : ""
-                        }`}
+  
+                          }`}
                         onClick={() => {
-                          setIsRegionOpen((prev) => !prev);
+                          setIsRegionOpen(true);
                           setIsTypeOpen(false);
                         }}
                       >
