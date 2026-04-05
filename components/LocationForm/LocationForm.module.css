@@ -1,4 +1,4 @@
-.main {
+.mainLocationForm {
   background-color: var(--color-bg-page);
   flex: 1;
   display: flex;
@@ -6,9 +6,61 @@
   font-family: var(--font-family);
 }
 
+.selectWrapper {
+  position: relative;
+}
+
+.select {
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  padding: 8px;
+  min-height: 40px;
+  background: var(--color-slider-normal);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--color-button-primary);
+}
+
+.placeholder {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 100%;
+  background: var(--color-slider-normal);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  overflow: hidden;
+  z-index: 10;
+}
+
+.option {
+  padding: 10px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.option:hover {
+  background: var(--color-slider-active);
+}
+
+.active {
+  background: var(--color-slider-active);
+  color: white;
+}
+
 .photoPreview {
   border-radius: 12px;
   width: 100%;
+  margin-bottom: 16px;
 }
 
 .locationFormTitle {
@@ -36,13 +88,12 @@
 }
 
 .uploadBtn {
+  align-self: flex-start;
   color: var(--color-text-main);
   background: rgba(0, 0, 0, 0.05);
   border: 1px solid rgba(0, 0, 0, 0.15);
   padding: 4px 10px;
-  width: 176px;
-  height: 32px;
-  margin: 16px 0;
+  min-height: 32px;
 }
 
 .formGroup {
@@ -60,7 +111,7 @@
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 6px;
   padding: 8px;
-  height: 40px;
+  min-height: 40px;
   background: var(--color-slider-normal);
 }
 
@@ -88,9 +139,6 @@
   font-weight: 400;
   font-size: 12px;
   line-height: 1.5;
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 1.5;
 }
 
 .buttonGroup {
@@ -103,8 +151,17 @@
   border: 1px solid var(--color-coral-primary);
   background: var(--color-button-primary);
   color: var(--color-bg-white);
-  width: 100%;
   min-height: 48px;
+}
+
+.locationSubmit:active,
+.locationCancel:hover,
+.locationCancel:focus,
+.uploadBtn:hover,
+.uploadBtn:focus {
+  border: 1px solid var(--color-coral-primary);
+  background: var(--color-button-primary);
+  color: var(--color-bg-white);
 }
 
 .loader {
@@ -126,30 +183,21 @@
   border: 1px solid rgba(0, 0, 0, 0.15);
   background: rgba(0, 0, 0, 0.05);
   color: var(--color-text-main);
-  width: 100%;
   min-height: 48px;
 }
 
 .locationSubmit:not(:disabled):hover,
-.locationSubmit:focus {
+.locationSubmit:not(:disabled):focus {
   background: var(--color-button-primary-hover);
   border: 1px solid var(--color-button-primary);
-  color: var(--color-bg-white);
   color: var(--color-text-input);
 }
 
-.locationSubmit:active,
-.locationCancel:hover,
-.locationCancel:focus {
-  transform: scale(0.98);
-  background: var(--color-button-primary);
-  color: var(--color-bg-white);
-  border-radius: 6px;
-}
-
-.locationCancel:active {
+.locationCancel:active,
+.uploadBtn:active {
   transform: scale(0.98);
   background-color: var(--color-button-secondary-active);
+  color: var(--color-bg-white);
   border-radius: 6px;
 }
 
@@ -175,12 +223,8 @@
   cursor: not-allowed;
 }
 
-.optional:focus {
-  background-color: var(--color-slider-active);
-}
-
 @media (min-width: 375px) {
-  .container {
+  .containerLocationForm {
     margin: 0px 20px;
   }
 
@@ -191,18 +235,31 @@
   }
 
   .buttonGroup {
+    display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    justify-content: flex-start;
-    padding: 36px 0px 0px;
-    height: 148px;
-    margin-bottom: 64px;
+    gap: 16px;
+    padding-bottom: 64px;
+    margin-top: 60px;
   }
+
+  .locationSubmit,
+  .locationCancel {
+    width: 100%;
+  }
+
+  /* .buttonGroup {
+    flex-direction: column;
+    align-items: center;
+    justify-content: stretch;
+    padding: 36px 0px 0px;
+    margin-bottom: 64px;
+  } */
 }
 
 @media (min-width: 768px) {
-  .container {
-    margin: 0px 32px;
+  .containerLocationForm {
+    padding-left: 32px;
+    padding-right: 32px;
   }
 
   .locationFormTitle {
@@ -213,18 +270,17 @@
   }
 
   .buttonGroup {
-    align-items: flex-start;
-    justify-content: space-between;
+    align-items: stretch;
     flex-direction: row;
-    width: 100%;
-    height: 84px;
-
+    margin-bottom: 72px;
+    max-width: 423px;
   }
 }
 
 @media (min-width: 1440px) {
-  .container {
-    margin: 0 285px 0 64px;
+  .containerLocationForm {
+    padding-left: 64px;
+    padding-right: 285px;
   }
 
   .locationFormTitle {
@@ -236,9 +292,7 @@
 
   .buttonGroup {
     align-items: flex-start;
-    justify-content: space-between;
     flex-direction: row;
-    width: 423px;
     min-height: 84px;
     margin-bottom: 72px;
   }

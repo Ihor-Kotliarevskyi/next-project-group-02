@@ -44,12 +44,12 @@ export default function ReviewsBlock() {
       }
 
       const unique = Array.from(
-        new Map(collected.map((r) => [r._id, r])).values(),
+        new Map(collected.map((r) => [r._id, r])).values()
       );
       const sorted = unique.sort(
         (a, b) =>
           new Date(b.createdAt ?? 0).getTime() -
-          new Date(a.createdAt ?? 0).getTime(),
+          new Date(a.createdAt ?? 0).getTime()
       );
       setReviews(sorted);
     } catch {

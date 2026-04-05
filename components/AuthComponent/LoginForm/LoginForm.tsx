@@ -8,9 +8,9 @@ import { useAuth } from "@/hooks/useAuth";
 import css from "../../AuthComponent/AuthNav/Auth.module.css";
 
 function LoginFormInner() {
-    const searchParams = useSearchParams();
-    const redirectTo = searchParams.get("redirect") || "/";
-    const { submitAuth } = useAuth(redirectTo);
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/";
+  const { submitAuth } = useAuth(redirectTo);
 
     return (
         <Formik
@@ -74,11 +74,9 @@ function LoginFormInner() {
 }
 
 export default function LoginForm() {
-    return (
-        <Suspense fallback={null}>
-            <LoginFormInner />
-        </Suspense>
-    );
+  return (
+    <Suspense fallback={null}>
+      <LoginFormInner />
+    </Suspense>
+  );
 }
-
-

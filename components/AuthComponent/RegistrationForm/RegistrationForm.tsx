@@ -8,9 +8,9 @@ import { useAuth } from "@/hooks/useAuth";
 import css from "../../AuthComponent/AuthNav/Auth.module.css";
 
 function RegistrationFormInner() {
-    const searchParams = useSearchParams();
-    const redirectTo = searchParams.get("redirect") || "/";
-    const { submitAuth } = useAuth(redirectTo);
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/";
+  const { submitAuth } = useAuth(redirectTo);
 
     return (
         <Formik
@@ -81,11 +81,9 @@ function RegistrationFormInner() {
 }
 
 export default function RegistrationForm() {
-    return (
-        <Suspense fallback={null}>
-            <RegistrationFormInner />
-        </Suspense>
-    );
+  return (
+    <Suspense fallback={null}>
+      <RegistrationFormInner />
+    </Suspense>
+  );
 }
-
-

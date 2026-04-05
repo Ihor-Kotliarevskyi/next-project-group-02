@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
-import { useAuthStore } from '@/lib/store/authStore';
-import { logout as logoutApi } from '@/lib/api/clientApi';
-import Modal from '@/components/Modal/Modal';
-import css from './ConfirmationModal.module.css';
+import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useAuthStore } from "@/lib/store/authStore";
+import { logout as logoutApi } from "@/lib/api/clientApi";
+import Modal from "@/components/Modal/Modal";
+import css from "./ConfirmationModal.module.css";
 
 export default function ConfirmationModal() {
   const queryClient = useQueryClient();
@@ -22,9 +22,9 @@ export default function ConfirmationModal() {
       await logoutApi();
     } finally {
       logout();
-      queryClient.removeQueries({ queryKey: ['currentUser'] });
+      queryClient.removeQueries({ queryKey: ["currentUser"] });
       setIsLoading(false);
-      window.location.href = '/';
+      window.location.href = "/";
     }
   };
 
@@ -50,7 +50,7 @@ export default function ConfirmationModal() {
             onClick={handleConfirm}
             disabled={isLoading}
           >
-            {isLoading ? 'Завантаження...' : 'Вийти'}
+            {isLoading ? "Завантаження..." : "Вийти"}
           </button>
         </div>
       </div>

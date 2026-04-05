@@ -1,8 +1,8 @@
-import { getMeServer, getUserLocationsServer } from '@/lib/api/serverApi';
-import ProfileInfo from '@/components/ProfileInfo/ProfileInfo';
-import ProfilePlaceholder from '@/components/ProfilePlaceholder/ProfilePlaceholder';
-import ProfileLocationList from '@/components/ProfileLocationList/ProfileLocationList';
-import css from './ProfilePage.module.css';
+import { getMeServer, getUserLocationsServer } from "@/lib/api/serverApi";
+import ProfileInfo from "@/components/ProfileInfo/ProfileInfo";
+import ProfilePlaceholder from "@/components/ProfilePlaceholder/ProfilePlaceholder";
+import ProfileLocationList from "@/components/ProfileLocationList/ProfileLocationList";
+import css from "./ProfilePage.module.css";
 
 export default async function Profile() {
   const user = await getMeServer();
@@ -22,7 +22,11 @@ export default async function Profile() {
           {hasLocations ? (
             <>
               <h2 className={css.title}>Мої локації</h2>
-              <ProfileLocationList locations={locations} isLoading={false} isEditable={true} />
+              <ProfileLocationList
+                locations={locations}
+                isLoading={false}
+                isEditable={true}
+              />
             </>
           ) : (
             <ProfilePlaceholder isOwnProfile={true} />
