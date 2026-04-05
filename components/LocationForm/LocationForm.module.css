@@ -6,14 +6,12 @@
   font-family: var(--font-family);
 }
 
-.selectWrapper {
-  position: relative;
-}
-
 .select {
+  position: relative;
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 6px;
   padding: 8px;
+  padding-right: 32px;
   min-height: 40px;
   background: var(--color-slider-normal);
   cursor: pointer;
@@ -21,9 +19,34 @@
   align-items: center;
 }
 
+.selectWrapper {
+  position: relative;
+}
+
 .select:focus {
   outline: none;
   border-color: var(--color-button-primary);
+}
+
+.select::after {
+  content: "";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--color-text-main);
+  border-bottom: 2px solid var(--color-text-main);
+  transform: translateY(-50%) rotate(45deg); /* вниз */
+  transition: transform 0.2s ease;
+}
+
+.selectOpen {
+  border-color: var(--color-button-primary);
+}
+
+.selectOpen::after {
+  transform: translateY(-50%) rotate(-135deg);
 }
 
 .placeholder {
@@ -40,6 +63,16 @@
   border-radius: 6px;
   overflow: hidden;
   z-index: 10;
+  overflow-y: auto;
+  opacity: 0;
+  transform: translateY(-5px);
+  transition: all 0.2s ease;
+}
+
+.selectWrapper:hover .dropdown,
+.dropdown {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .option {
