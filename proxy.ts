@@ -6,7 +6,8 @@ const authRoutes = ["/login", "/register"];
 
 const privateRoutes = ["/profile", "/locations/new", "/locations/edit"];
 
-const API_BASE_URL = process.env.BACKEND_API_URL ?? "https://node-project-group-02.onrender.com";
+const API_BASE_URL =
+  process.env.BACKEND_API_URL ?? "https://node-project-group-02.onrender.com";
 
 async function refreshSession(refreshToken: string): Promise<Response | null> {
   try {
@@ -50,9 +51,7 @@ export async function proxy(request: NextRequest) {
             const options = {
               path: parsed.Path ?? "/",
               expires: parsed.Expires ? new Date(parsed.Expires) : undefined,
-              maxAge: parsed["Max-Age"]
-                ? Number(parsed["Max-Age"])
-                : undefined,
+              maxAge: parsed["Max-Age"] ? Number(parsed["Max-Age"]) : undefined,
               httpOnly: /httponly/i.test(cookieStr),
               secure: /secure/i.test(cookieStr),
               sameSite: (

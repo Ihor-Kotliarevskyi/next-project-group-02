@@ -1,92 +1,92 @@
 .content {
-    text-align: center;
+  text-align: center;
 }
 
 .title {
-    font-weight: 700;
-    font-size: 26px;
-    line-height: 1.2;
-    letter-spacing: -0.01em;
-    color: #000;
-    margin-bottom: 16px;
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: #000;
+  margin-bottom: 16px;
 }
 
 .text {
-    font-size: 16px;
-    line-height: 1.5;
-    color: #475467;
-    margin-bottom: 32px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #475467;
+  margin-bottom: 32px;
 }
 
 .error {
-    color: #d92d20;
-    font-size: 14px;
-    margin-bottom: 16px;
+  color: #d92d20;
+  font-size: 14px;
+  margin-bottom: 16px;
 }
 
 .actions {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .cancelBtn,
 .confirmBtn {
-    background-color: rgba(0, 0, 0, 0.15);
-    border-radius: 6px;
-    padding: 12px;
-    max-width: 294px;
-    transition: background-color 250ms ease;
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  padding: 12px;
+  max-width: 294px;
+  transition: background-color 250ms ease;
 }
 
 .cancelBtn {
-    border: 1px solid #d0d5dd;
-    background: #ffffff;
-    color: #4C2613;
+  border: 1px solid #d0d5dd;
+  background: #ffffff;
+  color: #4c2613;
 }
 
 .confirmBtn {
-    border: none;
-    background-color: #CC6534;
-    color: #ffffff;
+  border: none;
+  background-color: #cc6534;
+  color: #ffffff;
 }
 
-.cancelBtn:hover{
-    background-color: #CC6534;
-    color: #ffffff;
+.cancelBtn:hover {
+  background-color: #cc6534;
+  color: #ffffff;
 }
 .confirmBtn:hover {
-    background-color: #FFE5D9;
-    color: #1B391B;
+  background-color: #ffe5d9;
+  color: #1b391b;
 }
 
 .cancelBtn:disabled,
 .confirmBtn:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 @media screen and (min-width: 768px) {
-    .title {
-        font-size: 32px;
-    }
+  .title {
+    font-size: 32px;
+  }
 
-    .actions {
-        flex-direction: row;
-        justify-content: center;
-    }
+  .actions {
+    flex-direction: row;
+    justify-content: center;
+  }
 
-    .cancelBtn,
-    .confirmBtn {
-        min-width: 230px;
-    }
+  .cancelBtn,
+  .confirmBtn {
+    min-width: 230px;
+  }
 }
 
 @media screen and (min-width: 1440px) {
-    .title {
-        font-size: 48px;
-    }
-    .text {
-        font-size: 20px;
- }
+  .title {
+    font-size: 48px;
+  }
+  .text {
+    font-size: 20px;
+  }
 }

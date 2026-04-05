@@ -16,8 +16,7 @@ export const register = (data: {
   password: string;
 }) => clientApi.post("/auth/register", data).then((r) => r.data);
 
-export const logout = () =>
-  clientApi.post("/auth/logout").then((r) => r.data);
+export const logout = () => clientApi.post("/auth/logout").then((r) => r.data);
 
 export const getMe = () => clientApi.get("/users/me").then((r) => r.data);
 
@@ -44,8 +43,8 @@ export const createFeedback = (
 ) =>
   clientApi
     .post(`/locations/${locationId}/feedbacks`, {
-      rate: data.rating,       
-      description: data.comment, 
+      rate: data.rating,
+      description: data.comment,
       userName: data.userName,
     })
     .then((r) => r.data);

@@ -53,39 +53,39 @@ export default function LocationList() {
         locationTypes.map((locationType: { slug: string; type: string }) => [
           locationType.slug,
           locationType.type,
-        ]),
+        ])
       ),
-    [locationTypes],
+    [locationTypes]
   );
 
   const locations = useMemo(() => {
     const allLocations =
-    data?.pages.flatMap((page) => page.locations as Location[]) ?? [];
+      data?.pages.flatMap((page) => page.locations as Location[]) ?? [];
 
-  const uniqueLocations = Array.from(
-    new Map(allLocations.map((loc) => [loc._id, loc])).values()
-  );
+    const uniqueLocations = Array.from(
+      new Map(allLocations.map((loc) => [loc._id, loc])).values()
+    );
 
-  const normalizedSearch = filters.search.trim().toLowerCase();
+    const normalizedSearch = filters.search.trim().toLowerCase();
 
-  const filteredLocations = normalizedSearch
-    ? uniqueLocations.filter((location) => {
-        const locationName = location.name.toLowerCase();
-        const locationTypeLabel =
-          locationTypeLabels.get(location.locationType)?.toLowerCase() ?? "";
-        const locationTypeSlug = location.locationType.toLowerCase();
+    const filteredLocations = normalizedSearch
+      ? uniqueLocations.filter((location) => {
+          const locationName = location.name.toLowerCase();
+          const locationTypeLabel =
+            locationTypeLabels.get(location.locationType)?.toLowerCase() ?? "";
+          const locationTypeSlug = location.locationType.toLowerCase();
 
-        return (
-          locationName.includes(normalizedSearch) ||
-          locationTypeLabel.includes(normalizedSearch) ||
-          locationTypeSlug.includes(normalizedSearch)
-        );
-      })
-    : uniqueLocations;
+          return (
+            locationName.includes(normalizedSearch) ||
+            locationTypeLabel.includes(normalizedSearch) ||
+            locationTypeSlug.includes(normalizedSearch)
+          );
+        })
+      : uniqueLocations;
 
     if (filters.sort === "name") {
       return [...filteredLocations].sort((a, b) =>
-        a.name.localeCompare(b.name, "uk"),
+        a.name.localeCompare(b.name, "uk")
       );
     }
 
@@ -109,7 +109,7 @@ export default function LocationList() {
             (locationType: { slug: string; type: string }) => ({
               value: locationType.slug,
               label: locationType.type,
-            }),
+            })
           )}
         />
 

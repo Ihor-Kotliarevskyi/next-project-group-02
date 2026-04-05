@@ -1,11 +1,14 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import Image from 'next/image';
-import styles from './LocationCard.module.css';
-import { Location } from '@/types/location';
+import Link from "next/link";
+import Image from "next/image";
+import styles from "./LocationCard.module.css";
+import { Location } from "@/types/location";
 
-type LocationCardProps = Pick<Location, '_id' | 'image' | 'name' | 'locationType' | 'rate'> & {
+type LocationCardProps = Pick<
+  Location,
+  "_id" | "image" | "name" | "locationType" | "rate"
+> & {
   isEditable?: boolean;
 };
 
@@ -36,7 +39,7 @@ export default function LocationCard({
         <div className={styles.rating} aria-label={`Рейтинг: ${rate} з 5`}>
           {Array.from({ length: 5 }, (_, index) => (
             <span key={index} className={styles.star}>
-              {index < roundedRate ? '★' : '☆'}
+              {index < roundedRate ? "★" : "☆"}
             </span>
           ))}
         </div>

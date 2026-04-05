@@ -1,23 +1,22 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import type { User } from '@/types/user';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import type { User } from "@/types/user";
 
 type AuthState = {
-    user: User | null;
-    setUser: (user: User) => void;
-    logout: () => void;
+  user: User | null;
+  setUser: (user: User) => void;
+  logout: () => void;
 };
 
 export const useAuthStore = create<AuthState>()(
-    persist(
-        (set) => ({
-            user: null,
-            setUser: (user) => set({ user }),
-            logout: () => set({ user: null }),
-        }),
-        {
-            name: 'auth-storage',
-        }
-    )
+  persist(
+    (set) => ({
+      user: null,
+      setUser: (user) => set({ user }),
+      logout: () => set({ user: null }),
+    }),
+    {
+      name: "auth-storage",
+    }
+  )
 );
-

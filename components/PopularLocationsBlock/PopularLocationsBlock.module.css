@@ -81,9 +81,9 @@
 
 .ctaBtn:hover,
 .ctaBtn:focus-visible {
-  background-color: #ffe5d9;
-  border-color: #a95325;
-  color: #1B391B;
+  background-color: var(--color-button-primary-hover);
+  border-color: var(--color-button-secondary-hover);
+  color: var(--color-text-input);
   outline: none;
 }
 

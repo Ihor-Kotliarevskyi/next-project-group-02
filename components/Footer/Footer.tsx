@@ -13,9 +13,9 @@ export default function Footer() {
     <footer className={css.footer}>
       <div className={css.footerContainer}>
         <div className={css.inner}>
-          <div onClick={handleScrollToTop} className={css.logoWrapper}>
+          <button onClick={handleScrollToTop} className={css.logoWrapper} aria-label="Scroll to top">
             <Logo />
-          </div>
+          </button>
           <ul className={css.socials}>
             <li className={css.facebook}>
               <Link href="https://www.facebook.com" target="_blank">
