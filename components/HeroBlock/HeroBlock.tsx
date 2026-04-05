@@ -13,7 +13,7 @@ export default function HeroBlock() {
     const trimmedQuery = query.trim();
     if (!trimmedQuery) return;
 
-    router.push(`/locations?query=${encodeURIComponent(trimmedQuery)}`);
+    router.push(`/locations?search=${encodeURIComponent(trimmedQuery)}`);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -24,6 +24,8 @@ export default function HeroBlock() {
 
   return (
     <section className={styles.hero}>
+
+      <div className={styles.heroContainer}>
       <Image
         src="/images/hero-bg.png"
         alt="Nature"
@@ -58,6 +60,7 @@ export default function HeroBlock() {
           </button>
         </div>
       </div>
+       </div>
     </section>
   );
 }
