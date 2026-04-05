@@ -5,7 +5,7 @@
 }
 
 .advantagesTitle {
-  color: #1B391B;
+  color: #1b391b;
   font-weight: bold;
   font-size: 28px;
   margin-bottom: 32px;
@@ -17,13 +17,14 @@
 }
 
 .advantagesCard {
-  background: #FFE5D9;
+  background: #ffe5d9;
   padding: 16px;
   border-radius: 16px;
   transition: all 0.25s ease;
 }
+
 .advantagesCardTitle {
-  color: #1B391B;
+  color: #1b391b;
   font-size: 18px;
   font-weight: bold;
   padding-bottom: 16px;
@@ -31,7 +32,7 @@
 
 .advantagesCardText {
   font-size: 16px;
-  color: #1B391B;
+  color: #1b391b;
 }
 
 .advantagesIcon {
@@ -45,46 +46,53 @@
   object-fit: contain;
 }
 
-/*Tablet*/
+/* Tablet */
 @media (min-width: 768px) {
-.advantagesSection {
-  padding: 64px 32px;
-}
-.advantagesTitle {
-  font-size: 44px;
-}
+  .advantagesSection {
+    padding: 64px 32px;
+  }
+
+  .advantagesTitle {
+    font-size: 44px;
+  }
+
   .advantagesGrid {
     grid-template-columns: repeat(2, 1fr);
   }
 
   .advantagesCard:nth-child(3) {
-    grid-column: span 2; 
+    grid-column: span 2;
   }
+
   .advantagesIcon {
-  width: 64px;
-  height: 64px;
+    width: 64px;
+    height: 64px;
+  }
 }
-}
-/*Desktop*/
+
+/* Desktop */
 @media screen and (min-width: 1440px) {
   .advantagesSection {
-  padding: 112px 64px;
-}
-.advantagesTitle {
-  font-size: 52px;
-}
-.advantagesCardTitle {
-font-size:26px;
-}
-.advantagesCardText {
-font-size:18px;
-}
+    padding: 112px 64px;
+  }
 
-.advantagesGrid {
-  grid-template-columns: repeat(3, 1fr);
-}
+  .advantagesTitle {
+    font-size: 52px;
+  }
 
-.advantagesCard:nth-child(3) {
-  grid-column: auto;
-}
+  .advantagesCardTitle {
+    font-size: 26px;
+  }
+
+  .advantagesCardText {
+    font-size: 18px;
+  }
+
+  .advantagesGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .advantagesCard:nth-child(3) {
+    grid-column: auto;
+  }
 }

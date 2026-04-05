@@ -1,6 +1,6 @@
 export type LocationType = {
   _id: string;
-  type: string; 
+  type: string;
   slug: string;
   shortDescription: string;
 };

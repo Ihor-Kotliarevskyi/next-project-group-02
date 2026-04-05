@@ -36,8 +36,13 @@ export default function AdvantagesBlock() {
               />
             </div>
 
-            <h3 className={styles.advantagesCardTitle}>{item.title}</h3>
-            <p className={styles.advantagesCardText}>{item.text}</p>
+            <h3 className={styles.advantagesCardTitle}>
+              {item.title}
+            </h3>
+
+            <p className={styles.advantagesCardText}>
+              {item.text}
+            </p>
           </div>
         ))}
       </div>

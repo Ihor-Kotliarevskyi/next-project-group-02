@@ -1,0 +1,53 @@
+.mainContent {
+  display: flex;
+  justify-content: center;
+}
+
+.profile {
+  width: 100%;
+  max-width: 375px;
+  padding: 32px 20px 64px;
+}
+
+.locations {
+  width: 100%;
+  margin-top: 32px;
+}
+
+.title {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 120%;
+  letter-spacing: -0.01em;
+  color: #000;
+  margin-bottom: 24px;
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  .profile {
+    max-width: 768px;
+    padding: 32px 32px 64px;
+  }
+
+  .title {
+    font-size: 44px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1280px) {
+  .profile {
+    max-width: 1440px;
+    padding: 48px 64px 72px;
+  }
+
+  .locations {
+    margin-top: 48px;
+  }
+
+  .title {
+    font-size: 52px;
+  }
+}

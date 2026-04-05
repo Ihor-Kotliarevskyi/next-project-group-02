@@ -1,50 +1,69 @@
 .footer {
-  background-color: var(--color-bg-page);
+  background-color: var(--color-bg-footer);
   border-top: 1px solid var(--color-border);
-  margin-top: auto;
+  width: 100%;
+  padding-bottom: 80px;
 }
 
+.footerContainer {
+  margin: 48px 20px;
+}
+
+.logoWrapper {
+  cursor: pointer;
+}
+
+.footer Link {
+  color: var(--color-scheme-2-text);
+  text-decoration: none;
+}
 .inner {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 24px;
   padding: 32px var(--container-padding-mobile);
   margin: 0 auto;
   max-width: var(--container-max);
+  margin-bottom: 24px;
 }
 
-.logo {
-  font-size: 20px;
-  font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
-  letter-spacing: -0.5px;
-  transition: color var(--transition-base);
-}
-
-.logo:hover {
-  color: var(--color-primary-hover);
-}
-
-.nav {
+.socials {
   display: flex;
+  list-style-type: none;
+  gap: 12px;
+}
+
+.footerNav {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 24px;
-}
-
-.link {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
-  transition: color var(--transition-base);
-}
-
-.link:hover {
-  color: var(--color-primary);
+  list-style-type: none;
+  padding-right: 0;
+  gap: 32px;
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 150%;
 }
 
 .copy {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
+  margin-top: 0;
+  padding-top: 32px;
+  text-align: center;
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 150%;
+  color: var(--color-scheme-2-text);
+  border-top: 1px solid var(--color-scheme-2-border);
+}
+
+.itemsLink {
+  color: var(--color-scheme-2-text);
+}
+.line {
+  border: 1px solid var(--color-overlay-light);
 }
 
 /* ─── Tablet ─── */
@@ -53,6 +72,13 @@
     flex-direction: row;
     justify-content: space-between;
     padding: 24px var(--container-padding-tablet);
+    flex-wrap: wrap;
+  }
+  .footerNav {
+    flex-direction: row;
+    gap: 24px;
+    width: 100%;
+    justify-content: center;
   }
 }
 
@@ -60,5 +86,16 @@
 @media (min-width: 1024px) {
   .inner {
     padding: 24px var(--container-padding-desktop);
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+  .footerNav {
+    flex-direction: row;
+    gap: 24px;
+    width: auto;
+    justify-content: flex-start;
+  }
+  .footerContainer {
+    margin: 80px 64px;
   }
 }

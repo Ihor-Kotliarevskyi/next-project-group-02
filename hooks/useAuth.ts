@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import toast from 'react-hot-toast';
-import { isAxiosError } from 'axios';
-import type { FormikHelpers } from 'formik';
-import { useAuthStore } from '@/lib/store/authStore';
-import { login, register } from '@/lib/api/clientApi';
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { isAxiosError } from "axios";
+import type { FormikHelpers } from "formik";
+import { useAuthStore } from "@/lib/store/authStore";
+import { login, register } from "@/lib/api/clientApi";
 
 type LoginValues = {
   email: string;
@@ -18,7 +18,7 @@ type RegisterValues = {
   password: string;
 };
 
-export function useAuth(redirectTo: string = '/') {
+export function useAuth(redirectTo: string = "/") {
   const router = useRouter();
   const setUser = useAuthStore((state) => state.setUser);
 
@@ -28,18 +28,18 @@ export function useAuth(redirectTo: string = '/') {
     helpers: FormikHelpers<T>
   ) {
     const { setSubmitting, setFieldError, resetForm } = helpers;
-    const loading = toast.loading(isLogin ? 'Вхід...' : 'Реєстрація...');
+    const loading = toast.loading(isLogin ? "Вхід..." : "Реєстрація...");
 
     try {
       const data = isLogin
         ? await login(values as LoginValues)
         : await register(values as RegisterValues);
 
-      if (!data) throw new Error('Користувача не отримано');
+      if (!data) throw new Error("Користувача не отримано");
 
       setUser(data);
       resetForm();
-      toast.success(isLogin ? 'Успішний вхід' : 'Реєстрація успішна');
+      toast.success(isLogin ? "Успішний вхід" : "Реєстрація успішна");
       router.push(redirectTo);
       router.refresh();
     } catch (e: unknown) {
@@ -49,13 +49,13 @@ export function useAuth(redirectTo: string = '/') {
           e.response?.data?.error ||
           e.message
         : e instanceof Error
-        ? e.message
-        : 'Щось пішло не так';
+          ? e.message
+          : "Щось пішло не так";
 
-      if (message.toLowerCase().includes('email')) {
-        setFieldError('email', message);
-      } else if (message.toLowerCase().includes('password')) {
-        setFieldError('password', message);
+      if (message.toLowerCase().includes("email")) {
+        setFieldError("email", message);
+      } else if (message.toLowerCase().includes("password")) {
+        setFieldError("password", message);
       }
 
       toast.error(message);

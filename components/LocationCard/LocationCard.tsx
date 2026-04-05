@@ -8,7 +8,9 @@ import { Location } from "@/types/location";
 type LocationCardProps = Pick<
   Location,
   "_id" | "image" | "name" | "locationType" | "rate"
->;
+> & {
+  isEditable?: boolean;
+};
 
 export default function LocationCard({
   _id,
@@ -16,6 +18,7 @@ export default function LocationCard({
   name,
   locationType,
   rate,
+  isEditable,
 }: LocationCardProps) {
   const roundedRate = Math.round(rate);
 
@@ -25,6 +28,7 @@ export default function LocationCard({
         <Image
           src={image}
           alt={name}
+          loading="eager"
           fill
           sizes="(min-width: 1440px) 389px, (min-width: 768px) calc((100vw - 88px) / 2), 100vw"
           className={styles.image}
@@ -40,9 +44,18 @@ export default function LocationCard({
           ))}
         </div>
         <h3 className={styles.title}>{name}</h3>
-        <Link href={`/locations/${_id}`} className={styles.button}>
-          Переглянути локацію
-        </Link>
+
+        <div className={styles.actions}>
+          <Link href={`/locations/${_id}`} className={styles.button}>
+            Переглянути локацію
+          </Link>
+
+          {isEditable && (
+            <Link href={`/locations/${_id}/edit`} className={styles.editLink}>
+              <Image src="/edit.svg" alt="Редагувати" width={24} height={24} />
+            </Link>
+          )}
+        </div>
       </div>
     </article>
   );

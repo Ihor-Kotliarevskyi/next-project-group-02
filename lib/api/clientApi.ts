@@ -16,8 +16,7 @@ export const register = (data: {
   password: string;
 }) => clientApi.post("/auth/register", data).then((r) => r.data);
 
-export const logout = () =>
-  clientApi.post("/auth/logout").then((r) => r.data);
+export const logout = () => clientApi.post("/auth/logout").then((r) => r.data);
 
 export const getMe = () => clientApi.get("/users/me").then((r) => r.data);
 
@@ -38,20 +37,16 @@ export const getRegions = () =>
 export const getLocationTypes = () =>
   clientApi.get("/categories/types").then((r) => r.data.data ?? r.data);
 
-export const getFeedbacks = (
-  locationId: string,
-  params?: { page?: number; limit?: number }
-) =>
-  clientApi
-    .get(`/locations/${locationId}/feedbacks`, { params })
-    .then((r) => r.data);
-
 export const createFeedback = (
   locationId: string,
-  data: { rating: number; comment: string }
+  data: { rating: number; comment: string; userName: string }
 ) =>
   clientApi
-    .post(`/locations/${locationId}/feedbacks`, data)
+    .post(`/locations/${locationId}/feedbacks`, {
+      rate: data.rating,
+      description: data.comment,
+      userName: data.userName,
+    })
     .then((r) => r.data);
 
 export const createLocation = (data: unknown) =>
