@@ -1,5 +1,7 @@
 "use client";
 
+import styles from "./error.module.css";
+
 export default function Error({
   reset,
 }: {
@@ -7,29 +9,10 @@ export default function Error({
   reset: () => void;
 }) {
   return (
-    <main
-      style={{
-        flex: 1,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "16px",
-        minHeight: "50vh",
-      }}
-    >
+    <main className={styles.wrapper}>
       <h1>Щось пішло не так!</h1>
       <p>Виникла непередбачена помилка. Спробуйте ще раз.</p>
-      <button
-        onClick={reset}
-        style={{
-          padding: "8px 16px",
-          cursor: "pointer",
-          borderRadius: "4px",
-          border: "1px solid #ccc",
-          background: "#fff",
-        }}
-      >
+      <button onClick={reset} className={styles.button}>
         Спробувати ще раз
       </button>
     </main>

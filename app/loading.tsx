@@ -2,6 +2,7 @@
 
 import { ScaleLoader } from "react-spinners";
 import type { CSSProperties } from "react";
+import styles from "./loading.module.css";
 
 const override: CSSProperties = {
   display: "block",
@@ -11,17 +12,7 @@ const override: CSSProperties = {
 
 export default function Loading() {
   return (
-    <div
-      style={{
-        flex: 1,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "12px",
-        minHeight: "50vh",
-      }}
-    >
+    <div className={styles.wrapper}>
       <ScaleLoader
         color="#E76F51"
         loading
