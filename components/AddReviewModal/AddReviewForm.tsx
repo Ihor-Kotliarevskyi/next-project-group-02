@@ -17,7 +17,7 @@ export const AddReviewForm = ({
   const [comment, setComment] = useState("");
   const [userName, setUserName] = useState("Анонім");
   const [errors, setErrors] = useState<{ rating?: string; comment?: string }>(
-    {},
+    {}
   );
   const [loading, setLoading] = useState(false);
 

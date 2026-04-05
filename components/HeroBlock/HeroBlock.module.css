@@ -53,7 +53,7 @@
   border: 1px solid transparent;
   outline: none;
   width: 100%;
-  background-color: #FFE5D9;
+  background-color: #ffe5d9;
   color: #00000099;
   transition: all 0.25s ease;
 }
@@ -63,18 +63,18 @@
   padding: 8px;
   border-radius: 6px;
   border: none;
-  background: #CC6534;
+  background: #cc6534;
   color: white;
   cursor: pointer;
   transition: 0.3s;
 }
 
 .heroSearch input:focus {
-  border: 1px solid #CC6534;
+  border: 1px solid #cc6534;
 }
 
 .heroSearch button:hover {
-  background: #FFE5D9;
+  background: #ffe5d9;
   transform: translateY(-2px);
   color: black;
 }
@@ -100,7 +100,7 @@
 
   .heroSearch input {
     width: 331px;
-  } 
+  }
 }
 
 /*Desktop*/

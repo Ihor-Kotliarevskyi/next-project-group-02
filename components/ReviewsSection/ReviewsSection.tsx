@@ -33,7 +33,7 @@ function sortByNewest(reviews: Feedback[]): Feedback[] {
   return [...reviews].sort(
     (a, b) =>
       new Date(b.createdAt ?? 0).getTime() -
-      new Date(a.createdAt ?? 0).getTime(),
+      new Date(a.createdAt ?? 0).getTime()
   );
 }
 
@@ -71,16 +71,16 @@ export default function ReviewsSection({
 }: Props) {
   const initialUniqueReviews = useMemo(
     () => sortByNewest(dedupeReviews(initialReviews)),
-    [initialReviews],
+    [initialReviews]
   );
   const [reviews, setReviews] = useState<Feedback[]>(initialUniqueReviews);
   const [loadedPages, setLoadedPages] = useState<number[]>(
-    initialUniqueReviews.length > 0 ? [1] : [],
+    initialUniqueReviews.length > 0 ? [1] : []
   );
   const [totalPages, setTotalPages] = useState<number | null>(
     initialUniqueReviews.length > 0 && initialUniqueReviews.length < LIMIT
       ? 1
-      : null,
+      : null
   );
   const [, setIsFetching] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -90,12 +90,12 @@ export default function ReviewsSection({
   const swiperRef = useRef<SwiperType | null>(null);
   const isFetchingRef = useRef(false);
   const loadedPagesRef = useRef<number[]>(
-    initialUniqueReviews.length > 0 ? [1] : [],
+    initialUniqueReviews.length > 0 ? [1] : []
   );
   const totalPagesRef = useRef<number | null>(
     initialUniqueReviews.length > 0 && initialUniqueReviews.length < LIMIT
       ? 1
-      : null,
+      : null
   );
   const router = useRouter();
 
@@ -120,7 +120,7 @@ export default function ReviewsSection({
         setIsEnd(swiperRef.current.isEnd);
       }
     },
-    [],
+    []
   );
 
   const fetchPage = useCallback(
@@ -153,7 +153,7 @@ export default function ReviewsSection({
           loadedPagesRef.current = [pageNum];
         } else {
           setReviews((prev) =>
-            sortByNewest(dedupeReviews([...prev, ...nextPageReviews])),
+            sortByNewest(dedupeReviews([...prev, ...nextPageReviews]))
           );
           setLoadedPages((prev) => {
             if (prev.includes(pageNum)) return prev;
@@ -171,7 +171,7 @@ export default function ReviewsSection({
         setReady(true);
       }
     },
-    [locationId],
+    [locationId]
   );
 
   const refreshReviews = useCallback(async () => {

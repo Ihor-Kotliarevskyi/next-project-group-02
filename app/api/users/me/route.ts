@@ -18,7 +18,10 @@ export async function GET(req: NextRequest) {
         { status: error.response?.status ?? 500 }
       );
     }
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -38,6 +41,9 @@ export async function PATCH(req: NextRequest) {
         { status: error.response?.status ?? 500 }
       );
     }
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
