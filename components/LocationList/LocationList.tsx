@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useMemo } from "react";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
@@ -98,9 +98,9 @@ export default function LocationList() {
         locationTypes.map((locationType: { slug: string; type: string }) => [
           locationType.slug,
           locationType.type,
-        ]),
+        ])
       ),
-    [locationTypes],
+    [locationTypes]
   );
 
   const locations = useMemo(() => {
@@ -137,7 +137,7 @@ export default function LocationList() {
             (locationType: { slug: string; type: string }) => ({
               value: locationType.slug,
               label: locationType.type,
-            }),
+            })
           )}
         />
 
@@ -156,7 +156,7 @@ export default function LocationList() {
                   name={location.name}
                   locationType={
                     locationTypeLabels.get(location.locationType) ??
-                    "Тип не вказано"
+                    location.locationType
                   }
                   rate={location.rate}
                 />

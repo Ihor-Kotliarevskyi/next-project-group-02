@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { useLocationStore } from "@/lib/store/locationStore";
 import styles from "./HeroBlock.module.css";
@@ -11,7 +11,7 @@ export default function HeroBlock() {
   const router = useRouter();
   const { setSearch } = useLocationStore();
 
-  const handleSearch = useCallback(() => {
+  const handleSearch = () => {
     const trimmedQuery = query.trim();
     if (!trimmedQuery) return;
 
@@ -19,11 +19,11 @@ export default function HeroBlock() {
     router.push(`/locations?search=${encodeURIComponent(trimmedQuery)}`);
   }, [query, router, setSearch]);
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleSearch();
     }
-  }, [handleSearch]);
+  };
 
   return (
     <section className={styles.hero}>
@@ -43,8 +43,8 @@ export default function HeroBlock() {
         </h1>
 
         <p>
-          Тисячі перевірених локацій з реальними фото та відгуками
-          від мандрівників.
+          Тисячі перевірених локацій з реальними фото та відгуками від
+          мандрівників.
         </p>
 
         <div className={styles.heroSearch}>

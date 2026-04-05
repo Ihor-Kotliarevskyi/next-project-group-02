@@ -10,7 +10,6 @@ export type Location = {
   feedbacksId: string[];
 };
 
-
 export type NewLocation = {
   name: string;
   locationType: string;

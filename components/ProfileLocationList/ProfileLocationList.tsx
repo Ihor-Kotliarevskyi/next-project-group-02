@@ -1,30 +1,40 @@
-'use client';
+"use client";
 
-import { useMemo, useState } from 'react';
-import { useLocationStore } from '@/lib/store/locationStore';
-import LocationCard from '@/components/LocationCard/LocationCard';
-import css from './ProfileLocationList.module.css';
-import { Location } from '@/types/location';
+import { useMemo, useState } from "react";
+import { useLocationStore } from "@/lib/store/locationStore";
+import LocationCard from "@/components/LocationCard/LocationCard";
+import css from "./ProfileLocationList.module.css";
+import { Location } from "@/types/location";
+import { getLocationTypes } from "@/lib/api/clientApi";
+import { useQuery } from "@tanstack/react-query";
 
 interface ProfileLocationListProps {
   locations: Location[];
   isLoading?: boolean;
+  isEditable?: boolean;
 }
 
 export default function ProfileLocationList({
   locations = [],
   isLoading = false,
+  isEditable = false,
 }: ProfileLocationListProps) {
   const { filters } = useLocationStore();
-
   const [visibleCount, setVisibleCount] = useState(6);
+
+  const { data: locationTypes = [] } = useQuery<
+    { slug: string; type: string }[]
+  >({
+    queryKey: ["locationTypes"],
+    queryFn: getLocationTypes,
+  });
 
   const sortedLocations = useMemo(() => {
     const list = [...locations];
-    if (filters.sort === 'name') {
-      return list.sort((a, b) => a.name.localeCompare(b.name, 'uk'));
+    if (filters.sort === "name") {
+      return list.sort((a, b) => a.name.localeCompare(b.name, "uk"));
     }
-    if (filters.sort === 'rate') {
+    if (filters.sort === "rate") {
       return list.sort((a, b) => b.rate - a.rate);
     }
     return list;
@@ -34,8 +44,13 @@ export default function ProfileLocationList({
     return sortedLocations.slice(0, visibleCount);
   }, [sortedLocations, visibleCount]);
 
+  const locationTypeLabels = useMemo(
+    () => new Map(locationTypes.map((item) => [item.slug, item.type])),
+    [locationTypes]
+  );
+
   const handleLoadMore = () => {
-    setVisibleCount(prev => prev + 6);
+    setVisibleCount((prev) => prev + 6);
   };
 
   const hasMore = visibleCount < sortedLocations.length;
@@ -57,8 +72,12 @@ export default function ProfileLocationList({
                 _id={location._id}
                 image={location.image}
                 name={location.name}
-                locationType={location.locationType}
+                locationType={
+                  locationTypeLabels.get(location.locationType) ??
+                  location.locationType
+                }
                 rate={location.rate}
+                isEditable={isEditable}
               />
             ))
           )}
@@ -72,7 +91,7 @@ export default function ProfileLocationList({
               disabled={isLoading}
               type="button"
             >
-              {isLoading ? 'Завантаження...' : 'Показати ще'}
+              {isLoading ? "Завантаження..." : "Показати ще"}
             </button>
           </div>
         )}

@@ -28,7 +28,7 @@ export default function PopularLocationsBlock() {
 
   const locationTypeLabels = useMemo(
     () => new Map(locationTypes.map((lt) => [lt.slug, lt.type])),
-    [locationTypes],
+    [locationTypes]
   );
 
   const locations = useMemo(() => {
@@ -73,7 +73,7 @@ export default function PopularLocationsBlock() {
                       name={location.name}
                       locationType={
                         locationTypeLabels.get(location.locationType) ??
-                        "Тип не вказано"
+                        location.locationType
                       }
                       rate={location.rate}
                     />

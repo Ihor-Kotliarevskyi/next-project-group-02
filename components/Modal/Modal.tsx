@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   useEffect,
@@ -6,10 +6,10 @@ import {
   useCallback,
   type ReactNode,
   type MouseEvent,
-} from 'react';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import css from './Modal.module.css';
+} from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import css from "./Modal.module.css";
 
 type ModalProps = {
   children: ReactNode;
@@ -25,17 +25,19 @@ export default function Modal({ children }: ModalProps) {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         closeModal();
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
     };
   }, [closeModal]);
 

@@ -1,7 +1,7 @@
 .page {
   width: min(100%, 1440px);
   margin: 0 auto;
-  padding: 32px 20px
+  padding: 32px 20px;
 }
 
 .card {
@@ -20,22 +20,26 @@
 }
 
 .content {
-  display: grid;
   gap: 12px;
-  
 }
 
 .ratingRow {
-  
   display: flex;
   align-items: center;
   gap: 12px;
   width: 160px;
-  color: #1B391B;
-  
+  color: #1b391b;
 }
 .stars {
-display: flex;
+  display: flex;
+}
+
+.ratingDot {
+  width: 5px;
+  height: 5px;
+  flex: 0 0 5px;
+  border-radius: 50%;
+  background: #1b391b;
 }
 
 .meta {
@@ -44,13 +48,13 @@ display: flex;
 }
 
 .type {
-  color: #1B391B;
+  color: #1b391b;
   font-size: 14px;
   line-height: 1.2;
 }
 
 .title {
-  color: #1B391B;
+  color: #1b391b;
   font-size: 32px;
   font-weight: 800;
   line-height: 1.05;
@@ -59,35 +63,34 @@ display: flex;
 .details {
   display: grid;
   gap: 8px;
-  color: #1B391B;
+  color: #1b391b;
   font-size: 14px;
   line-height: 1.5;
 }
 
 .details strong {
-  color: #1B391B;
+  color: #1b391b;
   font-size: 18px;
 }
 
-
 .description {
-  color: #1B391B;
+  color: #1b391b;
   font-size: 15px;
   line-height: 1.7;
-  padding-top: 20;
+  margin-top: 20px;
 }
 
 .notFound {
   padding: 40px 16px;
   text-align: center;
-  color: #1B391B;
+  color: #1b391b;
 }
 
 .authorLink {
-    color: #6f8864;
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
+  color: #6f8864;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 @media (min-width: 375px) {
   .imageWrap {
     min-height: 280px;
@@ -96,7 +99,7 @@ display: flex;
 
 @media (min-width: 768px) {
   .page {
-    padding: 32px;
+    padding: 32px 32px 0 32px;
   }
 
   .card {
@@ -125,6 +128,7 @@ display: flex;
     font-weight: 800;
     line-height: 1.06;
     letter-spacing: -0.03em;
+    padding: 12px 0;
   }
 
   .details {
@@ -134,9 +138,9 @@ display: flex;
   }
 
   .description {
-    margin-top: 4px;
     font-size: 16px;
     line-height: 1.7;
+    margin-top: 32px;
   }
 
   .ratingRow {
@@ -149,8 +153,6 @@ display: flex;
     margin: 0;
   }
 
-  
-
   .notFound {
     padding: 72px 24px;
     font-size: 18px;
@@ -160,12 +162,13 @@ display: flex;
 @media (min-width: 1440px) {
   .page {
     width: min(100%, 1440px);
-    padding: 44px 80px 88px;
+    padding: 64px 64px 0 64px;
   }
 
   .card {
-    grid-template-columns: 440px 760px;
+    grid-template-columns: 480px 760px;
     column-gap: 68px;
+    grid-template-rows: 146px auto 12px auto 12px auto 200px auto;
     row-gap: 0;
     align-items: start;
     justify-content: center;
@@ -176,7 +179,7 @@ display: flex;
 
   .imageWrap {
     grid-column: 2;
-    grid-row: 1;
+    grid-row: 1 / 8;
     width: 100%;
     min-height: 0;
     height: 520px;
@@ -186,22 +189,26 @@ display: flex;
   }
 
   .content {
-    grid-column: 1;
-    grid-row: 1;
-    max-width: 440px;
-    width: 100%;
-    gap: 18px;
-    margin: 0 auto;
-    padding: 62px 0 0;
-    align-content: start;
+    display: contents;
   }
 
   .ratingRow {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: start;
     gap: 10px;
     color: #26210f;
     font-size: 18px;
     font-weight: 600;
     letter-spacing: 0.02em;
+    margin-top: 0;
+  }
+
+  .meta {
+    grid-column: 1;
+    grid-row: 4;
+    align-self: start;
+    margin-top: 0;
   }
 
   .title {
@@ -214,10 +221,14 @@ display: flex;
   }
 
   .details {
+    grid-column: 1;
+    grid-row: 6;
+    align-self: start;
     gap: 10px;
     color: #364133;
     font-size: 16px;
     line-height: 1.45;
+    margin-top: 0;
   }
 
   .details p {
@@ -241,11 +252,15 @@ display: flex;
   }
 
   .description {
-    margin-top: 122px;
-    max-width: 440px;
+    grid-column: 1 / span 2;
+    grid-row: 8;
+    justify-self: center;
+    margin-top: 0;
+    max-width: 1060px;
     color: #5f564f;
     font-size: 16px;
     line-height: 1.72;
+    text-align: left;
   }
 
   .notFound {

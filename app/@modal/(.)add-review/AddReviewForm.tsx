@@ -11,8 +11,8 @@ import styles from "./AddReviewForm.module.css";
 const schema = Yup.object({
   rating: Yup.number().min(1, "Оберіть рейтинг").required(),
   comment: Yup.string()
-    .min(10, "Мінімум 10 символів")
-    .max(500, "Максимум 500 символів")
+    .min(2, "Мінімум 2 символи")
+    .max(200, "Максимум 200 символів")
     .required("Обовʼязково"),
 });
 
@@ -30,7 +30,7 @@ export default function AddReviewForm({ locationId }: { locationId: string }) {
     onSuccess: () => {
       window.dispatchEvent(new Event("review-added"));
       toast.success("Відгук додано!");
-      router.back();
+      setTimeout(() => router.back(), 100);
     },
     onError: () => toast.error("Помилка. Спробуйте ще раз."),
   });
@@ -45,38 +45,18 @@ export default function AddReviewForm({ locationId }: { locationId: string }) {
     <form onSubmit={formik.handleSubmit} className={styles.form} noValidate>
       <h2 className={styles.title}>Залишити відгук</h2>
 
-      <div className={styles.field}>
-        <label className={styles.label}>Рейтинг</label>
-        <div className={styles.stars}>
-          {[1, 2, 3, 4, 5].map((s) => (
-            <button
-              key={s}
-              type="button"
-              className={
-                s <= formik.values.rating ? styles.starOn : styles.starOff
-              }
-              onClick={() => formik.setFieldValue("rating", s)}
-              aria-label={`${s} зірок`}
-            >
-              ★
-            </button>
-          ))}
-        </div>
-        {formik.touched.rating && formik.errors.rating && (
-          <span className={styles.error}>{formik.errors.rating}</span>
-        )}
-      </div>
+      
 
       <div className={styles.field}>
         <label htmlFor="comment" className={styles.label}>
-          Коментар
+          Ваш відгук
         </label>
         <textarea
           id="comment"
           name="comment"
           rows={4}
           className={styles.textarea}
-          placeholder="Поділіться враженнями…"
+          placeholder="Напишіть ваш відгук"
           value={formik.values.comment}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
@@ -86,13 +66,57 @@ export default function AddReviewForm({ locationId }: { locationId: string }) {
         )}
       </div>
 
+      <div className={styles.stars}>
+  {[1, 2, 3, 4, 5].map((s) => {
+    const value = formik.values.rating;
+    const isFull = s <= Math.floor(value);
+    const isHalf = s === Math.ceil(value) && value % 1 === 0.5;
+
+    return (
       <button
-        type="submit"
-        className={styles.submit}
-        disabled={mutation.isPending}
+        key={s}
+        type="button"
+        className={
+          isFull
+            ? styles.starOn
+            : isHalf
+            ? styles.starHalf
+            : styles.starOff
+        }
+        onClick={(e) => {
+          const rect = e.currentTarget.getBoundingClientRect();
+          const clickX = e.clientX - rect.left;
+          const half = clickX < rect.width / 2;
+          const newRating = half ? s - 0.5 : s;
+          formik.setFieldValue("rating", newRating);
+        }}
+        aria-label={`${s} зірок`}
       >
-        {mutation.isPending ? "Надсилаємо…" : "Надіслати"}
+        <span className={styles.star}>★</span>
       </button>
+    );
+  })}
+</div>
+
+<div className={styles.actions}>
+  <button
+    type="button"
+    className={styles.cancel}
+    onClick={() => {
+      console.log("Скасовано");
+    }}
+  >
+    Відмінити
+  </button>
+
+  <button
+    type="submit"
+    className={styles.submit}
+    disabled={mutation.isPending}
+  >
+    {mutation.isPending ? "Надсилаємо…" : "Надіслати"}
+  </button>
+</div>
     </form>
   );
 }

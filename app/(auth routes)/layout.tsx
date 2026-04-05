@@ -8,7 +8,7 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <div className={css.wrapper}>
       <header className={css.header}>
         <Logo />
       </header>
@@ -18,6 +18,6 @@ export default function AuthLayout({
       <footer className={css.footer}>
         <p>© 2026 Relax Map</p>
       </footer>
-    </>
+    </div>
   );
 }

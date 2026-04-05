@@ -1,19 +1,26 @@
+"use client";
+
 import Image from "next/image";
 import Logo from "../Logo/Logo";
 import css from "./Footer.module.css";
 import Link from "next/link";
 
 export default function Footer() {
+  const handleScrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
   return (
     <footer className={css.footer}>
       <div className={css.footerContainer}>
         <div className={css.inner}>
-          <Logo />
+          <button onClick={handleScrollToTop} className={css.logoWrapper} aria-label="Scroll to top">
+            <Logo />
+          </button>
           <ul className={css.socials}>
             <li className={css.facebook}>
-              <Link href="https://www.facebook.com">
+              <Link href="https://www.facebook.com" target="_blank">
                 <Image
-                  src="/images/facebook.png"
+                  src="/facebook.svg"
                   alt="Facebook logo"
                   width={24}
                   height={24}
@@ -22,9 +29,9 @@ export default function Footer() {
               </Link>
             </li>
             <li className={css.instagram}>
-              <Link href="https://www.instagram.com">
+              <Link href="https://www.instagram.com" target="_blank">
                 <Image
-                  src="/images/instagram.png"
+                  src="/instagram.svg"
                   alt="Instagram logo"
                   width={24}
                   height={24}
@@ -33,9 +40,9 @@ export default function Footer() {
               </Link>
             </li>
             <li className={css.x}>
-              <Link href="https://x.com">
+              <Link href="https://x.com" target="_blank">
                 <Image
-                  src="/images/x.png"
+                  src="/x.svg"
                   alt="X logo"
                   width={24}
                   height={24}
@@ -44,9 +51,9 @@ export default function Footer() {
               </Link>
             </li>
             <li className={css.youtube}>
-              <Link href="https://www.youtube.com">
+              <Link href="https://www.youtube.com" target="_blank">
                 <Image
-                  src="/images/youtube.png"
+                  src="/youtube.svg"
                   alt="YouTube logo"
                   width={24}
                   height={24}

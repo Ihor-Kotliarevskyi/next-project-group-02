@@ -16,7 +16,6 @@ export const uploadImage = async (file: File): Promise<string> => {
 
     return data.secure_url;
   } catch (error) {
-    console.log("UPLOAD ERROR:", error);
     return "https://picsum.photos/300";
   }
 };
