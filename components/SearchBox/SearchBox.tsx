@@ -21,39 +21,44 @@ export default function SearchBox({ regions, locationTypes }: SearchBoxProps) {
         value={filters.search}
         onChange={(event) => setSearch(event.target.value)}
       />
-      <select
-        className={`${styles.control} ${styles.select}`}
-        value={filters.region}
-        onChange={(event) => setRegion(event.target.value)}
-      >
-        <option value="">Регіон</option>
-        {regions.map((region) => (
-          <option key={region.value} value={region.value}>
-            {region.label}
-          </option>
-        ))}
-      </select>
-      <select
-        className={`${styles.control} ${styles.select}`}
-        value={filters.locationType}
-        onChange={(event) => setLocationType(event.target.value)}
-      >
-        <option value="">Тип локації</option>
-        {locationTypes.map((type) => (
-          <option key={type.value} value={type.value}>
-            {type.label}
-          </option>
-        ))}
-      </select>
-      <select
-        className={`${styles.control} ${styles.select}`}
-        value={filters.sort}
-        onChange={(event) => setSort(event.target.value)}
-      >
-        <option value="">Сортування</option>
-        <option value="name">За назвою</option>
-        <option value="rate">За рейтингом</option>
-      </select>
+
+      <div className={styles.filtersRow}>
+        <select
+          className={`${styles.control} ${styles.select}`}
+          value={filters.locationType}
+          onChange={(event) => setLocationType(event.target.value)}
+        >
+          <option value="">Тип локації</option>
+          {locationTypes.map((type) => (
+            <option key={type.value} value={type.value}>
+              {type.label}
+            </option>
+          ))}
+        </select>
+
+        <select
+          className={`${styles.control} ${styles.select}`}
+          value={filters.region}
+          onChange={(event) => setRegion(event.target.value)}
+        >
+          <option value="">Регіон</option>
+          {regions.map((region) => (
+            <option key={region.value} value={region.value}>
+              {region.label}
+            </option>
+          ))}
+        </select>
+
+        <select
+          className={`${styles.control} ${styles.select}`}
+          value={filters.sort}
+          onChange={(event) => setSort(event.target.value)}
+        >
+          <option value="">Сортування</option>
+          <option value="name">За назвою</option>
+          <option value="rate">За рейтингом</option>
+        </select>
+      </div>
     </div>
   );
 }
