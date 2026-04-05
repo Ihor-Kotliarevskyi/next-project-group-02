@@ -1,5 +1,9 @@
 import LocationForm from "@/components/LocationForm/LocationForm";
-import { getRegionsServer, getLocationTypesServer, getLocationByIdServer } from "@/lib/api/serverApi";
+import {
+  getRegionsServer,
+  getLocationTypesServer,
+  getLocationByIdServer,
+} from "@/lib/api/serverApi";
 
 type Props = {
   params: Promise<{ id: string }>;

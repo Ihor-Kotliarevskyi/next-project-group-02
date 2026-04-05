@@ -1,9 +1,13 @@
-import { redirect } from 'next/navigation';
-import { getMeServer, getUserByIdServer, getUserLocationsServer } from '@/lib/api/serverApi';
-import ProfileInfo from '@/components/ProfileInfo/ProfileInfo';
-import ProfilePlaceholder from '@/components/ProfilePlaceholder/ProfilePlaceholder';
-import ProfileLocationList from '@/components/ProfileLocationList/ProfileLocationList';
-import css from './ProfilePage.module.css';
+import { redirect } from "next/navigation";
+import {
+  getMeServer,
+  getUserByIdServer,
+  getUserLocationsServer,
+} from "@/lib/api/serverApi";
+import ProfileInfo from "@/components/ProfileInfo/ProfileInfo";
+import ProfilePlaceholder from "@/components/ProfilePlaceholder/ProfilePlaceholder";
+import ProfileLocationList from "@/components/ProfileLocationList/ProfileLocationList";
+import css from "./ProfilePage.module.css";
 
 type Props = {
   params: Promise<{ userId: string }>;
@@ -27,7 +31,7 @@ export default async function ProfilePage({ params }: Props) {
     currentUser = currentUserData;
     locations = locationsData.data;
   } catch (error) {
-    redirect('/locations');
+    redirect("/locations");
   }
 
   const isOwnProfile = currentUser?._id === userId;
@@ -41,7 +45,9 @@ export default async function ProfilePage({ params }: Props) {
         <div className={css.locations}>
           {hasLocations ? (
             <>
-              <h2 className={css.title}>{isOwnProfile ? 'Мої локації' : 'Локації'}</h2>
+              <h2 className={css.title}>
+                {isOwnProfile ? "Мої локації" : "Локації"}
+              </h2>
               <ProfileLocationList
                 locations={locations}
                 isEditable={isOwnProfile}

@@ -18,7 +18,7 @@ type LocationDetails = {
   _id: string;
   image: string;
   name: string;
-  locationType: string | { type: string; slug: string };  
+  locationType: string | { type: string; slug: string };
   region: string;
   rate: number;
   description: string;
@@ -125,7 +125,10 @@ async function getLocationById(id: string): Promise<LocationDetails | null> {
   }
 }
 
-async function getLocationFeedbacks(id: string, feedbackIds: string[] = []): Promise<Feedback[]> {
+async function getLocationFeedbacks(
+  id: string,
+  feedbackIds: string[] = []
+): Promise<Feedback[]> {
   try {
     const { data } = await api.get(`/feedbacks/${id}`);
     const reviews = normalizeFeedbacks(data);
@@ -137,7 +140,9 @@ async function getLocationFeedbacks(id: string, feedbackIds: string[] = []): Pro
     const fallbackFeedbacks = await Promise.all(
       feedbackIds.map(async (feedbackId) => {
         try {
-          const { data: feedbackData } = await api.get(`/feedbacks/${feedbackId}`);
+          const { data: feedbackData } = await api.get(
+            `/feedbacks/${feedbackId}`
+          );
           return normalizeFeedback(feedbackData);
         } catch {
           return null;
@@ -145,7 +150,9 @@ async function getLocationFeedbacks(id: string, feedbackIds: string[] = []): Pro
       })
     );
 
-    return fallbackFeedbacks.filter((review): review is Feedback => review !== null);
+    return fallbackFeedbacks.filter(
+      (review): review is Feedback => review !== null
+    );
   } catch {
     return [];
   }
@@ -170,7 +177,10 @@ export default async function LocationPage({ params }: PageProps) {
     notFound();
   }
 
-  const initialReviews = await getLocationFeedbacks(locationId, location.feedbacksId ?? []);
+  const initialReviews = await getLocationFeedbacks(
+    locationId,
+    location.feedbacksId ?? []
+  );
   const ownerName =
     typeof location.ownerId === "object" && location.ownerId?.name
       ? location.ownerId.name
@@ -180,7 +190,7 @@ export default async function LocationPage({ params }: PageProps) {
       ? location.ownerId?._id
       : location.ownerId;
   const clampedRate = Math.max(0, Math.min(5, location.rate));
-  
+
   return (
     <main className={styles.page}>
       <article className={styles.card}>
@@ -197,7 +207,10 @@ export default async function LocationPage({ params }: PageProps) {
         </div>
         <div className={styles.content}>
           <div className={styles.ratingRow}>
-            <span className={styles.stars} aria-label={`Рейтинг: ${location.rate} з 5`}>
+            <span
+              className={styles.stars}
+              aria-label={`Рейтинг: ${location.rate} з 5`}
+            >
               {[1, 2, 3, 4, 5].map((star) => (
                 <StarIcon
                   key={star}
@@ -219,15 +232,21 @@ export default async function LocationPage({ params }: PageProps) {
           </div>
           <div className={styles.details}>
             <p>
-              <strong>Регіон:</strong> {regionLabels[location.region] ?? location.region}
+              <strong>Регіон:</strong>{" "}
+              {regionLabels[location.region] ?? location.region}
             </p>
             <p>
-              <strong>Тип локації:</strong> {locationTypeLabels[location.locationType as string] ?? location.locationType}
+              <strong>Тип локації:</strong>{" "}
+              {locationTypeLabels[location.locationType as string] ??
+                location.locationType}
             </p>
             <p>
               <strong>Автор статті:</strong>{" "}
               {ownerId ? (
-                <Link href={`/profile/${ownerId}`} className={styles.authorLink}>
+                <Link
+                  href={`/profile/${ownerId}`}
+                  className={styles.authorLink}
+                >
                   {ownerName}
                 </Link>
               ) : (

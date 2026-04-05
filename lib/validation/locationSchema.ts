@@ -2,18 +2,18 @@ import * as Yup from "yup";
 
 export const getLocationValidationSchema = (isEdit: boolean) =>
   Yup.object({
-   imageFile: isEdit
-  ? Yup.mixed<File>().nullable().notRequired()
-  : Yup.mixed<File>()
-      .required("Додайте фото")
-      .test("fileType", "Тільки JPG або PNG", (value) => {
-        if (!value) return true;
-        return ["image/jpeg", "image/png"].includes(value.type);
-      })
-      .test("fileSize", "Максимум 1MB", (value) => {
-        if (!value) return true;
-        return value.size <= 1024 * 1024;
-      }),
+    imageFile: isEdit
+      ? Yup.mixed<File>().nullable().notRequired()
+      : Yup.mixed<File>()
+          .required("Додайте фото")
+          .test("fileType", "Тільки JPG або PNG", (value) => {
+            if (!value) return true;
+            return ["image/jpeg", "image/png"].includes(value.type);
+          })
+          .test("fileSize", "Максимум 1MB", (value) => {
+            if (!value) return true;
+            return value.size <= 1024 * 1024;
+          }),
 
     name: Yup.string()
       .min(3, "Мінімум 3 символи")

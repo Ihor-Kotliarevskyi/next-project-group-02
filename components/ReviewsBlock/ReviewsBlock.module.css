@@ -1,83 +1,82 @@
 .section {
-    padding: 64px 20px;
-    background: #fff2ec;
+  padding: 64px 20px;
+  background: #fff2ec;
 }
 
 .title {
-    font-weight: 700;
-        font-size: 28px;
-        line-height: 1.2;
-        letter-spacing: -0.01em;
-        color: #4c2613;
-        margin-bottom: 40px;
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: #4c2613;
+  margin-bottom: 40px;
 }
 
 .swiperContainer {
-    position: relative;
+  position: relative;
 }
 
-
 .controls {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
 .arrowBtn {
-    width: 44px;
-    height: 44px;
-    border-radius: 8px;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    background: #ffe5d9;
-    color: #4c2613;
-    padding: 12px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: #ffe5d9;
+  color: #4c2613;
+  padding: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .arrowBtn:hover:not(:disabled) {
-    background: #ffa57a;
-    border-color: #ffa57a;
-    color: #4c2613;
+  background: #ffa57a;
+  border-color: #ffa57a;
+  color: #4c2613;
 }
 
 .arrowBtn:disabled {
-    background: #f2f2f2;
-    border-color: #ffa57a;
-    color: #4c2613;
-    cursor: not-allowed;
-    opacity: 0.6;
+  background: #f2f2f2;
+  border-color: #ffa57a;
+  color: #4c2613;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .loading,
 .error,
 .empty {
-    text-align: center;
-    color: #888;
-    padding: 32px 0;
-    font-size: 15px;
+  text-align: center;
+  color: #888;
+  padding: 32px 0;
+  font-size: 15px;
 }
 
 @media (min-width: 768px) {
-    .section {
-        padding: 64px 32px;
-    }
+  .section {
+    padding: 64px 32px;
+  }
 
-    .title {
-        font-size: 44px;
-    }
+  .title {
+    font-size: 44px;
+  }
 }
 
 @media (min-width: 1440px) {
-    .section {
-        padding: 72px 64px;
-    }
+  .section {
+    padding: 72px 64px;
+  }
 
-    .title {
-        font-size: 52px;
-    }
+  .title {
+    font-size: 52px;
+  }
 }

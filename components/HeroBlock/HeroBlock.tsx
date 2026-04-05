@@ -16,11 +16,14 @@ export default function HeroBlock() {
     router.push(`/locations?query=${encodeURIComponent(trimmedQuery)}`);
   }, [query, router]);
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
-  }, [handleSearch]);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        handleSearch();
+      }
+    },
+    [handleSearch]
+  );
 
   return (
     <section className={styles.hero}>
@@ -35,13 +38,11 @@ export default function HeroBlock() {
       <div className={styles.heroOverlay} />
 
       <div className={styles.heroContent}>
-        <h1>
-          Відкрий для себе Україну. Знайди ідеальне місце для відпочинку
-        </h1>
+        <h1>Відкрий для себе Україну. Знайди ідеальне місце для відпочинку</h1>
 
         <p>
-          Тисячі перевірених локацій з реальними фото та відгуками
-          від мандрівників.
+          Тисячі перевірених локацій з реальними фото та відгуками від
+          мандрівників.
         </p>
 
         <div className={styles.heroSearch}>
@@ -53,9 +54,7 @@ export default function HeroBlock() {
             onKeyDown={handleKeyDown}
           />
 
-          <button onClick={handleSearch}>
-            Знайти місце
-          </button>
+          <button onClick={handleSearch}>Знайти місце</button>
         </div>
       </div>
     </section>

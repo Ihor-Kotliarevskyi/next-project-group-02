@@ -1,5 +1,5 @@
-import Image from 'next/image';
-import css from './ProfileInfo.module.css';
+import Image from "next/image";
+import css from "./ProfileInfo.module.css";
 
 interface ProfileInfoProps {
   user: {
@@ -14,7 +14,7 @@ export default function ProfileInfo({ user }: ProfileInfoProps) {
   return (
     <div className={css.header}>
       <Image
-        src={user.avatarUrl || user.avatar || '/default-avatar.png'}
+        src={user.avatarUrl || user.avatar || "/default-avatar.png"}
         alt="User Avatar"
         width={145}
         height={145}
