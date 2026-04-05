@@ -79,7 +79,7 @@
   color: black;
 }
 
-/*Tablet*/
+/* Tablet */
 @media screen and (min-width: 768px) {
   .hero {
     padding: 32px;
@@ -103,7 +103,7 @@
   }
 }
 
-/*Desktop*/
+/* Desktop */
 @media screen and (min-width: 1440px) {
   .heroContent {
     max-width: 900px;
