@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import { api } from './api';
 import type { User } from '@/types/user';
-import type { Location, NewLocation } from '@/types/location';
+import type { Location } from '@/types/location';
 
 export const getMeServer = async (): Promise<User> => {
   const cookieStore = await cookies();
@@ -34,11 +34,6 @@ export const getUserLocationsServer = async (id: string): Promise<UserLocationsR
 
 export const getLocationByIdServer = async (id: string): Promise<Location> => {
   const { data } = await api.get<Location>(`/locations/${id}`);
-  return data;
-};
-
-export const createLocationServer = async (location: NewLocation): Promise<Location> => {
-  const { data } = await api.post<Location>('/locations', location);
   return data;
 };
 
