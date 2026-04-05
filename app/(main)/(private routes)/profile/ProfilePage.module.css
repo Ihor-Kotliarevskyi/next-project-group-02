@@ -37,7 +37,7 @@
 }
 
 /* Desktop */
-@media (min-width: 1280px) {
+@media (min-width: 1440px) {
   .profile {
     max-width: 1440px;
     padding: 48px 64px 72px;

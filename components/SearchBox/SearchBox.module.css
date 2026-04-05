@@ -34,6 +34,16 @@
   font-size: 16px;
   font-weight: 400;
   line-height: 1.5;
+  transition: border-color var(--transition-base);
+}
+
+.control:hover {
+  border-color: var(--color-button-primary);
+}
+
+.control:focus {
+  outline: none;
+  border-color: var(--color-button-primary);
 }
 
 .select {

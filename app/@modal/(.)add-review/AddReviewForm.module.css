@@ -132,6 +132,12 @@ justify-content: center;
   border-color: #a0522d;
 }
 
+.cancel:hover {
+  background-color: var(--color-button-primary);
+  border-color: var(--color-button-primary);
+  color: var(--color-bg-white);
+}
+
 .submit:disabled {
   opacity: 0.6;
   cursor: not-allowed;
