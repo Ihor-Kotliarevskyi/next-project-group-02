@@ -3,6 +3,7 @@
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import toast from "react-hot-toast";
 import { LocationFormValues } from "@/types/location";
 import { createLocation, updateLocation } from "@/lib/api/clientApi";
@@ -147,12 +148,13 @@ export default function LocationForm({
                     />
 
                     {imagePreview && (
-                      <img
+                      <Image
                         src={imagePreview}
                         className={css.photoPreview}
                         alt="preview"
                         width={120}
-                        style={{ display: "block", marginTop: 10 }}
+                        height={80}
+                        unoptimized
                       />
                     )}
 

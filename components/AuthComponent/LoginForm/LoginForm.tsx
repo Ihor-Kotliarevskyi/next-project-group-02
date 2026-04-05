@@ -3,6 +3,7 @@
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Formik, Form, Field, ErrorMessage } from "formik";
+import { ScaleLoader } from "react-spinners";
 import { signInSchema } from "@/utils/validationSchemas";
 import { useAuth } from "@/hooks/useAuth";
 import css from "../../AuthComponent/AuthNav/Auth.module.css";
@@ -65,7 +66,7 @@ function LoginFormInner() {
                         type="submit"
                         disabled={isSubmitting}
                     >
-                        {isSubmitting ? "..." : "Увійти"}
+                        {isSubmitting ? <ScaleLoader color="#fff" height={16} width={2} /> : "Увійти"}
                     </button>
                 </Form>
             )}
