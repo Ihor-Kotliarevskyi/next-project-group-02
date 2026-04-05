@@ -1,13 +1,16 @@
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Modal from "@/components/Modal/Modal";
 import css from "./AuthPromptModal.module.css";
 
-export default function AuthPromptModal() {
-  const pathname = usePathname();
-  const redirectParam = `?redirect=${encodeURIComponent(pathname)}`;
+function AuthPromptModalInner() {
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect") || "/";
+  const redirectParam = `?redirect=${encodeURIComponent(redirect)}`;
+
   return (
     <Modal>
       <div className={css.content}>
@@ -29,5 +32,13 @@ export default function AuthPromptModal() {
         </div>
       </div>
     </Modal>
+  );
+}
+
+export default function AuthPromptModal() {
+  return (
+    <Suspense fallback={null}>
+      <AuthPromptModalInner />
+    </Suspense>
   );
 }

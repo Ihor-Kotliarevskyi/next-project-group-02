@@ -81,10 +81,19 @@
 
 .ctaBtn:hover,
 .ctaBtn:focus-visible {
-  background-color: #a95325;
-  border-color: #a95325;
+  background-color: var(--color-button-primary-hover);
+  border-color: var(--color-button-secondary-hover);
+  color: var(--color-text-input);
   outline: none;
 }
+
+.ctaBtn:active {
+  background-color: #254c24;
+  border-color: #254c24;
+  outline: none;
+  color: #fff;
+}
+
 
 .swiperWrap {
   width: 100%;
