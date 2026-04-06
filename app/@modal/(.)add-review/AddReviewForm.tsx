@@ -30,6 +30,7 @@ export default function AddReviewForm({ locationId }: { locationId: string }) {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["latestReviews"] });
+      window.dispatchEvent(new Event("review-added"));
       toast.success("Відгук додано!");
       setTimeout(() => router.back(), 100);
     },
@@ -45,8 +46,6 @@ export default function AddReviewForm({ locationId }: { locationId: string }) {
   return (
     <form onSubmit={formik.handleSubmit} className={styles.form} noValidate>
       <h2 className={styles.title}>Залишити відгук</h2>
-
-      
 
       <div className={styles.field}>
         <label htmlFor="comment" className={styles.label}>
@@ -68,56 +67,56 @@ export default function AddReviewForm({ locationId }: { locationId: string }) {
       </div>
 
       <div className={styles.stars}>
-  {[1, 2, 3, 4, 5].map((s) => {
-    const value = formik.values.rating;
-    const isFull = s <= Math.floor(value);
-    const isHalf = s === Math.ceil(value) && value % 1 === 0.5;
+        {[1, 2, 3, 4, 5].map((s) => {
+          const value = formik.values.rating;
+          const isFull = s <= Math.floor(value);
+          const isHalf = s === Math.ceil(value) && value % 1 === 0.5;
 
-    return (
-      <button
-        key={s}
-        type="button"
-        className={
-          isFull
-            ? styles.starOn
-            : isHalf
-            ? styles.starHalf
-            : styles.starOff
-        }
-        onClick={(e) => {
-          const rect = e.currentTarget.getBoundingClientRect();
-          const clickX = e.clientX - rect.left;
-          const half = clickX < rect.width / 2;
-          const newRating = half ? s - 0.5 : s;
-          formik.setFieldValue("rating", newRating);
-        }}
-        aria-label={`${s} зірок`}
-      >
-        <span className={styles.star}>★</span>
-      </button>
-    );
-  })}
-</div>
+          return (
+            <button
+              key={s}
+              type="button"
+              className={
+                isFull
+                  ? styles.starOn
+                  : isHalf
+                    ? styles.starHalf
+                    : styles.starOff
+              }
+              onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const half = clickX < rect.width / 2;
+                const newRating = half ? s - 0.5 : s;
+                formik.setFieldValue("rating", newRating);
+              }}
+              aria-label={`${s} зірок`}
+            >
+              <span className={styles.star}>★</span>
+            </button>
+          );
+        })}
+      </div>
 
-<div className={styles.actions}>
-  <button
-    type="button"
-    className={styles.cancel}
-    onClick={() => {
-      console.log("Скасовано");
-    }}
-  >
-    Відмінити
-  </button>
+      <div className={styles.actions}>
+        <button
+          type="button"
+          className={styles.cancel}
+          onClick={() => {
+            console.log("Скасовано");
+          }}
+        >
+          Відмінити
+        </button>
 
-  <button
-    type="submit"
-    className={styles.submit}
-    disabled={mutation.isPending}
-  >
-    {mutation.isPending ? "Надсилаємо…" : "Надіслати"}
-  </button>
-</div>
+        <button
+          type="submit"
+          className={styles.submit}
+          disabled={mutation.isPending}
+        >
+          {mutation.isPending ? "Надсилаємо…" : "Надіслати"}
+        </button>
+      </div>
     </form>
   );
 }
