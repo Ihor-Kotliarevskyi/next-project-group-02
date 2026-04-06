@@ -52,15 +52,15 @@ padding-left: var(--container-padding-mobile);
 }
 
 .advantagesIcon {
-  position: relative;
   width: 64px;
   height: 64px;
   margin-bottom: 16px;
 }
 
 .advantagesIconImg {
-  object-fit: contain;
-
+  display: block;
+  width: 64px;
+  height: 64px;
 }
 
 /* Tablet */
