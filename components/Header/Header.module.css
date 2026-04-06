@@ -354,7 +354,8 @@
     background-color: var(--color-button-secondary);
     border-radius: 6px;
     padding: 4px 10px;
-    width: 335px;
+    width: 100%;
+    max-width: 335px;
     font-size: 16px;
     text-align: center;
     font-weight: var(--font-weight-medium);
