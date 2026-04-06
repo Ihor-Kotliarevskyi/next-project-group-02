@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
 import { useMemo } from "react";
-import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import {
   getLocations,
@@ -14,6 +14,14 @@ import Pagination from "@/components/Pagination/Pagination";
 import styles from "./LocationList.module.css";
 import { Location } from "@/types/location";
 
+const getLocationTimestamp = (location: Location) => {
+  if (location.createdAt) {
+    return new Date(location.createdAt).getTime();
+  }
+
+  return Number.parseInt(location._id.slice(0, 8), 16) * 1000;
+};
+
 export default function LocationList() {
   const searchParams = useSearchParams();
 
@@ -21,25 +29,20 @@ export default function LocationList() {
   const region = searchParams.get("region") ?? "";
   const locationType = searchParams.get("locationType") ?? "";
   const sort = searchParams.get("sort") ?? "";
+  const page = Number(searchParams.get("page") ?? "1");
 
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useInfiniteQuery({
-      queryKey: ["locations", search, region, locationType, sort],
-      initialPageParam: 1,
-      queryFn: ({ pageParam }) =>
-        getLocations({
-          page: pageParam,
-          limit: 9,
-          region,
-          locationType,
-          search,
-          sort,
-        }),
-      getNextPageParam: (lastPage) =>
-        lastPage.pagination.page < lastPage.pagination.totalPages
-          ? lastPage.pagination.page + 1
-          : undefined,
-    });
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: ["locations", search, region, locationType, sort, page],
+    queryFn: () =>
+      getLocations({
+        page,
+        limit: 9,
+        region,
+        locationType,
+        search,
+        sort,
+      }),
+  });
 
   const { data: regions = [] } = useQuery<{ slug: string; region: string }[]>({
     queryKey: ["regions"],
@@ -65,7 +68,7 @@ export default function LocationList() {
   );
 
   const locations = useMemo(() => {
-    const currentLocations = data?.locations ?? [];
+    const currentLocations = (data?.locations as Location[]) ?? [];
 
     if (sort === "name") {
       return [...currentLocations].sort((a, b) =>
@@ -75,6 +78,12 @@ export default function LocationList() {
 
     if (sort === "rate") {
       return [...currentLocations].sort((a, b) => b.rate - a.rate);
+    }
+
+    if (sort === "newest") {
+      return [...currentLocations].sort(
+        (a, b) => getLocationTimestamp(b) - getLocationTimestamp(a),
+      );
     }
 
     return currentLocations;
@@ -99,7 +108,7 @@ export default function LocationList() {
           }))}
         />
 
-        {isLoading ? (
+        {isLoading || isFetching ? (
           <p className={styles.loader}>Завантаження...</p>
         ) : locations.length === 0 ? (
           <p className={styles.empty}>Нічого не знайдено</p>
