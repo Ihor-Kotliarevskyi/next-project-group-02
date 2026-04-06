@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useLocationStore } from "@/lib/store/locationStore";
 import LocationCard from "@/components/LocationCard/LocationCard";
 import css from "./ProfileLocationList.module.css";
@@ -20,7 +20,22 @@ export default function ProfileLocationList({
   isEditable = false,
 }: ProfileLocationListProps) {
   const { filters } = useLocationStore();
-  const [visibleCount, setVisibleCount] = useState(6);
+  const [pageLimit, setPageLimit] = useState(4);
+  const [visibleCount, setVisibleCount] = useState(4);
+
+  useEffect(() => {
+    const mql = window.matchMedia("(min-width: 1440px)");
+    const newLimit = mql.matches ? 6 : 4;
+    setPageLimit(newLimit);
+    setVisibleCount(newLimit);
+    const handler = (e: MediaQueryListEvent) => {
+      const next = e.matches ? 6 : 4;
+      setPageLimit(next);
+      setVisibleCount(next);
+    };
+    mql.addEventListener("change", handler);
+    return () => mql.removeEventListener("change", handler);
+  }, []);
 
   const { data: locationTypes = [] } = useQuery<
     { slug: string; type: string }[]
@@ -50,7 +65,7 @@ export default function ProfileLocationList({
   );
 
   const handleLoadMore = () => {
-    setVisibleCount((prev) => prev + 6);
+    setVisibleCount((prev) => prev + pageLimit);
   };
 
   const hasMore = visibleCount < sortedLocations.length;

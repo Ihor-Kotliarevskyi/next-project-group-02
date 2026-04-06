@@ -22,6 +22,7 @@ type LocationDetails = {
   description: string;
   ownerId?: string | Owner;
   feedbacksId?: string[];
+  coordinates?: { lat: number; lon: number };
 };
 
 type PageProps = {

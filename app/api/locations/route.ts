@@ -6,8 +6,8 @@ import { cookies } from "next/headers";
 
 export async function GET(req: NextRequest) {
   try {
-    const params = Object.fromEntries(req.nextUrl.searchParams);
-    const { data } = await api.get("/locations", { params });
+    const { search } = req.nextUrl;
+    const { data } = await api.get(`/locations${search}`);
     return NextResponse.json(data);
   } catch (error) {
     if (isAxiosError(error)) {

@@ -8,6 +8,7 @@ import css from "./Header.module.css";
 import Logo from "../Logo/Logo";
 import Image from "next/image";
 import Logout from "../Logout/Logout";
+import Icon from "@/components/Icon/Icon";
 
 export default function Header() {
   const pathname = usePathname();
