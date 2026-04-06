@@ -18,6 +18,16 @@ type RegisterValues = {
   password: string;
 };
 
+const ERROR_MAP: Record<string, string> = {
+  "Invalid credentials": "Невірний email або пароль",
+  "User already exists": "Користувач вже існує",
+  "User not found": "Користувача не знайдено",
+};
+
+function mapErrorMessage(message: string): string {
+  return ERROR_MAP[message] || "Щось пішло не так";
+}
+
 export function useAuth(redirectTo: string = "/") {
   const router = useRouter();
   const setUser = useAuthStore((state) => state.setUser);
@@ -39,22 +49,27 @@ export function useAuth(redirectTo: string = "/") {
 
       setUser(data);
       resetForm();
+
       toast.success(isLogin ? "Успішний вхід" : "Реєстрація успішна");
+
       router.push(redirectTo);
       router.refresh();
     } catch (e: unknown) {
-      const message = isAxiosError(e)
+
+      const rawMessage = isAxiosError(e)
         ? e.response?.data?.response?.message ||
           e.response?.data?.response?.error ||
           e.response?.data?.error ||
           e.message
         : e instanceof Error
-          ? e.message
-          : "Щось пішло не так";
+        ? e.message
+        : "Unknown error";
 
-      if (message.toLowerCase().includes("email")) {
+      const message = mapErrorMessage(rawMessage);
+
+      if (rawMessage.toLowerCase().includes("email")) {
         setFieldError("email", message);
-      } else if (message.toLowerCase().includes("password")) {
+      } else if (rawMessage.toLowerCase().includes("password")) {
         setFieldError("password", message);
       }
 
