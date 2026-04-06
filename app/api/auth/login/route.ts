@@ -13,12 +13,16 @@ export async function POST(req: NextRequest) {
       status: apiRes.status,
     });
 
-    const cookies = apiRes.headers["set-cookie"];
+    const setCookieHeader = apiRes.headers["set-cookie"];
 
-    if (cookies && Array.isArray(cookies)) {
-      cookies.forEach((cookie) => {
-        response.headers.append("set-cookie", cookie);
-      });
+    if (setCookieHeader) {
+      if (Array.isArray(setCookieHeader)) {
+        setCookieHeader.forEach((cookie) => {
+          response.headers.append("set-cookie", cookie);
+        });
+      } else {
+        response.headers.set("set-cookie", setCookieHeader);
+      }
     }
 
     return response;

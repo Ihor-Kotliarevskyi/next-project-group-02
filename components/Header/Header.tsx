@@ -57,7 +57,6 @@ export default function Header() {
                   Поділитись локацією
                 </Link>
                 <Link href={`/profile`} className={css.profileLink}>
-                  {/* file/${user._id} */}
                   {user.avatarUrl ? (
                     <Image
                       src={user.avatarUrl}
@@ -76,7 +75,9 @@ export default function Header() {
                 {/* <Link href="/logout-confirm" className={css.logoutBtn}>
                   Вийти
                 </Link> */}
-                <Logout />
+                <div className={css.exitHeader}>
+                  <Logout />
+                </div>
               </>
             ) : (
               <>
@@ -125,8 +126,6 @@ export default function Header() {
             </Link>
           ))}
 
-          <div className={css.mobileDivider} />
-
           {user ? (
             <>
               <Link
@@ -135,33 +134,57 @@ export default function Header() {
                 className={css.mobileLink}
                 onClick={closeMenu}
               >
-                Профіль
+                Мій профіль
               </Link>
-              <Link
-                href="/logout-confirm"
-                className={css.mobileLink}
-                onClick={closeMenu}
-              >
-                Вийти
+
+              <div className={css.mobileDivider} />
+
+              <Link href="/locations/add" className={css.mobileLocationAdd}>
+                Поділитись локацією
               </Link>
+              <div className={css.mobileAuth}>
+                <Link href={`/profile`} className={css.mobileProfileLink}>
+                  {user.avatarUrl ? (
+                    <Image
+                      src={user.avatarUrl}
+                      alt={user.name}
+                      className={css.mobileAvatar}
+                      width={32}
+                      height={32}
+                    />
+                  ) : (
+                    <span className={css.mobileAvatarFallback}>
+                      {user.name.charAt(0).toUpperCase()}
+                    </span>
+                  )}
+                  <span className={css.mobileUserName}>{user.name}</span>
+                </Link>
+                <Link
+                  href="/logout-confirm"
+                  className={css.mobileLink}
+                  onClick={closeMenu}
+                >
+                  <Image src="/logout.svg" alt="Exit" width={24} height={24} />
+                </Link>
+              </div>
             </>
           ) : (
-            <>
+            <div className={css.mobileNotAuth}>
               <Link
                 href="/login"
-                className={css.mobileLink}
+                className={css.mobileLinkLog}
                 onClick={closeMenu}
               >
-                Увійти
+                Вхід
               </Link>
               <Link
                 href="/register"
-                className={css.mobileLink}
+                className={css.mobileLinkRegistration}
                 onClick={closeMenu}
               >
                 Реєстрація
               </Link>
-            </>
+            </div>
           )}
         </div>
       )}

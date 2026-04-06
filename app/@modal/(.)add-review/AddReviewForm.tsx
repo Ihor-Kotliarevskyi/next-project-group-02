@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -6,6 +6,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { createFeedback, getMe } from "@/lib/api/clientApi";
+import { Feedback } from "@/types/feedBackCard";
+import { ReviewAddedDetail } from "@/types/reviewEvents";
 import styles from "./AddReviewForm.module.css";
 
 const schema = Yup.object({
@@ -13,8 +15,28 @@ const schema = Yup.object({
   comment: Yup.string()
     .min(2, "Мінімум 2 символи")
     .max(200, "Максимум 200 символів")
-    .required("Обовʼязково"),
+    .required("Обов'язково"),
 });
+
+function extractCreatedReview(
+  payload: unknown,
+  fallbackReview: Feedback
+): Feedback {
+  if (payload && typeof payload === "object" && !Array.isArray(payload)) {
+    const record = payload as Record<string, unknown>;
+    const candidate =
+      (record.data as Feedback | undefined) ??
+      (record.feedback as Feedback | undefined) ??
+      (record.item as Feedback | undefined) ??
+      (payload as Feedback);
+
+    if (candidate && typeof candidate === "object" && "_id" in candidate) {
+      return candidate;
+    }
+  }
+
+  return fallbackReview;
+}
 
 export default function AddReviewForm({ locationId }: { locationId: string }) {
   const router = useRouter();
@@ -28,7 +50,16 @@ export default function AddReviewForm({ locationId }: { locationId: string }) {
         ...values,
         userName: me?.name ?? "Анонім",
       }),
-    onSuccess: () => {
+    onSuccess: (payload, values) => {
+      const fallbackReview: Feedback = {
+        _id: `new-review-${Date.now()}`,
+        userName: me?.name ?? "Анонім",
+        description: values.comment,
+        rate: values.rating,
+        createdAt: new Date().toISOString(),
+      };
+      const review = extractCreatedReview(payload, fallbackReview);
+
       queryClient.invalidateQueries({ queryKey: ["latestReviews"] });
       window.dispatchEvent(new Event("review-added"));
       toast.success("Відгук додано!");
@@ -50,8 +81,6 @@ export default function AddReviewForm({ locationId }: { locationId: string }) {
     <form onSubmit={formik.handleSubmit} className={styles.form} noValidate>
       <h2 className={styles.title}>Залишити відгук</h2>
 
-      
-
       <div className={styles.field}>
         <label htmlFor="comment" className={styles.label}>
           Ваш відгук
@@ -72,56 +101,57 @@ export default function AddReviewForm({ locationId }: { locationId: string }) {
       </div>
 
       <div className={styles.stars}>
-  {[1, 2, 3, 4, 5].map((s) => {
-    const value = formik.values.rating;
-    const isFull = s <= Math.floor(value);
-    const isHalf = s === Math.ceil(value) && value % 1 === 0.5;
+        {[1, 2, 3, 4, 5].map((s) => {
+          const value = formik.values.rating;
+          const isFull = s <= Math.floor(value);
+          const isHalf = s === Math.ceil(value) && value % 1 === 0.5;
 
-    return (
-      <button
-        key={s}
-        type="button"
-        className={
-          isFull
-            ? styles.starOn
-            : isHalf
-            ? styles.starHalf
-            : styles.starOff
-        }
-        onClick={(e) => {
-          const rect = e.currentTarget.getBoundingClientRect();
-          const clickX = e.clientX - rect.left;
-          const half = clickX < rect.width / 2;
-          const newRating = half ? s - 0.5 : s;
-          formik.setFieldValue("rating", newRating);
-        }}
-        aria-label={`${s} зірок`}
-      >
-        <span className={styles.star}>★</span>
-      </button>
-    );
-  })}
-</div>
+          return (
+            <button
+              key={s}
+              type="button"
+              className={
+                isFull
+                  ? styles.starOn
+                  : isHalf
+                    ? styles.starHalf
+                    : styles.starOff
+              }
+              onClick={(event) => {
+                const rect = event.currentTarget.getBoundingClientRect();
+                const clickX = event.clientX - rect.left;
+                const half = clickX < rect.width / 2;
+                const newRating = half ? s - 0.5 : s;
 
-<div className={styles.actions}>
-  <button
-    type="button"
-    className={styles.cancel}
-    onClick={() => {
-      console.log("Скасовано");
-    }}
-  >
-    Відмінити
-  </button>
+                formik.setFieldValue("rating", newRating);
+              }}
+              aria-label={`${s} зірок`}
+            >
+              <span className={styles.star}>★</span>
+            </button>
+          );
+        })}
+      </div>
 
-  <button
-    type="submit"
-    className={styles.submit}
-    disabled={mutation.isPending}
-  >
-    {mutation.isPending ? "Надсилаємо…" : "Надіслати"}
-  </button>
-</div>
+      <div className={styles.actions}>
+        <button
+          type="button"
+          className={styles.cancel}
+          onClick={() => {
+            console.log("Скасовано");
+          }}
+        >
+          Відмінити
+        </button>
+
+        <button
+          type="submit"
+          className={styles.submit}
+          disabled={mutation.isPending}
+        >
+          {mutation.isPending ? "Надсилаємо…" : "Надіслати"}
+        </button>
+      </div>
     </form>
   );
 }
