@@ -90,6 +90,7 @@ export default function LocationForm({
         : await createLocation(payload);
 
       router.push(`/locations/${data._id}`);
+      router.refresh();
     } catch {
       if (isEdit) {
         toast.error("Не вдалося зберегти зміни. Спробуйте ще раз.");
