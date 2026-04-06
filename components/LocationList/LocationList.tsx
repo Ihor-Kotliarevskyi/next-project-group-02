@@ -93,7 +93,7 @@ export default function LocationList() {
           }))}
         />
 
-        {isLoading || isFetching ? (
+        {isLoading ? (
           <p className={styles.loader}>Завантаження...</p>
         ) : locations.length === 0 ? (
           <p className={styles.empty}>Нічого не знайдено</p>
