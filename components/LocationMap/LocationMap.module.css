@@ -1,0 +1,46 @@
+.section {
+  padding: 40px 0;
+}
+
+.heading {
+  font-size: 28px;
+  font-weight: 700;
+  color: #274628;
+  margin-bottom: 24px;
+}
+
+.mapContainer {
+  height: 320px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(111, 136, 100, 0.3);
+  box-shadow: 0 4px 24px rgba(29, 36, 29, 0.08);
+}
+
+.noCoords {
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f2f5f0;
+  border-radius: 20px;
+  color: #6f8864;
+  font-size: 15px;
+  border: 1px dashed #6f8864;
+}
+
+@media (min-width: 768px) {
+  .mapContainer {
+    height: 400px;
+  }
+
+  .heading {
+    font-size: 44px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .mapContainer {
+    height: 460px;
+  }
+}

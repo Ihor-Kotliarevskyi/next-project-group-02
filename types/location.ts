@@ -9,6 +9,7 @@ export type Location = {
   ownerId: string;
   feedbacksId: string[];
   createdAt?: string;
+  coordinates?: { lat: number; lon: number };
 };
 
 export type NewLocation = {
@@ -25,4 +26,6 @@ export type LocationFormValues = {
   region: string;
   description: string;
   imageFile: File | null;
+  lat: number;
+  lon: number;
 };

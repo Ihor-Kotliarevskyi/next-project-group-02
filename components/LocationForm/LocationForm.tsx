@@ -11,9 +11,9 @@ import { createLocation, updateLocation } from "@/lib/api/clientApi";
 import css from "./LocationForm.module.css";
 import { getLocationValidationSchema } from "@/lib/validation/locationSchema";
 import { uploadImage } from "@/utils/uploadImage";
+import MapPickerWrapper from "@/components/MapPicker/MapPickerWrapper";
 import { useMemo } from "react";
 import { useRef } from "react";
-
 
 type Props = {
   id?: string;
@@ -23,6 +23,7 @@ type Props = {
     region: string;
     description: string;
     image?: string;
+    coordinates?: { lat: number; lon: number };
   };
   regions: { slug: string; region: string }[];
   locationTypes: { slug: string; type: string }[];
@@ -64,13 +65,15 @@ export default function LocationForm({
       region: regions.find((r) => r.slug === initialData?.region)?.slug || "",
       description: initialData?.description || "",
       imageFile: null,
+      lat: initialData?.coordinates?.lat ?? 0,
+      lon: initialData?.coordinates?.lon ?? 0,
     }),
-    [initialData, locationTypes, regions]
+    [initialData, locationTypes, regions],
   );
 
   const handleSubmit = async (
     values: LocationFormValues,
-    { setSubmitting }: FormikHelpers<LocationFormValues>
+    { setSubmitting }: FormikHelpers<LocationFormValues>,
   ) => {
     try {
       let imageUrl = initialData?.image || "https://picsum.photos/300";
@@ -84,13 +87,12 @@ export default function LocationForm({
         region: values.region,
         description: values.description,
         image: imageUrl,
-        coordinates: { lat: 0, lon: 0 },
+        coordinates: { lat: values.lat, lon: values.lon },
       };
 
       const data = isEdit
         ? await updateLocation(id!, payload)
         : await createLocation(payload);
-
 
       await queryClient.invalidateQueries({ queryKey: ["currentUser"] });
       router.push(`/locations/${data._id}`);
@@ -98,9 +100,10 @@ export default function LocationForm({
     } catch {
       if (isEdit) {
         toast.error("Не вдалося зберегти зміни. Спробуйте ще раз.");
-        
       } else {
-        toast.error("Не вдалося створити локацію. Зареєструйтеся або увійдіть.");
+        toast.error(
+          "Не вдалося створити локацію. Зареєструйтеся або увійдіть.",
+        );
       }
     } finally {
       setSubmitting(false);
@@ -112,31 +115,24 @@ export default function LocationForm({
 
   const typeRef = useRef<HTMLDivElement>(null);
   const regionRef = useRef<HTMLDivElement>(null);
-  
+
   useEffect(() => {
-  const handleClickOutside = (e: MouseEvent) => {
-    if (
-      typeRef.current &&
-      !typeRef.current.contains(e.target as Node)
-    ) {
-      setIsTypeOpen(false);
-    }
+    const handleClickOutside = (e: MouseEvent) => {
+      if (typeRef.current && !typeRef.current.contains(e.target as Node)) {
+        setIsTypeOpen(false);
+      }
 
-    if (
-      regionRef.current &&
-      !regionRef.current.contains(e.target as Node)
-    ) {
-      setIsRegionOpen(false);
-    }
-  };
+      if (regionRef.current && !regionRef.current.contains(e.target as Node)) {
+        setIsRegionOpen(false);
+      }
+    };
 
-  document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
 
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutside);
-  };
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
-  
 
   return (
     <main className={css.mainLocationForm}>
@@ -152,7 +148,7 @@ export default function LocationForm({
           enableReinitialize
           validateOnMount
           validateOnChange
-validateOnBlur
+          validateOnBlur
         >
           {({
             resetForm,
@@ -166,7 +162,7 @@ validateOnBlur
             values,
           }) => {
             const selectedLabel = locationTypes.find(
-              (l) => l.slug === values.locationType
+              (l) => l.slug === values.locationType,
             )?.type;
 
             return (
@@ -183,7 +179,7 @@ validateOnBlur
                       hidden
                       onChange={(e) => {
                         const file = e.target.files?.[0];
-                        setFieldTouched("imageFile", true); 
+                        setFieldTouched("imageFile", true);
                         if (file) {
                           setFieldValue("imageFile", file);
                           setImagePreview(URL.createObjectURL(file));
@@ -265,11 +261,8 @@ validateOnBlur
                     <div className={css.selectWrapper} ref={typeRef}>
                       <div
                         className={`${css.select} ${isTypeOpen ? css.selectOpen : ""} ${
-     
                           !values.locationType ? css.placeholder : ""
-  
-                          }`}
-
+                        }`}
                         onClick={() => {
                           setIsTypeOpen((prev) => !prev);
                           setIsRegionOpen(false);
@@ -329,12 +322,10 @@ validateOnBlur
                     <label className={css.label}>Регіон</label>
 
                     <div className={css.selectWrapper} ref={regionRef}>
-                        <div
+                      <div
                         className={`${css.select} ${isRegionOpen ? css.selectOpen : ""} ${
-     
                           !values.region ? css.placeholder : ""
-  
-                          }`}
+                        }`}
                         onClick={() => {
                           setIsRegionOpen(true);
                           setIsTypeOpen(false);
@@ -396,8 +387,34 @@ validateOnBlur
                     />
                   </div>
 
+                  {/* Карта */}
+                  <div className={css.formGroup}>
+                    <label className={css.label}>Оберіть розташування</label>
+                    <MapPickerWrapper
+                      lat={values.lat}
+                      lon={values.lon}
+                      onChange={(lat, lon) => {
+                        setFieldValue("lat", lat);
+                        setFieldValue("lon", lon);
+                      }}
+                    />
+                  </div>
+
                   {/* Кнопки */}
                   <div className={css.buttonGroup}>
+                    <button
+                      className={`${css.locationSubmit} ${css.buttonGeneral}`}
+                      type="submit"
+                      disabled={!isValid || isSubmitting || !dirty}
+                    >
+                      {isSubmitting ? (
+                        <span className={css.loader}></span>
+                      ) : isEdit ? (
+                        "Зберегти зміни"
+                      ) : (
+                        "Зберегти"
+                      )}
+                    </button>
                     <button
                       className={`${css.locationCancel} ${css.buttonGeneral}`}
                       type="button"
@@ -411,26 +428,12 @@ validateOnBlur
                         setImagePreview(initialData?.image || placeholder);
 
                         const input = document.getElementById(
-                          "fileInput"
+                          "fileInput",
                         ) as HTMLInputElement;
                         if (input) input.value = "";
                       }}
                     >
                       {isEdit ? "Відмінити зміни" : "Відмінити"}
-                    </button>
-
-                    <button
-                      className={`${css.locationSubmit} ${css.buttonGeneral}`}
-                      type="submit"
-                      disabled={!isValid || isSubmitting || !dirty}
-                    >
-                      {isSubmitting ? (
-                        <span className={css.loader}></span>
-                      ) : isEdit ? (
-                        "Зберегти зміни"
-                      ) : (
-                        "Зберегти"
-                      )}
                     </button>
                   </div>
                 </div>
