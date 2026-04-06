@@ -27,7 +27,10 @@ export default function SearchBox({ regions, locationTypes }: SearchBoxProps) {
       params.delete(key);
     }
 
-    router.replace(`${pathname}?${params.toString()}`);
+    params.delete("page");
+
+    const queryString = params.toString();
+    router.replace(queryString ? `${pathname}?${queryString}` : pathname);
   };
 
   return (
