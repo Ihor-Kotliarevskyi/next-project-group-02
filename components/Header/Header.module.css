@@ -283,7 +283,7 @@
     transition: var(--transition-base);
     }
     
-    .mobilLlocationAdd:hover {
+    .mobileLocationAdd:hover {
         color: var(--color-text-main);
         background-color: var(--color-button-primary-hover);
     }
