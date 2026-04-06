@@ -59,7 +59,7 @@ export default function LocationList() {
   );
 
   const locations = useMemo(() => {
-    const currentLocations = (data?.locations as Location[]) ?? [];
+    const currentLocations = data?.locations ?? [];
 
     if (sort === "name") {
       return [...currentLocations].sort((a, b) =>
