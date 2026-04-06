@@ -443,15 +443,9 @@
     .mobileMenu {
         display: none;
     }
-    .profilePage {
-        display: block;
-    }
-    .avatar {
-        display: block;
-    }
-    .userName {
-        display: block;
-    }
+    .profilePage,
+    .avatar,
+    .userName,
     .exitHeader {
         display: block;
     }
