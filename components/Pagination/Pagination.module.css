@@ -1,23 +1,34 @@
-﻿.wrapper {
-  width: 100%;
-  margin-top: 32px;
-}
-
-.button {
+.pager {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 160px;
-  min-height: 48px;
-  margin-inline: auto;
-  padding: 12px 24px;
-  border: 1px solid #e8845a;
-  border-radius: 10px;
-  background-color: #e8845a;
-  color: #fff7f2;
-  font-size: 16px;
-  line-height: 1.2;
-  font-weight: 600;
+  gap: calc(8 * 100vw / 375);
+  width: 100%;
+  margin-top: calc(32 * 100vw / 375);
+  padding: 0 0 64px;
+}
+
+.pagerPages {
+  display: flex;
+  align-items: center;
+  gap: calc(6 * 100vw / 375);
+}
+
+.pageBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: calc(40 * 100vw / 375);
+  height: calc(40 * 100vw / 375);
+  padding: calc(6 * 100vw / 375) calc(8 * 100vw / 375);
+  border: 1px solid #e5cfc2;
+  border-radius: calc(8 * 100vw / 375);
+  background-color: #ffe5d9;
+  color: #4c2613;
+  font-size: calc(14 * 100vw / 375);
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
   transition:
     background-color 0.2s ease,
     border-color 0.2s ease,
@@ -25,27 +36,114 @@
     opacity 0.2s ease;
 }
 
-.button:hover,
-.button:focus-visible {
-  cursor: pointer;
-  background-color: #cf6f47;
-  border-color: #cf6f47;
+.pageBtn:hover,
+.pageBtn:focus-visible {
+  background-color: #ffa57a;
+  border-color: #ffa57a;
   outline: none;
 }
 
-.button:disabled {
-  cursor: wait;
-  opacity: 0.8;
+.active {
+  background-color: #cc6534;
+  border-color: #cc6534;
+  color: #fff;
+}
+
+.pagerArrow {
+  width: calc(40 * 100vw / 375);
+  height: calc(40 * 100vw / 375);
+  border-radius: calc(8 * 100vw / 375);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: #ffe5d9;
+  color: #4c2613;
+  padding: calc(10 * 100vw / 375);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.pagerArrow svg {
+  width: calc(14 * 100vw / 375);
+  height: calc(14 * 100vw / 375);
+}
+
+.pagerArrow:hover:not(:disabled),
+.pagerArrow:focus-visible:not(:disabled) {
+  background: #ffa57a;
+  border-color: #ffa57a;
+  color: #4c2613;
+  outline: none;
+}
+
+.pagerArrow:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dots {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: calc(20 * 100vw / 375);
+  height: calc(40 * 100vw / 375);
+  color: #4c2613;
+  font-size: calc(14 * 100vw / 375);
+  line-height: 1;
+}
+
+@media (min-width: 375px) {
+  .pager {
+    gap: 12px;
+    margin-top: 40px;
+    padding-bottom: 64px;
+  }
+
+  .pagerPages {
+    gap: 8px;
+  }
+
+  .pageBtn {
+    min-width: 48px;
+    height: 48px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 16px;
+  }
+
+  .pagerArrow {
+    width: 48px;
+    height: 48px;
+    padding: 12px;
+    border-radius: 8px;
+  }
+
+  .pagerArrow svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .dots {
+    min-width: 24px;
+    height: 40px;
+    font-size: 16px;
+  }
 }
 
 @media (min-width: 768px) {
-  .wrapper {
+  .pager {
     margin-top: 40px;
   }
 }
 
 @media (min-width: 1440px) {
-  .wrapper {
+  .pager {
     margin-top: 48px;
   }
 }

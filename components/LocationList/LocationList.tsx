@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import {
   getLocations,
@@ -56,19 +56,32 @@ export default function LocationList() {
   const locationTypeLabels = useMemo(
     () =>
       new Map(
-        locationTypes.map((locationType: { slug: string; type: string }) => [
-          locationType.slug,
-          locationType.type,
+        locationTypes.map((locationTypeOption) => [
+          locationTypeOption.slug,
+          locationTypeOption.type,
         ]),
       ),
     [locationTypes],
   );
 
   const locations = useMemo(() => {
-    return (
-      data?.pages.flatMap((page) => page.locations as Location[]) ?? []
-    );
-  }, [data?.pages]);
+    const currentLocations = data?.locations ?? [];
+
+    if (sort === "name") {
+      return [...currentLocations].sort((a, b) =>
+        a.name.localeCompare(b.name, "uk"),
+      );
+    }
+
+    if (sort === "rate") {
+      return [...currentLocations].sort((a, b) => b.rate - a.rate);
+    }
+
+    return currentLocations;
+  }, [data?.locations, sort]);
+
+  const totalPages = data?.pagination?.totalPages ?? 1;
+  const currentPage = data?.pagination?.page ?? page;
 
   return (
     <section className={styles.section}>
@@ -80,45 +93,36 @@ export default function LocationList() {
             value: regionOption.slug,
             label: regionOption.region,
           }))}
-          locationTypes={locationTypes.map(
-            (locationTypeOption: { slug: string; type: string }) => ({
-              value: locationTypeOption.slug,
-              label: locationTypeOption.type,
-            }),
-          )}
+          locationTypes={locationTypes.map((locationTypeOption) => ({
+            value: locationTypeOption.slug,
+            label: locationTypeOption.type,
+          }))}
         />
 
         {isLoading ? (
           <p className={styles.loader}>Завантаження...</p>
+        ) : locations.length === 0 ? (
+          <p className={styles.empty}>Нічого не знайдено</p>
         ) : (
           <div className={styles.grid}>
-            {locations.length === 0 ? (
-              <p className={styles.empty}>Нічого не знайдено</p>
-            ) : (
-              locations.map((location: Location) => (
-                <LocationCard
-                  key={location._id}
-                  _id={location._id}
-                  image={location.image}
-                  name={location.name}
-                  locationType={
-                    locationTypeLabels.get(location.locationType) ??
-                    "Тип не вказано"
-                  }
-                  rate={location.rate}
-                />
-              ))
-            )}
+            {locations.map((location) => (
+              <LocationCard
+                key={location._id}
+                _id={location._id}
+                image={location.image}
+                name={location.name}
+                locationType={
+                  locationTypeLabels.get(location.locationType) ??
+                  "Тип не вказано"
+                }
+                rate={location.rate}
+              />
+            ))}
           </div>
         )}
 
-        {hasNextPage ? (
-          <Pagination
-            onLoadMore={() => {
-              void fetchNextPage();
-            }}
-            isLoading={isFetchingNextPage}
-          />
+        {totalPages > 1 ? (
+          <Pagination currentPage={currentPage} totalPages={totalPages} />
         ) : null}
       </div>
     </section>
