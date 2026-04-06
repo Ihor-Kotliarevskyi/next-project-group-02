@@ -15,7 +15,7 @@ export default function HeroBlock() {
     if (!trimmedQuery) return;
 
     router.push(`/locations?search=${encodeURIComponent(trimmedQuery)}`);
-  }, [query, router]);
+  };
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -28,6 +28,8 @@ export default function HeroBlock() {
 
   return (
     <section className={styles.hero}>
+
+      <div className={styles.heroContainer}>
       <Image
         src="/images/hero-bg.png"
         alt="Nature"
@@ -58,6 +60,7 @@ export default function HeroBlock() {
           <button onClick={handleSearch}>Знайти місце</button>
         </div>
       </div>
+       </div>
     </section>
   );
 }
