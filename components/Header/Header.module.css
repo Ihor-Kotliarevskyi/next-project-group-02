@@ -279,7 +279,8 @@
 
 .mobileLocationAdd {
     border: 1px solid var(--color-button-primary);
-    width: 335px;
+    width: 100%;
+    max-width: 335px;
     border-radius: 6px;
     padding: 4px 10px;
     font-size: 14px;
