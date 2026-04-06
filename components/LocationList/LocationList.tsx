@@ -31,7 +31,7 @@ export default function LocationList() {
   const sort = searchParams.get("sort") ?? "";
   const page = Number(searchParams.get("page") ?? "1");
 
-  const { data, isLoading, isFetching } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["locations", search, region, locationType, sort, page],
     queryFn: () =>
       getLocations({
@@ -67,30 +67,10 @@ export default function LocationList() {
     [locationTypes],
   );
 
-  const locations = useMemo(() => {
-    const currentLocations = (data?.locations as Location[]) ?? [];
-
-    if (sort === "name") {
-      return [...currentLocations].sort((a, b) =>
-        a.name.localeCompare(b.name, "uk"),
-      );
-    }
-
-    if (sort === "rate") {
-      return [...currentLocations].sort((a, b) => b.rate - a.rate);
-    }
-
-    if (sort === "newest") {
-      return [...currentLocations].sort(
-        (a, b) => getLocationTimestamp(b) - getLocationTimestamp(a),
-      );
-    }
-
-    return currentLocations;
-  }, [data?.locations, sort]);
+  const locations = (data?.locations as Location[]) ?? [];
 
   const totalPages = data?.pagination?.totalPages ?? 1;
-  const currentPage = data?.pagination?.page ?? page;
+  const currentPage = data?.pagination?.page ?? 1;
 
   return (
     <section className={styles.section}>

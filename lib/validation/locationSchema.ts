@@ -10,7 +10,7 @@ export const getLocationValidationSchema = (isEdit: boolean) =>
             if (!value) return true;
             return ["image/jpeg", "image/png"].includes(value.type);
           })
-          .test("fileSize", "Максимум 1MB", (value) => {
+          .test("fileSize", "Розмір фото не повинен перевищувати 1 МБ", (value) => {
             if (!value) return true;
             return value.size <= 1024 * 1024;
           }),

@@ -147,10 +147,13 @@ export default function LocationForm({
           onSubmit={handleSubmit}
           enableReinitialize
           validateOnMount
+          validateOnChange
+validateOnBlur
         >
           {({
             resetForm,
             setFieldValue,
+            setFieldTouched,
             isSubmitting,
             errors,
             touched,
@@ -176,6 +179,7 @@ export default function LocationForm({
                       hidden
                       onChange={(e) => {
                         const file = e.target.files?.[0];
+                        setFieldTouched("imageFile", true); 
                         if (file) {
                           setFieldValue("imageFile", file);
                           setImagePreview(URL.createObjectURL(file));
@@ -265,6 +269,7 @@ export default function LocationForm({
                         onClick={() => {
                           setIsTypeOpen((prev) => !prev);
                           setIsRegionOpen(false);
+                          setFieldTouched("locationType", true);
                         }}
                       >
                         {selectedLabel || "Оберіть тип місця"}
@@ -329,6 +334,7 @@ export default function LocationForm({
                         onClick={() => {
                           setIsRegionOpen(true);
                           setIsTypeOpen(false);
+                          setFieldTouched("region", true);
                         }}
                       >
                         {regions.find((r) => r.slug === values.region)
