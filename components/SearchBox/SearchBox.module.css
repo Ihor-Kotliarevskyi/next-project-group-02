@@ -1,4 +1,4 @@
-﻿.wrapper {
+.wrapper {
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -131,13 +131,99 @@
   background: #ffa57a;
 }
 
+.clearBtn {
+  margin: 8px;
+  border: 1px solid var(--color-overlay-light);
+  background-color: var(--color-button-secondary);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 14px;
+  text-align: center;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-main);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.clearBtn:hover {
+  color: var(--color-bg-white);
+  background-color: var(--color-button-primary);
+}
+
+.checkboxOption {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.checkboxOption:hover {
+  background-color: rgba(255, 165, 122, 0.4);
+}
+
+.checkboxWrapper {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.checkboxHidden {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkboxCustom {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  background-color: var(--color-button-secondary);
+  border: 2px solid var(--color-overlay-light);
+  border-radius: 4px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkboxHidden:checked ~ .checkboxCustom {
+  background-color: var(--color-button-primary);
+  border-color: var(--color-button-primary);
+}
+
+.checkboxCustom svg {
+  width: 14px;
+  height: 14px;
+  color: #fff;
+  display: none;
+}
+
+.checkboxHidden:checked ~ .checkboxCustom svg {
+  display: block;
+}
+
+.checkboxLabel {
+  font-size: 15px;
+  color: #36502f;
+  font-weight: 500;
+  user-select: none;
+}
+
 @media (min-width: 375px) {
   .wrapper {
     margin-bottom: 0;
   }
 }
 
-/* Tablet */
 @media (min-width: 768px) {
   .search {
     width: 100%;
@@ -153,7 +239,6 @@
   }
 }
 
-/* Desktop */
 @media (min-width: 1440px) {
   .wrapper {
     display: grid;

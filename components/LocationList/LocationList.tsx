@@ -14,25 +14,18 @@ import Pagination from "@/components/Pagination/Pagination";
 import styles from "./LocationList.module.css";
 import { Location } from "@/types/location";
 
-const getLocationTimestamp = (location: Location) => {
-  if (location.createdAt) {
-    return new Date(location.createdAt).getTime();
-  }
-
-  return Number.parseInt(location._id.slice(0, 8), 16) * 1000;
-};
-
 export default function LocationList() {
   const searchParams = useSearchParams();
 
   const search = searchParams.get("search") ?? "";
   const region = searchParams.get("region") ?? "";
-  const locationType = searchParams.get("locationType") ?? "";
-  const sort = searchParams.get("sort") ?? "";
+  const locationType = searchParams.getAll("locationType");
+  const sortBy = searchParams.get("sortBy") || "name";
+  const order = searchParams.get("order") || "asc";
   const page = Number(searchParams.get("page") ?? "1");
 
   const { data, isLoading, isFetching } = useQuery({
-    queryKey: ["locations", search, region, locationType, sort, page],
+    queryKey: ["locations", search, region, locationType, sortBy, order, page],
     queryFn: () =>
       getLocations({
         page,
@@ -40,7 +33,8 @@ export default function LocationList() {
         region,
         locationType,
         search,
-        sort,
+        sortBy,
+        order,
       }),
   });
 
@@ -67,7 +61,34 @@ export default function LocationList() {
     [locationTypes],
   );
 
-  const locations = (data?.locations as Location[]) ?? [];
+  const locations = useMemo(() => {
+    let list = (data?.locations as Location[]) ?? [];
+
+    if (sortBy === "name") {
+      return [...list].sort((a, b) => {
+        const res = a.name.localeCompare(b.name, "uk");
+        return order === "asc" ? res : -res;
+      });
+    }
+
+    if (sortBy === "rate") {
+      return [...list].sort((a, b) => {
+        const res = b.rate - a.rate;
+        return order === "asc" ? -res : res;
+      });
+    }
+
+    if (sortBy === "createdAt") {
+      return [...list].sort((a, b) => {
+        const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        const res = timeB - timeA;
+        return order === "asc" ? -res : res;
+      });
+    }
+
+    return list;
+  }, [data?.locations, sortBy, order]);
 
   const totalPages = data?.pagination?.totalPages ?? 1;
   const currentPage = data?.pagination?.page ?? 1;
