@@ -24,9 +24,10 @@ export const getLocations = (params?: {
   page?: number;
   limit?: number;
   region?: string;
-  locationType?: string;
+  locationType?: string | string[];
   search?: string;
-  sort?: string;
+  sortBy?: string;
+  order?: string;
 }) => {
   const cleanParams = Object.fromEntries(
     Object.entries(params ?? {}).filter(
@@ -35,7 +36,22 @@ export const getLocations = (params?: {
   );
 
   return clientApi
-    .get("/locations", { params: cleanParams })
+    .get("/locations", {
+      params: cleanParams,
+      paramsSerializer: {
+        serialize: (p) => {
+          const searchData = new URLSearchParams();
+          Object.entries(p).forEach(([key, value]) => {
+            if (Array.isArray(value)) {
+              value.forEach((v) => searchData.append(key, v));
+            } else {
+              searchData.append(key, String(value));
+            }
+          });
+          return searchData.toString();
+        },
+      },
+    })
     .then((r) => ({ locations: r.data.data, pagination: r.data.pagination }));
 };
 

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -10,10 +10,9 @@ type SearchBoxProps = {
 };
 
 const sortOptions = [
-  { value: "", label: "Сортування" },
-  { value: "name", label: "За назвою" },
-  { value: "rate", label: "За рейтингом" },
-  { value: "newest", label: "Новіші спочатку" },
+  { value: "name:asc", label: "За назвою" },
+  { value: "rate:desc", label: "За рейтингом" },
+  { value: "createdAt:desc", label: "Новіші спочатку" },
 ];
 
 export default function SearchBox({ regions, locationTypes }: SearchBoxProps) {
@@ -29,8 +28,11 @@ export default function SearchBox({ regions, locationTypes }: SearchBoxProps) {
 
   const search = searchParams.get("search") ?? "";
   const region = searchParams.get("region") ?? "";
-  const locationType = searchParams.get("locationType") ?? "";
-  const sort = searchParams.get("sort") ?? "";
+  const selectedTypes = searchParams.getAll("locationType");
+  const sortBy = searchParams.get("sortBy") || "name";
+  const order = searchParams.get("order") || "asc";
+
+  const currentSort = `${sortBy}:${order}`;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -66,10 +68,31 @@ export default function SearchBox({ regions, locationTypes }: SearchBoxProps) {
     };
   }, []);
 
+  const toggleType = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    const currentOnes = params.getAll("locationType");
+
+    if (currentOnes.includes(value)) {
+      const remaining = currentOnes.filter((t) => t !== value);
+      params.delete("locationType");
+      remaining.forEach((t) => params.append("locationType", t));
+    } else {
+      params.append("locationType", value);
+    }
+
+    params.delete("page");
+    const queryString = params.toString();
+    router.replace(queryString ? `${pathname}?${queryString}` : pathname);
+  };
+
   const updateParam = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
 
-    if (value.trim()) {
+    if (key === "sort") {
+      const [newSortBy, newOrder] = value.split(":");
+      params.set("sortBy", newSortBy);
+      params.set("order", newOrder);
+    } else if (value.trim()) {
       params.set(key, value);
     } else {
       params.delete(key);
@@ -82,10 +105,11 @@ export default function SearchBox({ regions, locationTypes }: SearchBoxProps) {
   };
 
   const activeSortLabel =
-    sortOptions.find((option) => option.value === sort)?.label ?? "Сортування";
+    sortOptions.find((option) => option.value === currentSort)?.label ?? "За назвою";
   const activeLocationTypeLabel =
-    locationTypes.find((option) => option.value === locationType)?.label ??
-    "Тип локації";
+    selectedTypes.length > 0
+      ? `Тип: ${selectedTypes.length}`
+      : "Тип локації";
   const activeRegionLabel =
     regions.find((option) => option.value === region)?.label ?? "Регіон";
 
@@ -135,32 +159,43 @@ export default function SearchBox({ regions, locationTypes }: SearchBoxProps) {
 
           {isLocationTypeOpen ? (
             <div className={styles.selectMenu} role="listbox">
-              <button
-                type="button"
-                className={`${styles.selectOption} ${
-                  locationType === "" ? styles.selectedOption : ""
-                }`}
-                onClick={() => {
-                  updateParam("locationType", "");
-                  setIsLocationTypeOpen(false);
-                }}
-              >
-                Тип локації
-              </button>
-              {locationTypes.map((type) => (
+              {selectedTypes.length > 0 && (
                 <button
-                  key={type.value}
                   type="button"
-                  className={`${styles.selectOption} ${
-                    type.value === locationType ? styles.selectedOption : ""
-                  }`}
-                  onClick={() => {
-                    updateParam("locationType", type.value);
-                    setIsLocationTypeOpen(false);
-                  }}
+                  className={styles.clearBtn}
+                  onClick={() => updateParam("locationType", "")}
                 >
-                  {type.label}
+                  Очистити все
                 </button>
+              )}
+              {locationTypes.map((type) => (
+                <label
+                  key={type.value}
+                  className={styles.checkboxOption}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className={styles.checkboxWrapper}>
+                    <input
+                      type="checkbox"
+                      checked={selectedTypes.includes(type.value)}
+                      onChange={() => toggleType(type.value)}
+                      className={styles.checkboxHidden}
+                    />
+                    <div className={styles.checkboxCustom}>
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </div>
+                  </div>
+                  <span className={styles.checkboxLabel}>{type.label}</span>
+                </label>
               ))}
             </div>
           ) : null}
@@ -272,7 +307,7 @@ export default function SearchBox({ regions, locationTypes }: SearchBoxProps) {
                   key={option.value || "default"}
                   type="button"
                   className={`${styles.selectOption} ${
-                    option.value === sort ? styles.selectedOption : ""
+                    option.value === currentSort ? styles.selectedOption : ""
                   }`}
                   onClick={() => {
                     updateParam("sort", option.value);
