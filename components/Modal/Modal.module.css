@@ -1,12 +1,13 @@
 .backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  background: rgba(17, 17, 17, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(17, 17, 17, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    overflow-y: auto;
 }
 
 .modal {
@@ -31,6 +32,11 @@
   line-height: 1;
   cursor: pointer;
   color: #101828;
+  transition: color var(--transition-base);
+}
+
+.closeBtn:hover {
+  color: var(--color-button-primary);
 }
 
 @media screen and (min-width: 768px) {

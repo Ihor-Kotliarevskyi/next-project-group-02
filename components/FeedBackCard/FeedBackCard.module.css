@@ -49,7 +49,7 @@
 }
 
 /* Tablet */
-@media (min-width: 704px) {
+@media (min-width: 768px) {
   .card {
     padding: 16px;
   }
@@ -63,7 +63,7 @@
   }
 }
 
-@media (min-width: 1312px) {
+@media (min-width: 1440px) {
   .description {
     font-size: 20px;
   }

@@ -1,32 +1,33 @@
 .header {
-  position: sticky;
-  top: 0;
-  z-index: 9999;
-  background-color: var(--color-scheme-2-background);
-  /* border-bottom: 1px solid var(--color-border); */
-  /* padding: 0px 64px; */
-  width: 100%;
-  height: 72px;
-  margin-bottom: 0;
-  font-family: var(--font-manrope);
-  font-weight: var(--font-weight-regular);
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 999;
+    background-color: var(--color-bg-page);
+    /* border-bottom: 1px solid var(--color-border); */
+    /* padding: 0px 64px; */
+    width: 100%;
+    height: 72px;
+    margin-bottom: 0;
+    font-family: var(--font-manrope);
+    font-weight: var(--font-weight-regular);
 }
 
-.inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 100%;
-  padding: 16px 64px;
-  margin: 0 auto;
-  max-width: var(--container-max);
+.inner {    
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    padding: 16px 64px;
+    margin: 0 auto;
+    max-width: var(--container-max);
 }
 
 .rightSide {
-  display: flex;
-  align-items: center;
-  gap: 32px;
-  margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    margin-left: auto;
 }
 
 /* ─── Desktop Nav ─── */
@@ -63,7 +64,7 @@
 
 .navLink.active::after,
 .navLink:hover::after {
-  width: 100%;
+    width: 100%;
 }
 
 /* ─── Desktop Auth ─── */
@@ -88,27 +89,26 @@
 }
 
 .profilePage {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-muted);
 }
 
 .locationAdd {
-  border: 1px solid var(--color-coral-dark);
-  border-radius: 6px;
-  padding: 4px 10px;
-  font-size: 14px;
-  text-align: center;
-  font-weight: var(--font-weight-medium);
-  color: var(--color-bg-white);
-  background-color: var(--color-button-primary);
-  transition: var(--transition-base);
+    border: 1px solid var(--color-button-primary);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 14px;
+    text-align: center;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-bg-white);
+    background-color: var(--color-button-primary);
+    transition: var(--transition-base);
 }
 
 .locationAdd:hover {
-  color: var(--color-text-main);
-  background-color: var(--color-button-primary-hover);
-  border: 1px solid var(--color-button-primary);
+    color: var(--color-text-main);
+    background-color: var(--color-button-primary-hover);
 }
 
 .avatar {
@@ -159,21 +159,20 @@
 }
 
 .registerBtn {
-  border: 1px solid var(--color-coral-dark);
-  border-radius: 6px;
-  padding: 4px 10px;
-  font-size: 16px;
-  text-align: center;
-  font-weight: var(--font-weight-medium);
-  color: var(--color-bg-white);
-  background-color: var(--color-button-primary);
-  transition: var(--transition-base);
+    border: 1px solid var(--color-button-primary);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 16px;
+    text-align: center;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-bg-white);
+    background-color: var(--color-button-primary);
+    transition: var(--transition-base);
 }
 
 .registerBtn:hover {
-  color: var(--color-text-main);
-  background-color: var(--color-button-primary-hover);
-  border: 1px solid var(--color-button-primary);
+    color: var(--color-text-main);
+    background-color: var(--color-button-primary-hover);
 }
 
 /* ─── Burger ─── */
@@ -266,40 +265,46 @@
 
 /* ─── Tablet ─────────────────── */
 @media (min-width: 768px) {
-  .inner {
-    padding: 0 var(--container-padding-tablet);
-  }
+    .inner {
+        padding: 0 var(--container-padding-tablet);
+    }
 
-  .mobileMenu {
-    padding: 16px var(--container-padding-tablet) 24px;
-  }
-  .auth {
-    display: flex;
-  }
+    .mobileMenu {
+        padding: 16px var(--container-padding-tablet) 24px;
+    }
+
+    .auth {
+        display: flex;
+    }
+
 }
 
 /* ─── Desktop ────────────────── */
-@media (min-width: 1024px) {
-  .inner {
-    padding: 0 var(--container-padding-desktop);
-  }
+@media (min-width: 1440px) {
+    .inner {
+        padding: 0 var(--container-padding-desktop);
+    }
 
-  .nav {
-    display: flex;
-    align-items: center;
-    gap: 32px;
-  }
-  .auth {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+    .nav {
+        display: flex;
+        align-items: center;
+        gap: 32px;
 
-  .burger {
-    display: none;
-  }
 
-  .mobileMenu {
-    display: none;
-  }
+    }
+
+    .auth {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .burger {
+        display: none;
+    }
+
+    .mobileMenu {
+        display: none;
+    }
+
 }

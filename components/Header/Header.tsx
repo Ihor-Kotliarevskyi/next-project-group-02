@@ -50,13 +50,13 @@ export default function Header() {
           <div className={css.auth}>
             {user ? (
               <>
-                <Link href="/pro" className={css.profilePage}>
+                <Link href="/profile" className={css.profilePage}>
                   Мій Профіль
                 </Link>
                 <Link href="/locations/add" className={css.locationAdd}>
                   Поділитись локацією
                 </Link>
-                <Link href={`/pro`} className={css.profileLink}>
+                <Link href={`/profile`} className={css.profileLink}>
                   {/* file/${user._id} */}
                   {user.avatarUrl ? (
                     <Image
@@ -130,7 +130,7 @@ export default function Header() {
           {user ? (
             <>
               <Link
-                href={`/pro`}
+                href={`/profile`}
                 // file/${user._id}
                 className={css.mobileLink}
                 onClick={closeMenu}

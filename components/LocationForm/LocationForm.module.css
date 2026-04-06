@@ -6,14 +6,12 @@
   font-family: var(--font-family);
 }
 
-.selectWrapper {
-  position: relative;
-}
-
 .select {
+  position: relative;
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 6px;
   padding: 8px;
+  padding-right: 32px;
   min-height: 40px;
   background: var(--color-slider-normal);
   cursor: pointer;
@@ -21,9 +19,34 @@
   align-items: center;
 }
 
+.selectWrapper {
+  position: relative;
+}
+
 .select:focus {
   outline: none;
   border-color: var(--color-button-primary);
+}
+
+.select::after {
+  content: "";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--color-text-main);
+  border-bottom: 2px solid var(--color-text-main);
+  transform: translateY(-50%) rotate(45deg); /* вниз */
+  transition: transform 0.2s ease;
+}
+
+.selectOpen {
+  border-color: var(--color-button-primary);
+}
+
+.selectOpen::after {
+  transform: translateY(-50%) rotate(-135deg);
 }
 
 .placeholder {
@@ -38,14 +61,25 @@
   background: var(--color-slider-normal);
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 6px;
-  overflow: hidden;
   z-index: 10;
+  opacity: 0;
+  transform: translateY(-5px);
+  transition: all 0.2s ease;
+  overflow-y: auto;
+  max-height: 400px;
+}
+
+.selectWrapper:hover .dropdown,
+.dropdown {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .option {
   padding: 10px;
   cursor: pointer;
   transition: background 0.2s ease;
+  white-space: nowrap;
 }
 
 .option:hover {
@@ -58,8 +92,10 @@
 }
 
 .photoPreview {
+  display: block;
   border-radius: 12px;
   width: 100%;
+  margin-top: 10px;
   margin-bottom: 16px;
 }
 
@@ -99,7 +135,7 @@
 .formGroup {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 24px;
 }
 
 .locationInput {
@@ -122,7 +158,8 @@
 
 .textarea {
   min-height: 180px;
-  resize: vertical;
+  resize: none;
+  overflow: hidden;
 }
 
 .inputError {
@@ -145,6 +182,7 @@
   display: flex;
   gap: 16px;
   width: 100%;
+  margin-top: 36px;
 }
 
 .locationSubmit {
@@ -225,7 +263,7 @@
 
 @media (min-width: 375px) {
   .containerLocationForm {
-    margin: 0px 20px;
+    padding: 0px 20px;
   }
 
   .locationFormTitle {
@@ -239,7 +277,6 @@
     flex-direction: column;
     gap: 16px;
     padding-bottom: 64px;
-    margin-top: 60px;
   }
 
   .locationSubmit,
@@ -247,19 +284,14 @@
     width: 100%;
   }
 
-  /* .buttonGroup {
-    flex-direction: column;
-    align-items: center;
-    justify-content: stretch;
-    padding: 36px 0px 0px;
-    margin-bottom: 64px;
-  } */
+  .dropdown {
+    max-height: 300px;
+  }
 }
 
 @media (min-width: 768px) {
   .containerLocationForm {
-    padding-left: 32px;
-    padding-right: 32px;
+    padding: 0 32px;
   }
 
   .locationFormTitle {
@@ -270,10 +302,10 @@
   }
 
   .buttonGroup {
-    align-items: stretch;
+    align-items: flex-start;
     flex-direction: row;
-    margin-bottom: 72px;
-    max-width: 423px;
+    padding-bottom: 72px;
+    padding-right: 280px;
   }
 }
 
@@ -294,7 +326,8 @@
     align-items: flex-start;
     flex-direction: row;
     min-height: 84px;
-    margin-bottom: 72px;
+    padding-bottom: 72px;
+    padding-right: 668px;
   }
 
   .label {

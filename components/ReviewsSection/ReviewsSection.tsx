@@ -226,7 +226,7 @@ export default function ReviewsSection({
 
   const handleAddReview = () => {
     if (!isAuthenticated) {
-      router.push(`/login?redirect=/locations/${locationId}`);
+      router.push(`/auth-prompt?redirect=/locations/${locationId}`);
     } else {
       router.push(`/add-review?locationId=${locationId}`);
     }

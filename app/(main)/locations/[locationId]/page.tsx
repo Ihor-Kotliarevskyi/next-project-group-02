@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -28,6 +29,28 @@ type LocationDetails = {
 type PageProps = {
   params: Promise<{ locationId: string }>;
 };
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { locationId } = await params;
+  try {
+    const { data: location } = await api.get<LocationDetails>(
+      `/locations/${locationId}`
+    );
+    const description = location.description?.slice(0, 160) ?? "";
+    return {
+      title: location.name,
+      description,
+      openGraph: {
+        title: location.name,
+        description,
+        images: location.image ? [{ url: location.image }] : [],
+        type: "article",
+      },
+    };
+  } catch {
+    return { title: "Локація не знайдена" };
+  }
+}
 
 function StarIcon({ type }: { type: "full" | "half" | "empty" }) {
   const starPath =

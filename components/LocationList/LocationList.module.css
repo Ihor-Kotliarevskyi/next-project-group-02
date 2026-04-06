@@ -1,19 +1,22 @@
 ﻿.section {
   background: #fff2ec;
-  padding: 32px 0 56px;
+  padding-inline: calc(20 * 100vw / 375);
 }
 
 .container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: calc(40 * 100vw / 375);
   width: 100%;
-  min-width: 320px;
-  padding: 0 16px;
-  margin: 0 auto;
+  margin: 0;
+  padding-inline: calc(20 * 100vw / 375);
 }
 
 .title {
-  margin: 0 0 24px;
+  margin-bottom: calc(40 * 100vw / 375);
   color: #1f1f1f;
-  font-size: 36px;
+  font-size: calc(36 * 100vw / 375);
   line-height: 1.08;
   font-weight: 700;
   text-align: center;
@@ -33,16 +36,22 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 24px;
+  width: 100%;
 }
 
 @media (min-width: 375px) {
   .section {
-    padding: 40px 0 64px;
+    width: 100%;
+    padding: 0;
   }
-
-  .title {
-    font-size: 42px;
-  }
+}
+.container {
+  gap: 40px;
+  padding: 0 20px 0;
+}
+.title {
+  font-size: 42px;
+  margin: 0;
 }
 
 @media (min-width: 768px) {

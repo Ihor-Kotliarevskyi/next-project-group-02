@@ -1,13 +1,16 @@
 .footer {
   background-color: var(--color-bg-footer);
   border-top: 1px solid var(--color-border);
-  margin-top: auto;
   width: 100%;
   padding-bottom: 80px;
 }
 
 .footerContainer {
   margin: 48px 20px;
+}
+
+.logoWrapper {
+  cursor: pointer;
 }
 
 .footer Link {
@@ -80,7 +83,7 @@
 }
 
 /* ─── Desktop ─── */
-@media (min-width: 1024px) {
+@media (min-width: 1440px) {
   .inner {
     padding: 24px var(--container-padding-desktop);
     flex-wrap: nowrap;

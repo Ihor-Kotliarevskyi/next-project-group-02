@@ -1,26 +1,30 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import Image from "next/image";
+
 import styles from "./HeroBlock.module.css";
 
 export default function HeroBlock() {
   const [query, setQuery] = useState("");
   const router = useRouter();
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const trimmedQuery = query.trim();
     if (!trimmedQuery) return;
 
     router.push(`/locations?search=${encodeURIComponent(trimmedQuery)}`);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
-  };
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        handleSearch();
+      }
+    },
+    [handleSearch],
+  );
 
   return (
     <section className={styles.hero}>
@@ -37,9 +41,7 @@ export default function HeroBlock() {
       <div className={styles.heroOverlay} />
 
       <div className={styles.heroContent}>
-        <h1>
-          Відкрий для себе Україну. Знайди ідеальне місце для відпочинку
-        </h1>
+        <h1>Відкрий для себе Україну. Знайди ідеальне місце для відпочинку</h1>
 
         <p>
           Тисячі перевірених локацій з реальними фото та відгуками від
@@ -55,9 +57,7 @@ export default function HeroBlock() {
             onKeyDown={handleKeyDown}
           />
 
-          <button onClick={handleSearch}>
-            Знайти місце
-          </button>
+          <button onClick={handleSearch}>Знайти місце</button>
         </div>
       </div>
        </div>

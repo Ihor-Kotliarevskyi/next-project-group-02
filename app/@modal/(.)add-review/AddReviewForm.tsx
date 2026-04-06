@@ -2,7 +2,7 @@
 
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { createFeedback, getMe } from "@/lib/api/clientApi";
@@ -18,6 +18,7 @@ const schema = Yup.object({
 
 export default function AddReviewForm({ locationId }: { locationId: string }) {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const { data: me } = useQuery({ queryKey: ["me"], queryFn: getMe });
 
@@ -28,7 +29,7 @@ export default function AddReviewForm({ locationId }: { locationId: string }) {
         userName: me?.name ?? "Анонім",
       }),
     onSuccess: () => {
-      window.dispatchEvent(new Event("review-added"));
+      queryClient.invalidateQueries({ queryKey: ["latestReviews"] });
       toast.success("Відгук додано!");
       setTimeout(() => router.back(), 100);
     },

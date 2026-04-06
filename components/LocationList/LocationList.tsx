@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { useLocationStore } from "@/lib/store/locationStore";
+import { useSearchParams } from "next/navigation";
 import {
   getLocations,
   getRegions,
@@ -15,19 +15,24 @@ import styles from "./LocationList.module.css";
 import { Location } from "@/types/location";
 
 export default function LocationList() {
-  const { filters } = useLocationStore();
+  const searchParams = useSearchParams();
+
+  const search = searchParams.get("search") ?? "";
+  const region = searchParams.get("region") ?? "";
+  const locationType = searchParams.get("locationType") ?? "";
+  const sort = searchParams.get("sort") ?? "";
 
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: ["locations", filters],
+      queryKey: ["locations", search, region, locationType, sort],
       initialPageParam: 1,
       queryFn: ({ pageParam }) =>
         getLocations({
           page: pageParam,
           limit: 9,
-          region: filters.region,
-          locationType: filters.locationType,
-          search: filters.search,
+          region,
+          locationType,
+          search,
         }),
       getNextPageParam: (lastPage) =>
         lastPage.pagination.page < lastPage.pagination.totalPages
@@ -53,9 +58,9 @@ export default function LocationList() {
         locationTypes.map((locationType: { slug: string; type: string }) => [
           locationType.slug,
           locationType.type,
-        ])
+        ]),
       ),
-    [locationTypes]
+    [locationTypes],
   );
 
   const locations = useMemo(() => {
@@ -63,53 +68,37 @@ export default function LocationList() {
       data?.pages.flatMap((page) => page.locations as Location[]) ?? [];
 
     const uniqueLocations = Array.from(
-      new Map(allLocations.map((loc) => [loc._id, loc])).values()
+      new Map(allLocations.map((loc) => [loc._id, loc])).values(),
     );
 
-    const normalizedSearch = filters.search.trim().toLowerCase();
-
-    const filteredLocations = normalizedSearch
-      ? uniqueLocations.filter((location) => {
-          const locationName = location.name.toLowerCase();
-          const locationTypeLabel =
-            locationTypeLabels.get(location.locationType)?.toLowerCase() ?? "";
-          const locationTypeSlug = location.locationType.toLowerCase();
-
-          return (
-            locationName.includes(normalizedSearch) ||
-            locationTypeLabel.includes(normalizedSearch) ||
-            locationTypeSlug.includes(normalizedSearch)
-          );
-        })
-      : uniqueLocations;
-
-    if (filters.sort === "name") {
-      return [...filteredLocations].sort((a, b) =>
-        a.name.localeCompare(b.name, "uk")
+    if (sort === "name") {
+      return [...uniqueLocations].sort((a, b) =>
+        a.name.localeCompare(b.name, "uk"),
       );
     }
 
-    if (filters.sort === "rate") {
-      return [...filteredLocations].sort((a, b) => b.rate - a.rate);
+    if (sort === "rate") {
+      return [...uniqueLocations].sort((a, b) => b.rate - a.rate);
     }
 
-    return filteredLocations;
-  }, [data?.pages, filters.sort, filters.search, locationTypeLabels]);
+    return uniqueLocations;
+  }, [data?.pages, sort]);
 
   return (
     <section className={styles.section}>
       <div className={styles.container}>
         <h2 className={styles.title}>Усі місця відпочинку</h2>
+
         <SearchBox
-          regions={regions.map((region) => ({
-            value: region.slug,
-            label: region.region,
+          regions={regions.map((regionOption) => ({
+            value: regionOption.slug,
+            label: regionOption.region,
           }))}
           locationTypes={locationTypes.map(
-            (locationType: { slug: string; type: string }) => ({
-              value: locationType.slug,
-              label: locationType.type,
-            })
+            (locationTypeOption: { slug: string; type: string }) => ({
+              value: locationTypeOption.slug,
+              label: locationTypeOption.type,
+            }),
           )}
         />
 
@@ -128,7 +117,7 @@ export default function LocationList() {
                   name={location.name}
                   locationType={
                     locationTypeLabels.get(location.locationType) ??
-                    location.locationType
+                    "Тип не вказано"
                   }
                   rate={location.rate}
                 />

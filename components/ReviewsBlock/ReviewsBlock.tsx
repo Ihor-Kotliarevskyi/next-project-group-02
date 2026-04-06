@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useState, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
+import { ScaleLoader } from "react-spinners";
 
 import { FeedBackCard } from "@/components/FeedBackCard/FeedBackCard";
 import { Feedback } from "@/types/feedBackCard";
@@ -12,74 +14,63 @@ import styles from "./ReviewsBlock.module.css";
 
 const MAX_REVIEWS = 9;
 
+async function fetchReviews(): Promise<Feedback[]> {
+  const locRes = await clientApi.get("/locations", {
+    params: { page: 1, limit: 20 },
+  });
+  const locations: { _id: string }[] = locRes.data?.data ?? [];
+
+  const collected: Feedback[] = [];
+
+  for (const loc of locations) {
+    if (collected.length >= MAX_REVIEWS) break;
+    try {
+      const fbRes = await clientApi.get(`/locations/${loc._id}/feedbacks`, {
+        params: { page: 1, limit: MAX_REVIEWS - collected.length },
+      });
+      const feedbacks: Feedback[] = fbRes.data?.data ?? [];
+      collected.push(...feedbacks);
+    } catch {
+      /* skip failed location feedbacks */
+    }
+  }
+
+  const unique = Array.from(
+    new Map(collected.map((r) => [r._id, r])).values()
+  );
+
+  return unique.sort(
+    (a, b) =>
+      new Date(b.createdAt ?? 0).getTime() -
+      new Date(a.createdAt ?? 0).getTime()
+  );
+}
+
 export default function ReviewsBlock() {
-  const [reviews, setReviews] = useState<Feedback[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [isBeginning, setIsBeginning] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
   const swiperRef = useRef<SwiperType | null>(null);
 
-  const fetchReviews = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const locRes = await clientApi.get("/locations", {
-        params: { page: 1, limit: 20 },
-      });
-      const locations: { _id: string }[] = locRes.data?.data ?? [];
-
-      const collected: Feedback[] = [];
-
-      for (const loc of locations) {
-        if (collected.length >= MAX_REVIEWS) break;
-        try {
-          const fbRes = await clientApi.get(`/locations/${loc._id}/feedbacks`, {
-            params: { page: 1, limit: MAX_REVIEWS - collected.length },
-          });
-          const feedbacks: Feedback[] = fbRes.data?.data ?? [];
-          collected.push(...feedbacks);
-        } catch {}
-      }
-
-      const unique = Array.from(
-        new Map(collected.map((r) => [r._id, r])).values()
-      );
-      const sorted = unique.sort(
-        (a, b) =>
-          new Date(b.createdAt ?? 0).getTime() -
-          new Date(a.createdAt ?? 0).getTime()
-      );
-      setReviews(sorted);
-    } catch {
-      setError("Не вдалося завантажити відгуки");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchReviews();
-  }, [fetchReviews]);
-
-  useEffect(() => {
-    const handler = () => fetchReviews();
-    window.addEventListener("review-added", handler);
-    return () => window.removeEventListener("review-added", handler);
-  }, [fetchReviews]);
+  const { data: reviews = [], isLoading, isError } = useQuery({
+    queryKey: ["latestReviews"],
+    queryFn: fetchReviews,
+  });
 
   return (
     <section className={styles.section}>
       <h2 className={styles.title}>Останні відгуки</h2>
 
-      {loading && <p className={styles.loading}>Завантаження відгуків...</p>}
-      {error && <p className={styles.error}>{error}</p>}
-      {!loading && !error && reviews.length === 0 && (
+      {isLoading && (
+        <div className={styles.loading}>
+          <ScaleLoader color="#E76F51" aria-label="Завантаження" />
+        </div>
+      )}
+      {isError && <p className={styles.error}>Не вдалося завантажити відгуки</p>}
+      {!isLoading && !isError && reviews.length === 0 && (
         <p className={styles.empty}>Відгуків поки немає</p>
       )}
 
-      {!loading && !error && reviews.length > 0 && (
+      {!isLoading && !isError && reviews.length > 0 && (
         <div className={styles.swiperContainer}>
           <Swiper
             modules={[Navigation]}

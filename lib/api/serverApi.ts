@@ -1,7 +1,7 @@
-import { cookies } from "next/headers";
-import { api } from "./api";
-import type { User } from "@/types/user";
-import type { Location, NewLocation } from "@/types/location";
+import { cookies } from 'next/headers';
+import { api } from './api';
+import type { User } from '@/types/user';
+import type { Location, NewLocation } from '@/types/location';
 
 export const getMeServer = async (): Promise<User> => {
   const cookieStore = await cookies();
@@ -47,10 +47,8 @@ export const getLocationByIdServer = async (id: string): Promise<Location> => {
   return data;
 };
 
-export const createLocationServer = async (
-  location: NewLocation
-): Promise<Location> => {
-  const { data } = await api.post<Location>("/locations", location);
+export const createLocationServer = async (location: NewLocation): Promise<Location> => {
+  const { data } = await api.post<Location>('/locations', location);
   return data;
 };
 
