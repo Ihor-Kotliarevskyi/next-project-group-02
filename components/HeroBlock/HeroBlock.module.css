@@ -4,13 +4,12 @@
   align-items: center;
   justify-content: center;
   padding: 173px 0;
-  
 }
 
 .heroContainer {
   max-width: 375px;
-  /*margin: 0 auto;*/
-padding-left: var(--container-padding-mobile);
+  margin: 0 auto;
+  padding-left: var(--container-padding-mobile);
   padding-right: var(--container-padding-mobile);
 }
 
@@ -44,7 +43,7 @@ padding-left: var(--container-padding-mobile);
 .heroContent p {
   font-size: 16px;
   line-height: 1.5;
-letter-spacing: 0%;
+  letter-spacing: 0%;
   font-weight: 500;
   margin-bottom: 32px;
   opacity: 0.9;
@@ -63,18 +62,18 @@ letter-spacing: 0%;
   border-radius: 6px;
   border: 1px solid transparent;
   outline: none;
-  /*width: 100%;*/
+  /* width: 100%; */
   font-weight: 400;
   line-height: 1.5;
   letter-spacing: 0%;
   background-color: #ffe5d9;
-color: #00000099;
+  color: #00000099;
   transition: all 0.25s ease;
 }
 
 .heroSearch button {
   font-size: 16px;
-   line-height: 1.5;
+  line-height: 1.5;
   letter-spacing: 0%;
   font-weight: 500;
   padding: 8px;
@@ -96,21 +95,17 @@ color: #00000099;
   color: black;
 }
 
-/* Tablet */
 @media screen and (min-width: 768px) {
-
   .hero {
-  padding-bottom: 215px;
-   padding-top: 215px;
-  
-}
+    padding-top: 215px;
+    padding-bottom: 215px;
+  }
 
-.heroContainer {
-max-width: 768px;
-padding-left: var(--container-padding-tablet);
-  padding-right: var(--container-padding-tablet);
-
-}
+  .heroContainer {
+    max-width: 768px;
+    padding-left: var(--container-padding-tablet);
+    padding-right: var(--container-padding-tablet);
+  }
 
   .heroContent h1 {
     font-size: 48px;
@@ -130,21 +125,19 @@ padding-left: var(--container-padding-tablet);
   }
 
   .heroSearch button {
- padding: 8px 12px;
-}
-}
-
-/* Desktop */
-@media screen and (min-width: 1440px) {
-  .hero{
-    padding: 235px 0px;
-
+    padding: 8px 12px;
   }
+}
+
+@media screen and (min-width: 1440px) {
+  .hero {
+    padding: 235px 0px;
+  }
+
   .heroContainer {
     max-width: 1440px;
     padding-left: var(--container-padding-desktop);
-  padding-right: var(--container-padding-desktop);
-
+    padding-right: var(--container-padding-desktop);
   }
 
   .heroContent h1 {
@@ -155,11 +148,11 @@ padding-left: var(--container-padding-tablet);
     font-size: 20px;
   }
 
-   .heroSearch input {
+  .heroSearch input {
     font-size: 18px;
   }
 
-   .heroSearch button {
- font-size: 20px;
-}
+  .heroSearch button {
+    font-size: 20px;
+  }
 }

@@ -28,39 +28,33 @@ export default function HeroBlock() {
 
   return (
     <section className={styles.hero}>
-
       <div className={styles.heroContainer}>
-      <Image
-        src="/images/hero-bg.png"
-        alt="Nature"
-        fill
-        priority
-        className={styles.heroImage}
-      />
-
-      <div className={styles.heroOverlay} />
-
-      <div className={styles.heroContent}>
-        <h1>Відкрий для себе Україну. Знайди ідеальне місце для відпочинку</h1>
-
-        <p>
-          Тисячі перевірених локацій з реальними фото та відгуками від
-          мандрівників.
-        </p>
-
-        <div className={styles.heroSearch}>
-          <input
-            type="text"
-            placeholder="Введіть назву, тип або регіон..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
-          />
-
-          <button onClick={handleSearch}>Знайти місце</button>
+        <Image
+          src="/images/hero-bg.png"
+          alt="Nature"
+          fill
+          priority
+          className={styles.heroImage}
+        />
+        <div className={styles.heroOverlay} />
+        <div className={styles.heroContent}>
+          <h1>Відкрий для себе Україну. Знайди ідеальне місце для відпочинку</h1>
+          <p>
+            Тисячі перевірених локацій з реальними фото та відгуками від
+            мандрівників.
+          </p>
+          <div className={styles.heroSearch}>
+            <input
+              type="text"
+              placeholder="Введіть назву, тип або регіон..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+            <button onClick={handleSearch}>Знайти місце</button>
+          </div>
         </div>
       </div>
-       </div>
     </section>
   );
 }

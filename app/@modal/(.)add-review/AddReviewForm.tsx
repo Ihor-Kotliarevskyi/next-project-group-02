@@ -61,13 +61,12 @@ export default function AddReviewForm({ locationId }: { locationId: string }) {
       const review = extractCreatedReview(payload, fallbackReview);
 
       queryClient.invalidateQueries({ queryKey: ["latestReviews"] });
-      window.dispatchEvent(
-        new CustomEvent<ReviewAddedDetail>("review-added", {
-          detail: { review },
-        })
-      );
+      window.dispatchEvent(new Event("review-added"));
       toast.success("Відгук додано!");
-      setTimeout(() => router.back(), 100);
+      setTimeout(() => {
+        router.back();
+        router.refresh();
+      }, 100);
     },
     onError: () => toast.error("Помилка. Спробуйте ще раз."),
   });
