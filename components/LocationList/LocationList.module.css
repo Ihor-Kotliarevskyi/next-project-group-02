@@ -1,22 +1,22 @@
-﻿.section {
+.section {
   background: #fff2ec;
-  padding: 32px 20px 64px;
+  padding-bottom: 48px;
 }
 
 .container {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 40px;
+  gap: clamp(34.13px, calc(40 / 375 * 100vw), 40px);
   width: 100%;
   margin: 0 auto;
-  padding: 0;
+  padding-inline: clamp(17.07px, calc(20 / 375 * 100vw), 20px);
 }
 
 .title {
-  margin: 0 0 32px;
+  margin: 0 0 clamp(34.13px, calc(40 / 375 * 100vw), 40px);
   color: #1f1f1f;
-  font-size: 36px;
+  font-size: clamp(30.72px, calc(36 / 375 * 100vw), 36px);
   line-height: 1.08;
   font-weight: 700;
   text-align: center;
@@ -40,26 +40,29 @@
 }
 
 @media (min-width: 375px) {
-  .section {
-    width: 100%;
-    padding: 40px 20px 64px;
+  .container {
+    max-width: 375px;
+    gap: 40px;
+    padding-inline: 20px;
   }
-}
-.title {
-  font-size: 42px;
+
+  .title {
+    font-size: 42px;
+    margin-bottom: 40px;
+  }
 }
 
 @media (min-width: 768px) {
   .section {
-    padding: 48px 0 72px;
+    padding-bottom: 60px;
   }
 
   .container {
-    padding: 0 32px;
+    max-width: 768px;
+    padding-inline: 32px;
   }
 
   .title {
-    margin-bottom: 40px;
     font-size: 56px;
   }
 
@@ -70,21 +73,20 @@
 
 @media (min-width: 1440px) {
   .section {
-    padding: 48px 0 72px;
+    padding-bottom: 72px;
   }
 
   .container {
-    max-width: 1568px;
-    padding: 0 64px;
+    max-width: 1440px;
+    padding-inline: 64px;
+    margin-inline: auto;
   }
 
   .title {
-    margin-bottom: 24px;
     font-size: 64px;
   }
 
   .grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 24px;
   }
 }

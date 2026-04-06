@@ -61,12 +61,12 @@
   background: var(--color-slider-normal);
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 6px;
-  overflow: hidden;
   z-index: 10;
-  overflow-y: auto;
   opacity: 0;
   transform: translateY(-5px);
   transition: all 0.2s ease;
+  overflow-y: auto;
+  max-height: 400px;
 }
 
 .selectWrapper:hover .dropdown,
@@ -79,6 +79,7 @@
   padding: 10px;
   cursor: pointer;
   transition: background 0.2s ease;
+  white-space: nowrap;
 }
 
 .option:hover {
@@ -157,7 +158,8 @@
 
 .textarea {
   min-height: 180px;
-  resize: vertical;
+  resize: none;
+  overflow: hidden;
 }
 
 .inputError {
@@ -180,6 +182,7 @@
   display: flex;
   gap: 16px;
   width: 100%;
+  margin-top: 36px;
 }
 
 .locationSubmit {
@@ -260,7 +263,8 @@
 
 @media (min-width: 375px) {
   .containerLocationForm {
-    margin: 0px 20px;
+    padding: 0px 20px;
+    max-width: 375px;
   }
 
   .locationFormTitle {
@@ -274,7 +278,6 @@
     flex-direction: column;
     gap: 16px;
     padding-bottom: 64px;
-    margin-top: 60px;
   }
 
   .locationSubmit,
@@ -282,19 +285,15 @@
     width: 100%;
   }
 
-  /* .buttonGroup {
-    flex-direction: column;
-    align-items: center;
-    justify-content: stretch;
-    padding: 36px 0px 0px;
-    margin-bottom: 64px;
-  } */
+  .dropdown {
+    max-height: 300px;
+  }
 }
 
 @media (min-width: 768px) {
   .containerLocationForm {
-    padding-left: 32px;
-    padding-right: 32px;
+    padding: 0 32px;
+    max-width: 768px;
   }
 
   .locationFormTitle {
@@ -305,15 +304,16 @@
   }
 
   .buttonGroup {
-    align-items: stretch;
+    align-items: flex-start;
     flex-direction: row;
-    margin-bottom: 72px;
-    max-width: 423px;
+    padding-bottom: 72px;
+    padding-right: 280px;
   }
 }
 
 @media (min-width: 1440px) {
   .containerLocationForm {
+    max-width: 1440px;
     padding-left: 64px;
     padding-right: 285px;
   }
@@ -329,10 +329,15 @@
     align-items: flex-start;
     flex-direction: row;
     min-height: 84px;
-    margin-bottom: 72px;
+    padding-bottom: 72px;
+    padding-right: 668px;
   }
 
   .label {
     font-size: 18px;
+  }
+
+  .photoPreview {
+    max-width: 1091px;
   }
 }

@@ -26,10 +26,18 @@ export const getLocations = (params?: {
   region?: string;
   locationType?: string;
   search?: string;
-}) =>
-  clientApi
-    .get("/locations", { params })
+  sort?: string;
+}) => {
+  const cleanParams = Object.fromEntries(
+    Object.entries(params ?? {}).filter(
+      ([, v]) => v !== "" && v !== undefined,
+    ),
+  );
+
+  return clientApi
+    .get("/locations", { params: cleanParams })
     .then((r) => ({ locations: r.data.data, pagination: r.data.pagination }));
+};
 
 export const getRegions = () =>
   clientApi.get("/categories/regions").then((r) => r.data.data ?? r.data);

@@ -29,44 +29,20 @@
 
 .stars {
   display: flex;
+  gap: 4px;
 }
 
-.starOn,
-.starOff,
-.starHalf {
-  background: none;
-  border: none;
+.starBtn {
   width: 32px;
   height: 32px;
+  border: none;
+  background: none;
   padding: 0;
-  margin: 0;
   cursor: pointer;
+
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.star {
-  width: 22.55px;
-  height: 22.65px;
-  font-size: 22.5px;
-  line-height: 22.65px;
-  color: transparent;
-  -webkit-text-stroke: 3px black;
-  -webkit-text-stroke-linejoin: round;
-}
-
-/* повне заповнення */
-.starOn .star {
-  color: black;
-  -webkit-text-stroke: 3px black;
-}
-
-/* пів-зірочка */
-.starHalf .star {
-  background: linear-gradient(to right, black 50%, transparent 50%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 
 
@@ -132,13 +108,8 @@ justify-content: center;
   border-color: #a0522d;
 }
 
-.cancel:hover {
-  background-color: var(--color-button-primary);
-  border-color: var(--color-button-primary);
-  color: var(--color-bg-white);
-}
-
 .submit:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
+

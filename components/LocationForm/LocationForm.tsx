@@ -90,8 +90,14 @@ export default function LocationForm({
         : await createLocation(payload);
 
       router.push(`/locations/${data._id}`);
+      router.refresh();
     } catch {
-      toast.error("Не вдалося зберегти");
+      if (isEdit) {
+        toast.error("Не вдалося зберегти зміни. Спробуйте ще раз.");
+        
+      } else {
+        toast.error("Не вдалося створити локацію. Зареєструйтеся або увійдіть.");
+      }
     } finally {
       setSubmitting(false);
     }
@@ -141,10 +147,13 @@ export default function LocationForm({
           onSubmit={handleSubmit}
           enableReinitialize
           validateOnMount
+          validateOnChange
+validateOnBlur
         >
           {({
             resetForm,
             setFieldValue,
+            setFieldTouched,
             isSubmitting,
             errors,
             touched,
@@ -170,6 +179,7 @@ export default function LocationForm({
                       hidden
                       onChange={(e) => {
                         const file = e.target.files?.[0];
+                        setFieldTouched("imageFile", true); 
                         if (file) {
                           setFieldValue("imageFile", file);
                           setImagePreview(URL.createObjectURL(file));
@@ -259,6 +269,7 @@ export default function LocationForm({
                         onClick={() => {
                           setIsTypeOpen((prev) => !prev);
                           setIsRegionOpen(false);
+                          setFieldTouched("locationType", true);
                         }}
                       >
                         {selectedLabel || "Оберіть тип місця"}
@@ -323,6 +334,7 @@ export default function LocationForm({
                         onClick={() => {
                           setIsRegionOpen(true);
                           setIsTypeOpen(false);
+                          setFieldTouched("region", true);
                         }}
                       >
                         {regions.find((r) => r.slug === values.region)
@@ -366,7 +378,12 @@ export default function LocationForm({
                       id="description"
                       name="description"
                       placeholder="Детальний опис локації"
-                      maxLength={600}
+                      maxLength={6000}
+                      onInput={(e: React.FormEvent<HTMLTextAreaElement>) => {
+                        const target = e.currentTarget;
+                        target.style.height = "auto";
+                        target.style.height = target.scrollHeight + "px";
+                      }}
                     />
                     <ErrorMessage
                       className={css.errorMessage}

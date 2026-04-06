@@ -2,11 +2,12 @@
   background-color: var(--color-bg-footer);
   border-top: 1px solid var(--color-border);
   width: 100%;
-  padding-bottom: 80px;
 }
 
-.footerContainer {
-  margin: 48px 20px;
+.container {
+  max-width: 375px;
+  padding: 48px 20px;
+  margin: 0 auto;
 }
 
 .logoWrapper {
@@ -67,7 +68,6 @@
 }
 
 
-/* ─── Tablet ─── */
 @media (min-width: 768px) {
   .footerContainer {
     margin: 48px 32px;
@@ -75,7 +75,6 @@
   .inner {
     flex-direction: row;
     justify-content: space-between;
-    /* padding: 24px;var(--container-padding-tablet);  */
     padding-left: 0;
     padding-right: 0;
     margin-bottom: 24px;
@@ -92,9 +91,13 @@
     width: 100%;
     justify-content: center;
   }
+  .container {
+    max-width: 768px;
+    margin: 0 auto;
+    padding: 48px 32px;
+  }
 }
 
-/* ─── Desktop ─── */
 @media (min-width: 1440px) {
 
   .footerContainer {

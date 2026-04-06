@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -8,6 +8,7 @@ import type { Swiper as SwiperType } from "swiper";
 
 import { FeedBackCard } from "@/components/FeedBackCard/FeedBackCard";
 import { Feedback } from "@/types/feedBackCard";
+import { ReviewAddedDetail } from "@/types/reviewEvents";
 import { getFeedbacks } from "@/lib/api/feedbacks";
 import styles from "./ReviewsSection.module.css";
 
@@ -35,6 +36,10 @@ function sortByNewest(reviews: Feedback[]): Feedback[] {
       new Date(b.createdAt ?? 0).getTime() -
       new Date(a.createdAt ?? 0).getTime()
   );
+}
+
+function prependReview(reviews: Feedback[], review: Feedback): Feedback[] {
+  return sortByNewest(dedupeReviews([review, ...reviews]));
 }
 
 function extractPageReviews(payload: unknown): Feedback[] {
@@ -132,6 +137,7 @@ export default function ReviewsSection({
       if (totalPagesRef.current !== null && pageNum > totalPagesRef.current) {
         return;
       }
+
       try {
         isFetchingRef.current = true;
         setIsFetching(true);
@@ -191,9 +197,34 @@ export default function ReviewsSection({
   }, [locationId, initialUniqueReviews, resetWithInitialReviews, fetchPage]);
 
   useEffect(() => {
-    const handler = () => {
+    const handler = (event: Event) => {
+      const detail = (event as CustomEvent<ReviewAddedDetail | undefined>).detail;
+      const newReview = detail?.review;
+
+      if (newReview?._id) {
+        setReviews((prev) => prependReview(prev, newReview));
+        setError(null);
+        setReady(true);
+        setTotalPages((prev) => {
+          const nextTotalPages = prev === 1 ? null : prev;
+          totalPagesRef.current = nextTotalPages;
+          return nextTotalPages;
+        });
+
+        if (!loadedPagesRef.current.includes(1)) {
+          loadedPagesRef.current = [1];
+          setLoadedPages([1]);
+        }
+
+        requestAnimationFrame(() => {
+          swiperRef.current?.slideTo(0, 300);
+        });
+        return;
+      }
+
       void refreshReviews();
     };
+
     window.addEventListener("review-added", handler);
     return () => window.removeEventListener("review-added", handler);
   }, [refreshReviews]);

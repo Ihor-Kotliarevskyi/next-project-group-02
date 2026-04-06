@@ -11,7 +11,7 @@ export default function Footer() {
   };
   return (
     <footer className={css.footer}>
-      <div className={css.footerContainer}>
+      <div className={css.container}>
         <div className={css.inner}>
           <button
             onClick={handleScrollToTop}

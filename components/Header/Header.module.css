@@ -18,9 +18,9 @@
     align-items: center;
     justify-content: space-between;
     height: 100%;
-    padding: 16px 64px;
+    padding: 16px 20px;
     margin: 0 auto;
-    max-width: var(--container-max);
+    max-width: 375px;
 }
 
 .rightSide {
@@ -237,7 +237,7 @@
   top: 72px;
   left: 0;
   width: 100%;
-  height: 100vh;
+  height: calc(100dvh - 72px);
   z-index: 9998;
 }
 
@@ -284,7 +284,7 @@
     transition: var(--transition-base);
     }
     
-    .mobilLlocationAdd:hover {
+    .mobileLocationAdd:hover {
         color: var(--color-text-main);
         background-color: var(--color-button-primary-hover);
     }
@@ -383,6 +383,7 @@
 /* ─── Tablet ─────────────────── */
 @media (min-width: 768px) {
     .inner {
+        max-width: 768px;
         padding: 0 var(--container-padding-tablet);
     }
 
@@ -419,6 +420,7 @@
 /* ─── Desktop ────────────────── */
 @media (min-width: 1440px) {
     .inner {
+        max-width: 1440px;
         padding: 0 var(--container-padding-desktop);
     }
 
@@ -443,15 +445,9 @@
     .mobileMenu {
         display: none;
     }
-    .profilePage {
-        display: block;
-    }
-    .avatar {
-        display: block;
-    }
-    .userName {
-        display: block;
-    }
+    .profilePage,
+    .avatar,
+    .userName,
     .exitHeader {
         display: block;
     }
