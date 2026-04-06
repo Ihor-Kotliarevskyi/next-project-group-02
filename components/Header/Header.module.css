@@ -237,12 +237,13 @@
   top: 72px;
   left: 0;
   width: 100%;
+  height: 100vh;
   z-index: 9998;
 }
 
 .mobileAuth {
     display: flex;
-    margin-bottom: 92px;
+    /* margin-bottom: 92px; */
 }
 
 .mobileLink {
@@ -264,8 +265,8 @@
 }
 
 .mobileDivider {
-  height: 50px;
-  /* flex-grow: 12; */
+  height: 80px;
+  /* flex-grow: 1; */
   background-color: var(--color-border);
   margin: 8px 0;
 }
@@ -441,6 +442,18 @@
 
     .mobileMenu {
         display: none;
+    }
+    .profilePage {
+        display: block;
+    }
+    .avatar {
+        display: block;
+    }
+    .userName {
+        display: block;
+    }
+    .exitHeader {
+        display: block;
     }
 
 }
