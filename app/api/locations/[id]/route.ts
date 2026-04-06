@@ -58,3 +58,33 @@ export async function PATCH(
     );
   }
 }
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const cookie = req.headers.get("cookie") || "";
+
+    const { data } = await api.delete(`/locations/${id}`, {
+      headers: {
+        Cookie: cookie,
+      },
+    });
+
+    return NextResponse.json(data);
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.response?.status ?? 500 }
+      );
+    }
+
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}

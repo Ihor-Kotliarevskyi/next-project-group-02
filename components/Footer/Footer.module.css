@@ -69,8 +69,9 @@
 
 
 @media (min-width: 768px) {
-  .footerContainer {
-    margin: 48px 32px;
+  .container {
+    max-width: 768px;
+    padding: 48px 32px;
   }
   .inner {
     flex-direction: row;
@@ -100,9 +101,11 @@
 
 @media (min-width: 1440px) {
 
-  .footerContainer {
-      margin: 80px 64px;
+  .container {
+    max-width: 1440px;
+    padding: 80px 64px;
     }
+
   .inner {
     padding: 0;
     flex-wrap: nowrap;

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -31,7 +31,7 @@ export default function LocationList() {
   const sort = searchParams.get("sort") ?? "";
   const page = Number(searchParams.get("page") ?? "1");
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isFetching } = useQuery({
     queryKey: ["locations", search, region, locationType, sort, page],
     queryFn: () =>
       getLocations({

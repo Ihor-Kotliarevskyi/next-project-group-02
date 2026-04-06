@@ -1,8 +1,8 @@
-﻿"use client";
+"use client";
 
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { createFeedback, getMe } from "@/lib/api/clientApi";
@@ -44,8 +44,9 @@ function StarIcon({ type }: { type: "full" | "half" | "empty" }) {
 
 export default function AddReviewForm({ locationId }: { locationId: string }) {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
-  const { data: me } = useQuery({ queryKey: ["me"], queryFn: getMe });
+  const { data: me } = useQuery({ queryKey: ["currentUser"], queryFn: getMe });
 
   const mutation = useMutation({
     mutationFn: (values: { rating: number; comment: string }) =>
@@ -53,9 +54,14 @@ export default function AddReviewForm({ locationId }: { locationId: string }) {
         ...values,
         userName: me?.name ?? "Анонім",
       }),
-    onSuccess: () => {
-      window.dispatchEvent(new Event("review-added"));
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+      queryClient.invalidateQueries({ queryKey: ["locations", locationId] });
+      queryClient.invalidateQueries({ queryKey: ["location", locationId] });
+      
+      window.dispatchEvent(new CustomEvent("review-added", { detail: { review: data } }));
       toast.success("Відгук додано!");
+      router.refresh();
       setTimeout(() => router.back(), 100);
     },
     onError: () => toast.error("Помилка. Спробуйте ще раз."),
