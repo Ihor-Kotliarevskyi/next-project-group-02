@@ -137,53 +137,61 @@ export default function Header() {
                 Мій профіль
               </Link>
 
-              <div className={css.mobileDivider} />
-
-              <Link href="/locations/add" className={css.mobileLocationAdd}>
-                Поділитись локацією
-              </Link>
-              <div className={css.mobileAuth}>
-                <Link href={`/profile`} className={css.mobileProfileLink}>
-                  {user.avatarUrl ? (
+              {/* <div className={css.mobileDivider} /> */}
+              <div className={css.mobileAuthContainer}>
+                <Link href="/locations/add" className={css.mobileLocationAdd}>
+                  Поділитись локацією
+                </Link>
+                <div className={css.mobileAuth}>
+                  <Link href={`/profile`} className={css.mobileProfileLink}>
+                    {user.avatarUrl ? (
+                      <Image
+                        src={user.avatarUrl}
+                        alt={user.name}
+                        className={css.mobileAvatar}
+                        width={32}
+                        height={32}
+                      />
+                    ) : (
+                      <span className={css.mobileAvatarFallback}>
+                        {user.name.charAt(0).toUpperCase()}
+                      </span>
+                    )}
+                    <span className={css.mobileUserName}>{user.name}</span>
+                  </Link>
+                  <Link
+                    href="/logout-confirm"
+                    className={css.mobileLink}
+                    onClick={closeMenu}
+                  >
                     <Image
-                      src={user.avatarUrl}
-                      alt={user.name}
-                      className={css.mobileAvatar}
-                      width={32}
-                      height={32}
+                      src="/logout.svg"
+                      alt="Exit"
+                      width={24}
+                      height={24}
                     />
-                  ) : (
-                    <span className={css.mobileAvatarFallback}>
-                      {user.name.charAt(0).toUpperCase()}
-                    </span>
-                  )}
-                  <span className={css.mobileUserName}>{user.name}</span>
-                </Link>
-                <Link
-                  href="/logout-confirm"
-                  className={css.mobileLink}
-                  onClick={closeMenu}
-                >
-                  <Image src="/logout.svg" alt="Exit" width={24} height={24} />
-                </Link>
+                  </Link>
+                </div>
               </div>
             </>
           ) : (
-            <div className={css.mobileNotAuth}>
-              <Link
-                href="/login"
-                className={css.mobileLinkLog}
-                onClick={closeMenu}
-              >
-                Вхід
-              </Link>
-              <Link
-                href="/register"
-                className={css.mobileLinkRegistration}
-                onClick={closeMenu}
-              >
-                Реєстрація
-              </Link>
+            <div className={css.mobileGuestContainer}>
+              <div className={css.mobileNotAuth}>
+                <Link
+                  href="/login"
+                  className={css.mobileLinkLog}
+                  onClick={closeMenu}
+                >
+                  Вхід
+                </Link>
+                <Link
+                  href="/register"
+                  className={css.mobileLinkRegistration}
+                  onClick={closeMenu}
+                >
+                  Реєстрація
+                </Link>
+              </div>
             </div>
           )}
         </div>
