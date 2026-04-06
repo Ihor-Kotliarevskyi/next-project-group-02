@@ -2,11 +2,12 @@
   background-color: var(--color-bg-footer);
   border-top: 1px solid var(--color-border);
   width: 100%;
-  padding-bottom: 80px;
 }
 
-.footerContainer {
-  margin: 48px 20px;
+.container {
+  max-width: 375px;
+  padding: 48px 20px;
+  margin: 0 auto;
 }
 
 .logoWrapper {
@@ -68,7 +69,6 @@
   margin: 0 auto;
 }
 
-/* ─── Tablet ─── */
 @media (min-width: 768px) {
   .inner {
     flex-direction: row;
@@ -83,9 +83,13 @@
     width: 100%;
     justify-content: center;
   }
+  .container {
+    max-width: 768px;
+    margin: 0 auto;
+    padding: 48px 32px;
+  }
 }
 
-/* ─── Desktop ─── */
 @media (min-width: 1440px) {
   .inner {
     padding: 24px var(--container-padding-desktop);
@@ -98,7 +102,10 @@
     width: auto;
     justify-content: flex-start;
   }
-  .footerContainer {
-    margin: 80px 64px;
+
+  .container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 80px 64px;
   }
 }
