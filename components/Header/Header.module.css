@@ -4,8 +4,6 @@
     left: 0;
     z-index: 999;
     background-color: var(--color-bg-page);
-    /* border-bottom: 1px solid var(--color-border); */
-    /* padding: 0px 64px; */
     width: 100%;
     height: 72px;
     margin-bottom: 0;
@@ -199,33 +197,28 @@
   border-radius: 999px;
   margin: 0 auto;
   transition:
-    transform var(--transition-base),
-    opacity var(--transition-base);
-  /* 0.3s ease */
-  /* transform-origin: center; */
+    transform 0.3s ease,
+    opacity 0.3s ease;
+  transform-origin: center;
 }
 
-/* коли меню відкрите
-.open .burgerLine:nth-child(1) {
-    transform: translateY(8px) rotate(45deg);
+/* коли меню відкрите*/
+
+
+.burgerOpen:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
 }
 
-.open .burgerLine:nth-child(2) {
+.burgerOpen:nth-child(2) {
     opacity: 0;
 }
 
-.open .burgerLine:nth-child(3) {
-    transform: translateY(-8px) rotate(-45deg);
-} */
+.burgerOpen:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+} 
 
 /* ─── Mobile Menu ─── */
-/* .nav {
-    display: none;
-}
 
-.auth {
-    display: none;
-} */
 .mobileMenu {
   display: flex;
   align-items: center;
@@ -266,7 +259,6 @@
 
 .mobileDivider {
   height: 80px;
-  /* flex-grow: 1; */
   background-color: var(--color-border);
   margin: 8px 0;
 }
@@ -377,9 +369,6 @@
 }
 
 
-
-
-
 /* ─── Tablet ─────────────────── */
 @media (min-width: 768px) {
     .inner {
@@ -428,8 +417,6 @@
         display: flex;
         align-items: center;
         gap: 32px;
-
-
     }
 
     .auth {
