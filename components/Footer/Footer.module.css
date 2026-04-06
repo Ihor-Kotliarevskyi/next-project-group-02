@@ -51,9 +51,7 @@
 .copy {
   max-width: var(--container-max);
   margin: 0 auto;
-  /* padding: 32px var(--container-padding-mobile); */
-  /* margin-top: 0; */
-  padding-top: 32px 0 0 0;
+  padding: 32px 0 0 0;
 
   text-align: center;
   font-family: var(--font-family);
