@@ -73,10 +73,8 @@
   .inner {
     flex-direction: row;
     justify-content: space-between;
-    /* padding: 24px;var(--container-padding-tablet);  */
     padding-left: 0;
     padding-right: 0;
-    /* margin: 48px 32px; */
     flex-wrap: wrap;
   }
   .footerNav {
