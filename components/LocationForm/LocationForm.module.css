@@ -133,7 +133,7 @@
 .formGroup {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 8px;
 }
 
 .locationInput {
@@ -262,6 +262,7 @@
 @media (min-width: 375px) {
   .containerLocationForm {
     padding: 0px 20px;
+    max-width: 375px;
   }
 
   .locationFormTitle {
@@ -290,6 +291,7 @@
 @media (min-width: 768px) {
   .containerLocationForm {
     padding: 0 32px;
+    max-width: 768px;
   }
 
   .locationFormTitle {
@@ -309,6 +311,7 @@
 
 @media (min-width: 1440px) {
   .containerLocationForm {
+    max-width: 1440px;
     padding-left: 64px;
     padding-right: 285px;
   }
@@ -330,5 +333,9 @@
 
   .label {
     font-size: 18px;
+  }
+
+  .photoPreview {
+    max-width: 1091px;
   }
 }
