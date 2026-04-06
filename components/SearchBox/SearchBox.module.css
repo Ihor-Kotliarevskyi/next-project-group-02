@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  margin: 0 0 40px;
+  margin-bottom: calc(40 * 100vw / 375);
 }
 
 .search {
@@ -59,6 +59,12 @@
 
 .search::placeholder {
   color: #4c4c4c;
+}
+
+@media (min-width: 375px) {
+  .wrapper {
+    margin-bottom: 0;
+  }
 }
 
 /* Tablet */
