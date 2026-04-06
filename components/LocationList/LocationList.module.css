@@ -1,5 +1,6 @@
-﻿.section {
+.section {
   background: #fff2ec;
+  padding-bottom: 48px;
 }
 
 .container {
@@ -52,6 +53,10 @@
 }
 
 @media (min-width: 768px) {
+  .section {
+    padding-bottom: 60px;
+  }
+
   .container {
     max-width: 768px;
     padding-inline: 32px;
@@ -67,6 +72,10 @@
 }
 
 @media (min-width: 1440px) {
+  .section {
+    padding-bottom: 72px;
+  }
+
   .container {
     max-width: 1440px;
     padding-inline: 64px;

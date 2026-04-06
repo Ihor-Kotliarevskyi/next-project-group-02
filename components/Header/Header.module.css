@@ -18,9 +18,9 @@
     align-items: center;
     justify-content: space-between;
     height: 100%;
-    padding: 16px 64px;
+    padding: 16px 20px;
     margin: 0 auto;
-    max-width: var(--container-max);
+    max-width: 375px;
 }
 
 .rightSide {
@@ -383,6 +383,7 @@
 /* ─── Tablet ─────────────────── */
 @media (min-width: 768px) {
     .inner {
+        max-width: 768px;
         padding: 0 var(--container-padding-tablet);
     }
 
@@ -419,6 +420,7 @@
 /* ─── Desktop ────────────────── */
 @media (min-width: 1440px) {
     .inner {
+        max-width: 1440px;
         padding: 0 var(--container-padding-desktop);
     }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import {
   getLocations,
@@ -21,25 +21,20 @@ export default function LocationList() {
   const region = searchParams.get("region") ?? "";
   const locationType = searchParams.get("locationType") ?? "";
   const sort = searchParams.get("sort") ?? "";
+  const page = Number(searchParams.get("page") ?? "1");
 
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useInfiniteQuery({
-      queryKey: ["locations", search, region, locationType, sort],
-      initialPageParam: 1,
-      queryFn: ({ pageParam }) =>
-        getLocations({
-          page: pageParam,
-          limit: 9,
-          region,
-          locationType,
-          search,
-          sort,
-        }),
-      getNextPageParam: (lastPage) =>
-        lastPage.pagination.page < lastPage.pagination.totalPages
-          ? lastPage.pagination.page + 1
-          : undefined,
-    });
+  const { data, isLoading } = useQuery({
+    queryKey: ["locations", search, region, locationType, sort, page],
+    queryFn: () =>
+      getLocations({
+        page,
+        limit: 9,
+        region,
+        locationType,
+        search,
+        sort,
+      }),
+  });
 
   const { data: regions = [] } = useQuery<{ slug: string; region: string }[]>({
     queryKey: ["regions"],
@@ -64,24 +59,10 @@ export default function LocationList() {
     [locationTypes],
   );
 
-  const locations = useMemo(() => {
-    const currentLocations = data?.locations ?? [];
-
-    if (sort === "name") {
-      return [...currentLocations].sort((a, b) =>
-        a.name.localeCompare(b.name, "uk"),
-      );
-    }
-
-    if (sort === "rate") {
-      return [...currentLocations].sort((a, b) => b.rate - a.rate);
-    }
-
-    return currentLocations;
-  }, [data?.locations, sort]);
+  const locations = (data?.locations as Location[]) ?? [];
 
   const totalPages = data?.pagination?.totalPages ?? 1;
-  const currentPage = data?.pagination?.page ?? page;
+  const currentPage = data?.pagination?.page ?? 1;
 
   return (
     <section className={styles.section}>

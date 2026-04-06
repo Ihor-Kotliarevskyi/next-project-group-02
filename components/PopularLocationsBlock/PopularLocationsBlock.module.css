@@ -10,7 +10,8 @@
   gap: 40px;
   padding: 64px 20px;
   width: 100%;
-  margin: 0;
+  max-width: 375px;
+  margin: 0 auto;
 }
 
 .topRow {
@@ -143,10 +144,10 @@
   cursor: not-allowed;
 }
 
-/* ─── Tablet ─── */
 @media (min-width: 768px) {
   .container {
     padding: 64px 32px;
+    max-width: 768px;
   }
 
   .title {
@@ -159,10 +160,10 @@
   }
 }
 
-/* ─── Desktop ─── */
 @media (min-width: 1440px) {
   .container {
     padding: 72px 64px;
+    max-width: 1440px;
   }
 
   .title {
