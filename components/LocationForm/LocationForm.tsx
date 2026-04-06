@@ -2,6 +2,7 @@
 
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import { useState, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import toast from "react-hot-toast";
@@ -34,6 +35,7 @@ export default function LocationForm({
   locationTypes,
 }: Props) {
   const isEdit = !!id;
+  const queryClient = useQueryClient();
   const router = useRouter();
   const placeholder = "/images/location-form-placeholder-image.jpg";
   const validationSchema = getLocationValidationSchema(isEdit);
@@ -89,6 +91,8 @@ export default function LocationForm({
         ? await updateLocation(id!, payload)
         : await createLocation(payload);
 
+
+      await queryClient.invalidateQueries({ queryKey: ["currentUser"] });
       router.push(`/locations/${data._id}`);
       router.refresh();
     } catch {
@@ -147,10 +151,13 @@ export default function LocationForm({
           onSubmit={handleSubmit}
           enableReinitialize
           validateOnMount
+          validateOnChange
+validateOnBlur
         >
           {({
             resetForm,
             setFieldValue,
+            setFieldTouched,
             isSubmitting,
             errors,
             touched,
@@ -176,6 +183,7 @@ export default function LocationForm({
                       hidden
                       onChange={(e) => {
                         const file = e.target.files?.[0];
+                        setFieldTouched("imageFile", true); 
                         if (file) {
                           setFieldValue("imageFile", file);
                           setImagePreview(URL.createObjectURL(file));
@@ -265,6 +273,7 @@ export default function LocationForm({
                         onClick={() => {
                           setIsTypeOpen((prev) => !prev);
                           setIsRegionOpen(false);
+                          setFieldTouched("locationType", true);
                         }}
                       >
                         {selectedLabel || "Оберіть тип місця"}
@@ -329,6 +338,7 @@ export default function LocationForm({
                         onClick={() => {
                           setIsRegionOpen(true);
                           setIsTypeOpen(false);
+                          setFieldTouched("region", true);
                         }}
                       >
                         {regions.find((r) => r.slug === values.region)

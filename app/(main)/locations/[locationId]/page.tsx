@@ -83,6 +83,13 @@ function normalizeFeedback(payload: unknown): Feedback | null {
     : null;
 }
 
+function calculateAverageRate(reviews: Feedback[], fallbackRate: number): number {
+  if (reviews.length === 0) return fallbackRate;
+
+  const totalRate = reviews.reduce((sum, review) => sum + review.rate, 0);
+  return Number((totalRate / reviews.length).toFixed(1));
+}
+
 async function getLocationById(id: string): Promise<LocationDetails | null> {
   try {
     const { data } = await api.get<LocationDetails>(`/locations/${id}`);
@@ -101,6 +108,21 @@ async function getLocationById(id: string): Promise<LocationDetails | null> {
   }
 }
 
+async function getFeedbacksByIds(feedbackIds: string[]): Promise<Feedback[]> {
+  const feedbacks = await Promise.all(
+    feedbackIds.map(async (feedbackId) => {
+      try {
+        const { data } = await api.get(`/feedbacks/${feedbackId}`);
+        return normalizeFeedback(data);
+      } catch {
+        return null;
+      }
+    })
+  );
+
+  return feedbacks.filter((review): review is Feedback => review !== null);
+}
+
 async function getLocationFeedbacks(
   id: string,
   feedbackIds: string[] = []
@@ -113,20 +135,7 @@ async function getLocationFeedbacks(
       return reviews;
     }
 
-    const fallbackFeedbacks = await Promise.all(
-      feedbackIds.map(async (feedbackId) => {
-        try {
-          const { data: feedbackData } = await api.get(`/feedbacks/${feedbackId}`);
-          return normalizeFeedback(feedbackData);
-        } catch {
-          return null;
-        }
-      })
-    );
-
-    return fallbackFeedbacks.filter(
-      (review): review is Feedback => review !== null
-    );
+    return getFeedbacksByIds(feedbackIds);
   } catch {
     return [];
   }
@@ -152,15 +161,24 @@ export default async function LocationPage({ params }: PageProps) {
     notFound();
   }
 
-  const initialReviews = await getLocationFeedbacks(
-    locationId,
-    location.feedbacksId ?? []
-  );
+  const feedbackIds = location.feedbacksId ?? [];
+  const [initialReviews, allReviews] = await Promise.all([
+    getLocationFeedbacks(locationId, feedbackIds),
+    feedbackIds.length > 0 ? getFeedbacksByIds(feedbackIds) : Promise.resolve([]),
+  ]);
+
+  const locationWithActualRate: LocationDetails = {
+    ...location,
+    rate: calculateAverageRate(
+      allReviews.length > 0 ? allReviews : initialReviews,
+      location.rate
+    ),
+  };
 
   return (
     <main className={styles.page}>
       <LocationDetailsClient
-        location={location}
+        location={locationWithActualRate}
         locationId={locationId}
         isAuthenticated={isAuthorized}
         initialReviews={initialReviews}

@@ -11,9 +11,13 @@ export default function Footer() {
   };
   return (
     <footer className={css.footer}>
-      <div className={css.footerContainer}>
+      <div className={css.container}>
         <div className={css.inner}>
-          <button onClick={handleScrollToTop} className={css.logoWrapper} aria-label="Scroll to top">
+          <button
+            onClick={handleScrollToTop}
+            className={css.logoWrapper}
+            aria-label="Scroll to top"
+          >
             <Logo />
           </button>
           <ul className={css.socials}>
@@ -76,9 +80,8 @@ export default function Footer() {
             </li>
           </ul>
         </div>
-        <hr className={css.line} />
         <div className={css.copy}>
-          <p>
+          <p className={css.copyText}>
             &copy; {new Date().getFullYear()} Природні Мандри. Усі права
             захищені.
           </p>
