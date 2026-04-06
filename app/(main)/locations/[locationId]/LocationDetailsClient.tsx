@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import ReviewsSection from "@/components/ReviewsSection/ReviewsSection";
 import { Feedback } from "@/types/feedBackCard";
+import LocationMapWrapper from "./LocationMapWrapper";
 import { ReviewAddedDetail } from "@/types/reviewEvents";
 import { locationTypeLabels, regionLabels } from "@/utils/labels";
 import styles from "./page.module.css";
@@ -25,6 +26,7 @@ type LocationDetailsViewModel = {
   description: string;
   ownerId?: string | Owner;
   feedbacksId?: string[];
+  coordinates?: { lat: number; lon: number };
 };
 
 type Props = {
@@ -204,6 +206,10 @@ export default function LocationDetailsClient({
           <p className={styles.description}>{location.description}</p>
         </div>
       </article>
+      <LocationMapWrapper
+        coordinates={location.coordinates}
+        locationName={location.name}
+      />
       <ReviewsSection
         locationId={locationId}
         isAuthenticated={isAuthenticated}

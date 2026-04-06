@@ -32,8 +32,19 @@
 
 .socials {
   display: flex;
+  align-items: center;
   list-style-type: none;
   gap: 12px;
+}
+
+.socials li {
+  display: flex;
+  align-items: center;
+}
+
+.socials a {
+  display: flex;
+  align-items: center;
 }
 
 .footerNav {
@@ -102,30 +113,27 @@
 }
 
 @media (min-width: 1440px) {
-
   .container {
     max-width: 1440px;
     padding: 80px 64px;
-    }
+  }
 
   .inner {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
     padding: 0;
     flex-wrap: nowrap;
-    align-items: center;
-    /* padding-left: 0;
-    padding-right: 0; */
   }
+
   .copy {
     padding: 0;
   }
+
   .footerNav {
     flex-direction: row;
     gap: 24px;
     width: auto;
-    justify-content: flex-start;
+    justify-content: flex-end;
   }
-  .container {
-    padding: 80px 64px;
-  }
-
 }
