@@ -21,7 +21,7 @@ export default function LocationList() {
   const region = searchParams.get("region") ?? "";
   const locationType = searchParams.get("locationType") ?? "";
   const sort = searchParams.get("sort") ?? "";
-  const page = Number(searchParams.get("page") ?? "1");
+  const page = Math.max(1, Number(searchParams.get("page")) || 1);
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ["locations", search, region, locationType, sort, page],
