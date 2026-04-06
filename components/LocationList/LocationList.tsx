@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import {
@@ -24,12 +24,21 @@ export default function LocationList() {
   const order = searchParams.get("order") || "asc";
   const page = Number(searchParams.get("page") ?? "1");
 
+  const [limit, setLimit] = useState(6);
+  useEffect(() => {
+    const mql = window.matchMedia("(min-width: 1440px)");
+    setLimit(mql.matches ? 9 : 6);
+    const handler = (e: MediaQueryListEvent) => setLimit(e.matches ? 9 : 6);
+    mql.addEventListener("change", handler);
+    return () => mql.removeEventListener("change", handler);
+  }, []);
+
   const { data, isLoading, isFetching } = useQuery({
-    queryKey: ["locations", search, region, locationType, sortBy, order, page],
+    queryKey: ["locations", search, region, locationType, sortBy, order, page, limit],
     queryFn: () =>
       getLocations({
         page,
-        limit: 9,
+        limit,
         region,
         locationType,
         search,
