@@ -4,7 +4,7 @@ import { parse } from "cookie";
 
 const authRoutes = ["/login", "/register"];
 
-const privateRoutes = ["/profile", "/locations/new", "/locations/edit"];
+const privateRoutes = ["/locations/new", "/locations/edit"];
 
 const API_BASE_URL =
   process.env.BACKEND_API_URL ?? "https://node-project-group-02.onrender.com";
@@ -32,9 +32,11 @@ export async function proxy(request: NextRequest) {
   const refreshToken = cookieStore.get("refreshToken")?.value;
 
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
-  const isPrivateRoute = privateRoutes.some((route) =>
-    pathname.startsWith(route)
-  );
+  const isOwnProfileRoute =
+    pathname === "/profile" || pathname.startsWith("/profile/edit");
+  const isPrivateRoute =
+    isOwnProfileRoute ||
+    privateRoutes.some((route) => pathname.startsWith(route));
 
   if (!accessToken) {
     if (refreshToken) {
@@ -99,7 +101,8 @@ export const config = {
   matcher: [
     "/login",
     "/register",
-    "/profile/:path*",
+    "/profile",
+    "/profile/edit/:path*",
     "/locations/new",
     "/locations/edit/:path*",
   ],

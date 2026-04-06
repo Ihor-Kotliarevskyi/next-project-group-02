@@ -52,17 +52,12 @@
 }
 
 @media (min-width: 768px) {
-  .section {
-    padding: 48px 0 72px;
-  }
-
   .container {
     max-width: 768px;
     padding-inline: 32px;
   }
 
   .title {
-    margin-bottom: 40px;
     font-size: 56px;
   }
 
@@ -79,7 +74,6 @@
   }
 
   .title {
-    margin-bottom: 24px;
     font-size: 64px;
   }
 
