@@ -2,7 +2,6 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  margin-bottom: calc(40 * 100vw / 375);
 }
 
 .search {
@@ -69,10 +68,6 @@
 
 /* Tablet */
 @media (min-width: 768px) {
-  .wrapper {
-    margin: 0 0 40px;
-  }
-
   .search {
     width: 100%;
   }
@@ -95,7 +90,6 @@
     align-items: center;
     column-gap: 16px;
     row-gap: 0;
-    margin: 0 0 24px;
   }
 
   .search {

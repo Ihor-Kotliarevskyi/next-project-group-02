@@ -1,6 +1,5 @@
 ﻿.section {
   background: #fff2ec;
-  padding-inline: calc(20 * 100vw / 375);
 }
 
 .container {
@@ -9,12 +8,10 @@
   align-items: stretch;
   gap: calc(40 * 100vw / 375);
   width: 100%;
-  margin: 0;
-  padding-inline: calc(20 * 100vw / 375);
+  padding: 32px 20px 64px;
 }
 
 .title {
-  margin-bottom: calc(40 * 100vw / 375);
   color: #1f1f1f;
   font-size: calc(36 * 100vw / 375);
   line-height: 1.08;
@@ -42,7 +39,6 @@
 @media (min-width: 375px) {
   .section {
     width: 100%;
-    padding: 0;
   }
 }
 .container {
@@ -55,16 +51,11 @@
 }
 
 @media (min-width: 768px) {
-  .section {
-    padding: 48px 0 72px;
-  }
-
   .container {
-    padding: 0 32px;
+    padding: 32px 32px 64px;
   }
 
   .title {
-    margin-bottom: 40px;
     font-size: 56px;
   }
 
@@ -74,17 +65,12 @@
 }
 
 @media (min-width: 1440px) {
-  .section {
-    padding: 48px 0 72px;
-  }
-
   .container {
     max-width: 1568px;
-    padding: 0 64px;
+    padding: 64px 48px 72px;
   }
 
   .title {
-    margin-bottom: 24px;
     font-size: 64px;
   }
 

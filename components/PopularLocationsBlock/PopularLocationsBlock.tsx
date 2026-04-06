@@ -29,7 +29,7 @@ export default function PopularLocationsBlock() {
 
   const locationTypeLabels = useMemo(
     () => new Map(locationTypes.map((lt) => [lt.slug, lt.type])),
-    [locationTypes]
+    [locationTypes],
   );
 
   const locations = useMemo(() => {
@@ -60,6 +60,9 @@ export default function PopularLocationsBlock() {
               <Swiper
                 modules={[Navigation]}
                 loop={true}
+                className={styles.swiper}
+                wrapperClass={styles.swiperInner}
+                autoHeight={true}
                 slidesPerView={1}
                 spaceBetween={24}
                 breakpoints={{
@@ -71,7 +74,7 @@ export default function PopularLocationsBlock() {
                 }}
               >
                 {locations.map((location: Location) => (
-                  <SwiperSlide key={location._id}>
+                  <SwiperSlide key={location._id} className={styles.slide}>
                     <LocationCard
                       _id={location._id}
                       image={location.image}

@@ -1,6 +1,5 @@
 .section {
   background: #fff2ec;
-  padding: 64px 20px;
 }
 
 .container {
@@ -9,9 +8,9 @@
   align-items: flex-start;
   justify-content: flex-start;
   gap: 40px;
-
+  padding: 64px 20px;
   width: 100%;
-  margin: 0 auto;
+  margin: 0;
 }
 
 .topRow {
@@ -43,6 +42,17 @@
 
 .swiperWrap {
   width: 100%;
+}
+.swiper {
+  height: auto;
+}
+
+.swiperInner {
+  align-items: flex-start;
+}
+
+.slide {
+  height: auto;
 }
 
 .grid {
@@ -94,7 +104,6 @@
   color: #fff;
 }
 
-
 .swiperWrap {
   width: 100%;
 }
@@ -136,7 +145,7 @@
 
 /* ─── Tablet ─── */
 @media (min-width: 768px) {
-  .section {
+  .container {
     padding: 64px 32px;
   }
 
@@ -152,13 +161,8 @@
 
 /* ─── Desktop ─── */
 @media (min-width: 1440px) {
-  .section {
-    padding: 72px 64px;
-  }
-
   .container {
-    max-width: 1280px;
-    margin: 0 auto;
+    padding: 72px 64px;
   }
 
   .title {
