@@ -33,6 +33,7 @@ export default function LocationList() {
           region,
           locationType,
           search,
+          sort,
         }),
       getNextPageParam: (lastPage) =>
         lastPage.pagination.page < lastPage.pagination.totalPages
@@ -64,25 +65,10 @@ export default function LocationList() {
   );
 
   const locations = useMemo(() => {
-    const allLocations =
-      data?.pages.flatMap((page) => page.locations as Location[]) ?? [];
-
-    const uniqueLocations = Array.from(
-      new Map(allLocations.map((loc) => [loc._id, loc])).values(),
+    return (
+      data?.pages.flatMap((page) => page.locations as Location[]) ?? []
     );
-
-    if (sort === "name") {
-      return [...uniqueLocations].sort((a, b) =>
-        a.name.localeCompare(b.name, "uk"),
-      );
-    }
-
-    if (sort === "rate") {
-      return [...uniqueLocations].sort((a, b) => b.rate - a.rate);
-    }
-
-    return uniqueLocations;
-  }, [data?.pages, sort]);
+  }, [data?.pages]);
 
   return (
     <section className={styles.section}>
