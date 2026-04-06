@@ -8,8 +8,8 @@ import {
   type MouseEvent,
 } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import css from "./Modal.module.css";
+import Icon from "@/components/Icon/Icon";
 
 type ModalProps = {
   children: ReactNode;
@@ -59,7 +59,7 @@ export default function Modal({ children }: ModalProps) {
           onClick={closeModal}
           aria-label="Закрити модальне вікно"
         >
-          <Image src="/exit.svg" alt="close" width={13.5} height={13.5} />
+          <Icon name="close" width={14} height={14} aria-hidden={true} />
         </button>
         {children}
       </div>

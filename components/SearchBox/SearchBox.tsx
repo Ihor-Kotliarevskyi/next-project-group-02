@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import styles from "./SearchBox.module.css";
+import Icon from "@/components/Icon/Icon";
 
 type SearchBoxProps = {
   regions: { value: string; label: string }[];
@@ -142,19 +143,7 @@ export default function SearchBox({ regions, locationTypes }: SearchBoxProps) {
             aria-expanded={isLocationTypeOpen}
           >
             <span>{activeLocationTypeLabel}</span>
-            <svg
-              className={styles.selectIcon}
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M11.9998 15.2019C11.8878 15.2019 11.7824 15.1832 11.6838 15.1459C11.5851 15.1085 11.4891 15.0432 11.3958 14.9499L5.79581 9.34991C5.62715 9.18124 5.54315 8.96724 5.54381 8.70791C5.54448 8.44858 5.63315 8.23458 5.80981 8.06591C5.98648 7.89724 6.19881 7.81291 6.44681 7.81291C6.69481 7.81291 6.90715 7.89724 7.08381 8.06591L11.9998 12.9819L16.9158 8.06591C17.0845 7.89724 17.2941 7.81291 17.5448 7.81291C17.7955 7.81291 18.0091 7.89724 18.1858 8.06591C18.3625 8.23458 18.4508 8.44558 18.4508 8.69891C18.4508 8.95224 18.3625 9.16324 18.1858 9.33191L12.5858 14.9319C12.4925 15.0252 12.3965 15.0939 12.2978 15.1379C12.1991 15.1819 12.0998 15.2032 11.9998 15.2019Z"
-                fill="currentColor"
-              />
-            </svg>
+            <Icon name="chevron-down" width={24} height={24} className={styles.selectIcon} aria-hidden={true} />
           </button>
 
           {isLocationTypeOpen ? (
@@ -182,16 +171,7 @@ export default function SearchBox({ regions, locationTypes }: SearchBoxProps) {
                       className={styles.checkboxHidden}
                     />
                     <div className={styles.checkboxCustom}>
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
+                      <Icon name="checkmark" width={24} height={24} aria-hidden={true} />
                     </div>
                   </div>
                   <span className={styles.checkboxLabel}>{type.label}</span>
@@ -219,19 +199,7 @@ export default function SearchBox({ regions, locationTypes }: SearchBoxProps) {
             aria-expanded={isRegionOpen}
           >
             <span>{activeRegionLabel}</span>
-            <svg
-              className={styles.selectIcon}
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M11.9998 15.2019C11.8878 15.2019 11.7824 15.1832 11.6838 15.1459C11.5851 15.1085 11.4891 15.0432 11.3958 14.9499L5.79581 9.34991C5.62715 9.18124 5.54315 8.96724 5.54381 8.70791C5.54448 8.44858 5.63315 8.23458 5.80981 8.06591C5.98648 7.89724 6.19881 7.81291 6.44681 7.81291C6.69481 7.81291 6.90715 7.89724 7.08381 8.06591L11.9998 12.9819L16.9158 8.06591C17.0845 7.89724 17.2941 7.81291 17.5448 7.81291C17.7955 7.81291 18.0091 7.89724 18.1858 8.06591C18.3625 8.23458 18.4508 8.44558 18.4508 8.69891C18.4508 8.95224 18.3625 9.16324 18.1858 9.33191L12.5858 14.9319C12.4925 15.0252 12.3965 15.0939 12.2978 15.1379C12.1991 15.1819 12.0998 15.2032 11.9998 15.2019Z"
-                fill="currentColor"
-              />
-            </svg>
+            <Icon name="chevron-down" width={24} height={24} className={styles.selectIcon} aria-hidden={true} />
           </button>
 
           {isRegionOpen ? (
@@ -285,19 +253,7 @@ export default function SearchBox({ regions, locationTypes }: SearchBoxProps) {
             aria-expanded={isSortOpen}
           >
             <span>{activeSortLabel}</span>
-            <svg
-              className={styles.selectIcon}
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M11.9998 15.2019C11.8878 15.2019 11.7824 15.1832 11.6838 15.1459C11.5851 15.1085 11.4891 15.0432 11.3958 14.9499L5.79581 9.34991C5.62715 9.18124 5.54315 8.96724 5.54381 8.70791C5.54448 8.44858 5.63315 8.23458 5.80981 8.06591C5.98648 7.89724 6.19881 7.81291 6.44681 7.81291C6.69481 7.81291 6.90715 7.89724 7.08381 8.06591L11.9998 12.9819L16.9158 8.06591C17.0845 7.89724 17.2941 7.81291 17.5448 7.81291C17.7955 7.81291 18.0091 7.89724 18.1858 8.06591C18.3625 8.23458 18.4508 8.44558 18.4508 8.69891C18.4508 8.95224 18.3625 9.16324 18.1858 9.33191L12.5858 14.9319C12.4925 15.0252 12.3965 15.0939 12.2978 15.1379C12.1991 15.1819 12.0998 15.2032 11.9998 15.2019Z"
-                fill="currentColor"
-              />
-            </svg>
+            <Icon name="chevron-down" width={24} height={24} className={styles.selectIcon} aria-hidden={true} />
           </button>
 
           {isSortOpen ? (

@@ -1,19 +1,19 @@
 import styles from "./AdvantagesBlock.module.css";
-import Image from "next/image";
+import Icon from "@/components/Icon/Icon";
 
 const advantages = [
   {
-    icon: "/iconsAdvantage/reviews.svg",
+    icon: "reviews-icon",
     title: "Реальні відгуки",
     text: "Користувачі діляться чесними враженнями, щоб ви робили правильний вибір.",
   },
   {
-    icon: "/iconsAdvantage/filters.svg",
+    icon: "filters-icon",
     title: "Зручні фільтри",
     text: "Шукайте за типом локації, регіоном, наявністю зручностей та іншими критеріями.",
   },
   {
-    icon: "/iconsAdvantage/community.svg",
+    icon: "community-icon",
     title: "Спільнота мандрівників",
     text: "Додавайте власні улюблені місця та діліться своїми неймовірними знахідками.",
   },
@@ -29,11 +29,12 @@ export default function AdvantagesBlock() {
         {advantages.map((item, index) => (
           <div key={index} className={styles.advantagesCard}>
             <div className={styles.advantagesIcon}>
-              <Image
-                src={item.icon}
-                alt={item.title}
-                fill
+              <Icon
+                name={item.icon}
+                width={64}
+                height={64}
                 className={styles.advantagesIconImg}
+                aria-hidden={true}
               />
             </div>
 

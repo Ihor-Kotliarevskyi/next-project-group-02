@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import styles from "./LocationCard.module.css";
+import Icon from "@/components/Icon/Icon";
 import { Location } from "@/types/location";
 
 type LocationCardProps = Pick<
@@ -52,7 +53,7 @@ export default function LocationCard({
 
           {isEditable && (
             <Link href={`/locations/${_id}/edit`} className={styles.editLink}>
-              <Image src="/edit.svg" alt="Редагувати" width={24} height={24} />
+              <Icon name="edit" width={24} height={24} aria-label="Редагувати" />
             </Link>
           )}
         </div>

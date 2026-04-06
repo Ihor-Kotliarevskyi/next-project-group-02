@@ -8,6 +8,7 @@ import css from "./Header.module.css";
 import Logo from "../Logo/Logo";
 import Image from "next/image";
 import Logout from "../Logout/Logout";
+import Icon from "@/components/Icon/Icon";
 
 export default function Header() {
   const pathname = usePathname();
@@ -164,7 +165,7 @@ export default function Header() {
                   className={css.mobileLink}
                   onClick={closeMenu}
                 >
-                  <Image src="/logout.svg" alt="Exit" width={24} height={24} />
+                  <Icon name="logout" width={24} height={24} aria-hidden={true} />
                 </Link>
               </div>
             </>
