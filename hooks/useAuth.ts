@@ -58,7 +58,7 @@ export function useAuth(redirectTo: string = "/") {
         setFieldError("password", message);
       }
 
-      toast.error(message);
+      toast.error("Щось пішло не так");
     } finally {
       toast.dismiss(loading);
       setSubmitting(false);
