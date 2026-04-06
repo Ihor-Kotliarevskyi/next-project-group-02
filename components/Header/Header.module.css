@@ -259,7 +259,6 @@
 
 .mobileDivider {
   height: 80px;
-  /* flex-grow: 1; */
   background-color: var(--color-border);
   margin: 8px 0;
 }

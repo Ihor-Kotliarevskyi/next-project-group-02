@@ -81,7 +81,7 @@ export default function Footer() {
           </ul>
         </div>
         <div className={css.copy}>
-          <p>
+          <p className={css.copyText}>
             &copy; {new Date().getFullYear()} Природні Мандри. Усі права
             захищені.
           </p>
