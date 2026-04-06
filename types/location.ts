@@ -8,6 +8,7 @@ export type Location = {
   description: string;
   ownerId: string;
   feedbacksId: string[];
+  createdAt?: string;
 };
 
 export type NewLocation = {

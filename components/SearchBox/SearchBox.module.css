@@ -40,7 +40,8 @@
   border-color: var(--color-button-primary);
 }
 
-.control:focus {
+.control:focus,
+.open {
   outline: none;
   border-color: var(--color-button-primary);
 }
@@ -58,6 +59,76 @@
 
 .search::placeholder {
   color: #4c4c4c;
+}
+
+.customSelect {
+  position: relative;
+  overflow: visible;
+  padding: 0;
+}
+
+.selectTrigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+  border: 0;
+  background: transparent;
+  color: #4c4c4c;
+  font: inherit;
+  cursor: pointer;
+}
+
+.selectIcon {
+  flex-shrink: 0;
+  color: #4c4c4c;
+  transition: transform 0.2s ease;
+}
+
+.open .selectIcon {
+  transform: rotate(180deg);
+}
+
+.selectMenu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  padding: 4px;
+  border: 1px solid #ffa57a;
+  border-radius: 8px;
+  background: #ffe5d9;
+}
+
+.selectOption {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 35px;
+  padding: 4px 12px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #36502f;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.selectOption:hover,
+.selectOption:focus-visible {
+  background: #ffa57a;
+  outline: none;
+}
+
+.selectedOption {
+  background: #ffa57a;
 }
 
 @media (min-width: 375px) {

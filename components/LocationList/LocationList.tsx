@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -13,6 +13,14 @@ import SearchBox from "@/components/SearchBox/SearchBox";
 import Pagination from "@/components/Pagination/Pagination";
 import styles from "./LocationList.module.css";
 import { Location } from "@/types/location";
+
+const getLocationTimestamp = (location: Location) => {
+  if (location.createdAt) {
+    return new Date(location.createdAt).getTime();
+  }
+
+  return Number.parseInt(location._id.slice(0, 8), 16) * 1000;
+};
 
 export default function LocationList() {
   const searchParams = useSearchParams();
@@ -80,7 +88,7 @@ export default function LocationList() {
           }))}
         />
 
-        {isLoading ? (
+        {isLoading || isFetching ? (
           <p className={styles.loader}>Завантаження...</p>
         ) : locations.length === 0 ? (
           <p className={styles.empty}>Нічого не знайдено</p>
