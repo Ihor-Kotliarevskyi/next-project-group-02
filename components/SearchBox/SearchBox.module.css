@@ -60,6 +60,12 @@
   color: #4c4c4c;
 }
 
+@media (min-width: 375px) {
+  .wrapper {
+    margin-bottom: 0;
+  }
+}
+
 /* Tablet */
 @media (min-width: 768px) {
   .search {

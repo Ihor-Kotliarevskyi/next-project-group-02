@@ -1,7 +1,15 @@
 .advantagesSection {
-  padding: 64px 20px;
+padding: 104px 0px 64px;
   background: #fdf4ee;
   text-align: left;
+}
+
+.advantagesContainer {
+  max-width: 375px;
+  margin: 0 auto;
+padding-left: var(--container-padding-mobile);
+  padding-right: var(--container-padding-mobile);
+
 }
 
 .advantagesTitle {
@@ -9,6 +17,9 @@
   font-weight: bold;
   font-size: 28px;
   margin-bottom: 32px;
+  line-height: 1.2;
+  letter-spacing: -1%;
+  font-weight: 700;
 }
 
 .advantagesGrid {
@@ -26,32 +37,41 @@
 .advantagesCardTitle {
   color: #1b391b;
   font-size: 18px;
-  font-weight: bold;
+  font-weight: 700;
   padding-bottom: 16px;
+  letter-spacing: -1%;
+  line-height: 1.4;
 }
 
 .advantagesCardText {
   font-size: 16px;
   color: #1b391b;
+    font-weight: 400;
+     letter-spacing: 0%;
+  line-height: 1.5;
 }
 
 .advantagesIcon {
   position: relative;
-  width: 40px;
-  height: 40px;
+  width: 64px;
+  height: 64px;
   margin-bottom: 16px;
 }
 
 .advantagesIconImg {
   object-fit: contain;
+
 }
 
 /* Tablet */
 @media (min-width: 768px) {
-  .advantagesSection {
-    padding: 64px 32px;
-  }
+  
+.advantagesContainer {
+max-width: 768px;
+padding-left: var(--container-padding-tablet);
+  padding-right: var(--container-padding-tablet);
 
+}
   .advantagesTitle {
     font-size: 44px;
   }
@@ -73,9 +93,15 @@
 /* Desktop */
 @media screen and (min-width: 1440px) {
   .advantagesSection {
-    padding: 112px 64px;
+    padding-bottom: 112px;
+    padding-top: 152px;
   }
+.advantagesContainer {
+  max-width: 1440px;
+    padding-left: var(--container-padding-desktop);
+  padding-right: var(--container-padding-desktop);
 
+}
   .advantagesTitle {
     font-size: 52px;
   }

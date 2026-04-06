@@ -3,29 +3,33 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import Image from "next/image";
-import { useLocationStore } from "@/lib/store/locationStore";
+
 import styles from "./HeroBlock.module.css";
 
 export default function HeroBlock() {
   const [query, setQuery] = useState("");
   const router = useRouter();
-  const { setSearch } = useLocationStore();
 
   const handleSearch = useCallback(() => {
     const trimmedQuery = query.trim();
     if (!trimmedQuery) return;
-    setSearch(trimmedQuery);
-    router.push(`/locations?search=${encodeURIComponent(trimmedQuery)}`);
-  }, [query, router, setSearch]);
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
-  }, [handleSearch]);
+    router.push(`/locations?search=${encodeURIComponent(trimmedQuery)}`);
+  }, [query, router]);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        handleSearch();
+      }
+    },
+    [handleSearch],
+  );
 
   return (
     <section className={styles.hero}>
+
+      <div className={styles.heroContainer}>
       <Image
         src="/images/hero-bg.png"
         alt="Nature"
@@ -37,9 +41,7 @@ export default function HeroBlock() {
       <div className={styles.heroOverlay} />
 
       <div className={styles.heroContent}>
-        <h1>
-          Відкрий для себе Україну. Знайди ідеальне місце для відпочинку
-        </h1>
+        <h1>Відкрий для себе Україну. Знайди ідеальне місце для відпочинку</h1>
 
         <p>
           Тисячі перевірених локацій з реальними фото та відгуками від
@@ -55,11 +57,10 @@ export default function HeroBlock() {
             onKeyDown={handleKeyDown}
           />
 
-          <button onClick={handleSearch}>
-            Знайти місце
-          </button>
+          <button onClick={handleSearch}>Знайти місце</button>
         </div>
       </div>
+       </div>
     </section>
   );
 }

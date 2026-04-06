@@ -10,18 +10,19 @@ const advantages = [
   {
     icon: "/iconsAdvantage/filters.svg",
     title: "Зручні фільтри",
-    text: "Шукайте за типом локації, регіоном, ціною та іншими параметрами.",
+    text: "Шукайте за типом локації, регіоном, наявністю зручностей та іншими критеріями.",
   },
   {
     icon: "/iconsAdvantage/community.svg",
     title: "Спільнота мандрівників",
-    text: "Додавайте власні улюблені місця та діліться досвідом.",
+    text: "Додавайте власні улюблені місця та діліться своїми неймовірними знахідками.",
   },
 ];
 
 export default function AdvantagesBlock() {
   return (
     <section className={styles.advantagesSection}>
+      <div className={styles.advantagesContainer}>
       <h2 className={styles.advantagesTitle}>Ключові переваги</h2>
 
       <div className={styles.advantagesGrid}>
@@ -45,6 +46,7 @@ export default function AdvantagesBlock() {
             </p>
           </div>
         ))}
+      </div>
       </div>
     </section>
   );
