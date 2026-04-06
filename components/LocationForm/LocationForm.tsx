@@ -2,6 +2,7 @@
 
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import { useState, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import toast from "react-hot-toast";
@@ -34,6 +35,7 @@ export default function LocationForm({
   locationTypes,
 }: Props) {
   const isEdit = !!id;
+  const queryClient = useQueryClient();
   const router = useRouter();
   const placeholder = "/images/location-form-placeholder-image.jpg";
   const validationSchema = getLocationValidationSchema(isEdit);
@@ -89,6 +91,8 @@ export default function LocationForm({
         ? await updateLocation(id!, payload)
         : await createLocation(payload);
 
+
+      await queryClient.invalidateQueries({ queryKey: ["currentUser"] });
       router.push(`/locations/${data._id}`);
       router.refresh();
     } catch {
