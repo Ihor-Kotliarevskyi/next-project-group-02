@@ -15,7 +15,7 @@ export default function HeroBlock() {
     if (!trimmedQuery) return;
 
     router.push(`/locations?search=${encodeURIComponent(trimmedQuery)}`);
-  };
+  }, [query, router]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
