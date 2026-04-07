@@ -37,6 +37,7 @@ export const getUserLocationsServer = async (
     `/users/${id}/locations`,
     {
       headers: { Cookie: cookieStore.toString() },
+      params: { limit: 50 },
     }
   );
   return data;

@@ -23,8 +23,9 @@
 
 .avatarRow {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
 }
 
 .avatarPreview {
@@ -75,7 +76,7 @@
   font-size: 16px;
   font-family: var(--font-family);
   color: var(--color-text-primary);
-  background-color: var(--color-input-bg, #fdf4f0);
+  background-color: #ffe5d9;
   outline: none;
   transition: border-color var(--transition-base);
 }
@@ -95,14 +96,14 @@
 
 .actions {
   display: flex;
-  gap: 16px;
+  flex-direction: column;
+  gap: 12px;
   justify-content: center;
   margin-top: 8px;
 }
 
 .cancelBtn {
-  flex: 1;
-  max-width: 160px;
+  width: 100%;
   padding: 12px 16px;
   border: 1px solid var(--color-overlay-light);
   background-color: var(--color-button-secondary);
@@ -124,8 +125,7 @@
 }
 
 .saveBtn {
-  flex: 1;
-  max-width: 160px;
+  width: 100%;
   padding: 12px 16px;
   border: 1px solid var(--color-button-primary);
   background-color: var(--color-button-primary);
@@ -153,5 +153,23 @@
 
   .title {
     font-size: 44px;
+  }
+
+  .avatarRow {
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .actions {
+    flex-direction: row;
+    gap: 16px;
+  }
+
+  .cancelBtn,
+  .saveBtn {
+    width: auto;
+    flex: 1;
+    max-width: 160px;
   }
 }
