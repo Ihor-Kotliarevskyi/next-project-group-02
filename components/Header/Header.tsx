@@ -172,8 +172,9 @@ export default function Header() {
                   Вхід
                 </Link>
                 <Link
-                  href="/register"
-                  className={css.mobileLinkRegistration}
+                  href="/logout-confirm"
+                  className={css.mobileLink}
+                  scroll={false}
                   onClick={closeMenu}
                 >
                   Реєстрація
