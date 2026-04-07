@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import css from "./ProfileInfo.module.css";
 
 interface ProfileInfoProps {
@@ -8,9 +9,10 @@ interface ProfileInfoProps {
     name: string;
     articlesAmount: number;
   };
+  isEditable?: boolean;
 }
 
-export default function ProfileInfo({ user }: ProfileInfoProps) {
+export default function ProfileInfo({ user, isEditable }: ProfileInfoProps) {
   return (
     <div className={css.header}>
       <Image
@@ -23,6 +25,11 @@ export default function ProfileInfo({ user }: ProfileInfoProps) {
       <div className={css.profileInfo}>
         <h2 className={css.userName}>{user.name}</h2>
         <p className={css.articles}>Статей: {user.articlesAmount}</p>
+        {isEditable && (
+          <Link href="/profile/edit" className={css.editBtn}>
+            Редагувати профіль
+          </Link>
+        )}
       </div>
     </div>
   );

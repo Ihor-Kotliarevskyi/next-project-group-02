@@ -81,3 +81,6 @@ export const updateLocation = (id: string, data: unknown) =>
 
 export const deleteLocation = (id: string) =>
   clientApi.delete(`/locations/${id}`).then((r) => r.data);
+
+export const updateMe = (data: { name?: string; avatarUrl?: string }) =>
+  clientApi.patch("/users/me", data).then((r) => r.data);

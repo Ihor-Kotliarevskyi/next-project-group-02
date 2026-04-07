@@ -28,12 +28,33 @@ export default function SearchBox({ regions, locationTypes }: SearchBoxProps) {
   const [isSortOpen, setIsSortOpen] = useState(false);
 
   const search = searchParams.get("search") ?? "";
+  const [searchInput, setSearchInput] = useState(search);
+  const isFirstSearchSync = useRef(true);
   const region = searchParams.get("region") ?? "";
   const selectedTypes = searchParams.getAll("locationType");
   const sortBy = searchParams.get("sortBy") || "name";
   const order = searchParams.get("order") || "asc";
 
   const currentSort = `${sortBy}:${order}`;
+
+  useEffect(() => {
+    setSearchInput(search);
+  }, [search]);
+
+  useEffect(() => {
+    if (isFirstSearchSync.current) {
+      isFirstSearchSync.current = false;
+      return;
+    }
+    if (searchInput === search) return;
+
+    const timer = setTimeout(() => {
+      updateParam("search", searchInput);
+    }, 300);
+
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchInput]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -120,8 +141,8 @@ export default function SearchBox({ regions, locationTypes }: SearchBoxProps) {
         className={`${styles.control} ${styles.search}`}
         type="text"
         placeholder="Пошук"
-        value={search}
-        onChange={(event) => updateParam("search", event.target.value)}
+        value={searchInput}
+        onChange={(event) => setSearchInput(event.target.value)}
       />
 
       <div className={styles.filtersRow}>
@@ -147,7 +168,10 @@ export default function SearchBox({ regions, locationTypes }: SearchBoxProps) {
           </button>
 
           {isLocationTypeOpen ? (
-            <div className={styles.selectMenu} role="listbox">
+            <div
+              className={`${styles.selectMenu} ${styles.selectMenuScrollable}`}
+              role="listbox"
+            >
               {selectedTypes.length > 0 && (
                 <button
                   type="button"
@@ -203,7 +227,10 @@ export default function SearchBox({ regions, locationTypes }: SearchBoxProps) {
           </button>
 
           {isRegionOpen ? (
-            <div className={styles.selectMenu} role="listbox">
+            <div
+              className={`${styles.selectMenu} ${styles.selectMenuScrollable}`}
+              role="listbox"
+            >
               <button
                 type="button"
                 className={`${styles.selectOption} ${

@@ -1,8 +1,10 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useLocationStore } from "@/lib/store/locationStore";
 import LocationCard from "@/components/LocationCard/LocationCard";
+import Pagination from "@/components/Pagination/Pagination";
 import css from "./ProfileLocationList.module.css";
 import { Location } from "@/types/location";
 import { getLocationTypes } from "@/lib/api/clientApi";
@@ -20,19 +22,15 @@ export default function ProfileLocationList({
   isEditable = false,
 }: ProfileLocationListProps) {
   const { filters } = useLocationStore();
-  const [pageLimit, setPageLimit] = useState(4);
-  const [visibleCount, setVisibleCount] = useState(4);
+  const searchParams = useSearchParams();
+  const page = Number(searchParams.get("page") ?? "1");
+
+  const [limit, setLimit] = useState(4);
 
   useEffect(() => {
     const mql = window.matchMedia("(min-width: 1440px)");
-    const newLimit = mql.matches ? 6 : 4;
-    setPageLimit(newLimit);
-    setVisibleCount(newLimit);
-    const handler = (e: MediaQueryListEvent) => {
-      const next = e.matches ? 6 : 4;
-      setPageLimit(next);
-      setVisibleCount(next);
-    };
+    setLimit(mql.matches ? 6 : 4);
+    const handler = (e: MediaQueryListEvent) => setLimit(e.matches ? 6 : 4);
     mql.addEventListener("change", handler);
     return () => mql.removeEventListener("change", handler);
   }, []);
@@ -55,20 +53,18 @@ export default function ProfileLocationList({
     return list;
   }, [locations, filters.sort]);
 
+  const totalPages = Math.ceil(sortedLocations.length / limit);
+  const currentPage = Math.min(page, totalPages || 1);
+
   const displayedLocations = useMemo(() => {
-    return sortedLocations.slice(0, visibleCount);
-  }, [sortedLocations, visibleCount]);
+    const start = (currentPage - 1) * limit;
+    return sortedLocations.slice(start, start + limit);
+  }, [sortedLocations, currentPage, limit]);
 
   const locationTypeLabels = useMemo(
     () => new Map(locationTypes.map((item) => [item.slug, item.type])),
     [locationTypes]
   );
-
-  const handleLoadMore = () => {
-    setVisibleCount((prev) => prev + pageLimit);
-  };
-
-  const hasMore = visibleCount < sortedLocations.length;
 
   if (isLoading) {
     return <p className={css.loader}>Завантаження...</p>;
@@ -98,17 +94,8 @@ export default function ProfileLocationList({
           )}
         </div>
 
-        {hasMore && (
-          <div className={css.wrapper}>
-            <button
-              className={css.button}
-              onClick={handleLoadMore}
-              disabled={isLoading}
-              type="button"
-            >
-              {isLoading ? "Завантаження..." : "Показати ще"}
-            </button>
-          </div>
+        {totalPages > 1 && (
+          <Pagination currentPage={currentPage} totalPages={totalPages} />
         )}
       </div>
     </section>
