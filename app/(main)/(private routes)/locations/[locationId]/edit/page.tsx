@@ -23,11 +23,13 @@ export default async function Page({ params }: Props) {
     getLocationByIdServer(locationId),
   ]);
 
+  const sortedRegions = regions.slice().sort((a, b) => a.region.localeCompare(b.region, "uk"));
+
   return (
     <LocationForm
       id={locationId}
       initialData={location}
-      regions={regions}
+      regions={sortedRegions}
       locationTypes={types}
     />
   );

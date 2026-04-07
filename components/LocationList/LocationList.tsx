@@ -108,10 +108,13 @@ export default function LocationList() {
         <h2 className={styles.title}>Усі місця відпочинку</h2>
 
         <SearchBox
-          regions={regions.map((regionOption) => ({
-            value: regionOption.slug,
-            label: regionOption.region,
-          }))}
+          regions={regions
+            .slice()
+            .sort((a, b) => a.region.localeCompare(b.region, "uk"))
+            .map((regionOption) => ({
+              value: regionOption.slug,
+              label: regionOption.region,
+            }))}
           locationTypes={locationTypes.map((locationTypeOption) => ({
             value: locationTypeOption.slug,
             label: locationTypeOption.type,

@@ -13,5 +13,7 @@ export default async function Page() {
     getLocationTypesServer(),
   ]);
 
-  return <LocationForm regions={regions} locationTypes={locationTypes} />;
+  const sortedRegions = regions.slice().sort((a, b) => a.region.localeCompare(b.region, "uk"));
+
+  return <LocationForm regions={sortedRegions} locationTypes={locationTypes} />;
 }
