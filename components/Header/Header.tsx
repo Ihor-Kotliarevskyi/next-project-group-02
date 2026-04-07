@@ -149,6 +149,7 @@ export default function Header() {
                 <Link
                   href="/logout-confirm"
                   className={css.mobileLink}
+                  scroll={false}
                   onClick={closeMenu}
                 >
                   <Icon name="logout" width={24} height={24} aria-hidden={true} />

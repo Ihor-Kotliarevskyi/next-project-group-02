@@ -11,14 +11,14 @@
     font-weight: var(--font-weight-regular);
 }
 
-.inner {    
+.inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
     height: 100%;
-    padding: 16px 20px;
+    padding: 16px var(--container-padding-mobile);
     margin: 0 auto;
-    max-width: 375px;
+    width: 100%;
 }
 
 .rightSide {
@@ -212,7 +212,7 @@
 .mobileMenu {
   display: flex;
   flex-direction: column;
-  padding: 0 20px 32px;
+  padding: 24px 20px 32px;
   border-top: 1px solid var(--color-border);
   background-color: var(--color-bg-page);
   position: fixed;
@@ -227,18 +227,18 @@
 .mobileAuth {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 16px;
   width: 100%;
-  padding-top: 16px;
-  border-top: 1px solid var(--color-border);
+  padding-top: 24px;
 }
 
 .mobileLink {
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
-  padding: 12px 0;
-  border-bottom: 1px solid var(--color-border-light);
+  padding: 20px 0;
+  text-align: center;
   transition: color var(--transition-base);
 }
 
@@ -317,9 +317,9 @@
 .mobileNotAuth {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 16px;
     width: 100%;
-    margin-bottom: 92px;
+    margin-top: auto;
 }
 .mobileLinkLog {
     border: 1px solid var(--color-overlay-light);
@@ -359,7 +359,6 @@
 
 @media (min-width: 768px) {
     .inner {
-        max-width: 768px;
         padding: 0 var(--container-padding-tablet);
     }
 

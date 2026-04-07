@@ -14,7 +14,7 @@ export default function AuthProvider({
   const setUser = useAuthStore((state) => state.setUser);
   const logout = useAuthStore((state) => state.logout);
 
-  const { data, error } = useQuery<User>({
+  const { data, error } = useQuery<User | null>({
     queryKey: ["currentUser"],
     queryFn: getMe,
     retry: false,
@@ -23,7 +23,8 @@ export default function AuthProvider({
 
   useEffect(() => {
     if (data) setUser(data);
-  }, [data, setUser]);
+    else if (data === null) logout();
+  }, [data, setUser, logout]);
 
   useEffect(() => {
     if (error) logout();
