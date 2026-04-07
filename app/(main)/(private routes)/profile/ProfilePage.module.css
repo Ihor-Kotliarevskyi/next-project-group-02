@@ -24,7 +24,6 @@
   margin-bottom: 24px;
 }
 
-/* Tablet */
 @media (min-width: 768px) {
   .profile {
     max-width: 768px;
@@ -36,7 +35,6 @@
   }
 }
 
-/* Desktop */
 @media (min-width: 1440px) {
   .profile {
     max-width: 1440px;

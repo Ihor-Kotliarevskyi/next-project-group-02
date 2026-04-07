@@ -25,15 +25,8 @@ export default function Header() {
   return (
     <header className={css.header}>
       <div className={css.inner}>
-        {/* Logo */}
-        {/* <Link href="/" className={css.logo} onClick={closeMenu}>
-          Relax Map
-        </Link> */}
-
-        {/* onClick={closeMenu} */}
         <Logo />
 
-        {/* Desktop nav */}
         <div className={css.rightSide}>
           <nav className={css.nav}>
             {navLinks.map(({ href, label }) => (
@@ -47,7 +40,6 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* Desktop auth */}
           <div className={css.auth}>
             {user ? (
               <>
@@ -73,9 +65,6 @@ export default function Header() {
                   )}
                   <span className={css.userName}>{user.name}</span>
                 </Link>
-                {/* <Link href="/logout-confirm" className={css.logoutBtn}>
-                  Вийти
-                </Link> */}
                 <div className={css.exitHeader}>
                   <Logout />
                 </div>
@@ -93,7 +82,6 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Burger button */}
         <button
           type="button"
           className={css.burger}
@@ -113,7 +101,6 @@ export default function Header() {
         </button>
       </div>
 
-      {/* Mobile menu */}
       {menuOpen && (
         <div className={css.mobileMenu}>
           {navLinks.map(({ href, label }) => (
@@ -131,7 +118,6 @@ export default function Header() {
             <>
               <Link
                 href={`/profile`}
-                // file/${user._id}
                 className={css.mobileLink}
                 onClick={closeMenu}
               >

@@ -37,7 +37,7 @@
   height: 8px;
   border-right: 2px solid var(--color-text-main);
   border-bottom: 2px solid var(--color-text-main);
-  transform: translateY(-50%) rotate(45deg); /* вниз */
+  transform: translateY(-50%) rotate(45deg);
   transition: transform 0.2s ease;
 }
 

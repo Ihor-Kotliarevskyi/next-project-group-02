@@ -168,7 +168,6 @@ export default function LocationForm({
             return (
               <Form>
                 <div className={css.locationFormWrapper}>
-                  {/* Фото */}
                   <div className={css.formGroup}>
                     <p className={css.label}>Обкладинка</p>
 
@@ -215,7 +214,6 @@ export default function LocationForm({
                     />
                   </div>
 
-                  {/* Назва */}
                   <div className={css.formGroup}>
                     <label className={css.label} htmlFor="name">
                       Назва місця
@@ -235,25 +233,6 @@ export default function LocationForm({
                       component="div"
                     />
                   </div>
-
-                  {/* Тип */}
-                  {/* <div className={css.formGroup}>
-            <label className={css.label} htmlFor="locationType">Тип місця</label>
-                <Field
-                  className={`
-                    ${css.locationInput}
-                    ${errors.locationType && touched.locationType ? css.inputError : ""}
-                `}
-                  as="select" id="locationType" name="locationType">
-              <option value="">Оберіть тип місця</option>
-                {locationTypes.map((location, index) => (
-                 <option className={css.optional} key={index} value={location.slug}>
-                  {location.type}
-                </option>
-     ))}
-              </Field>
-              <ErrorMessage className={css.errorMessage} name="locationType" component="div" />
-            </div> */}
 
                   <div className={css.formGroup}>
                     <label className={css.label}>Тип місця</label>
@@ -301,23 +280,6 @@ export default function LocationForm({
                     />
                   </div>
 
-                  {/* Регіон */}
-                  {/* <div className={css.formGroup}>
-              <label className={css.label} htmlFor="region">Регіон</label>
-              <Field className={`
-                ${css.locationInput}
-                ${errors.region && touched.region ? css.inputError : ""}
-              `} as="select" id="region" name="region">
-                <option value="">Оберіть регіон</option>
-                {regions.map((region, index) => (
-                  <option key={index} value={region.slug}>
-                    {region.region}
-                  </option>
-              ))}
-              </Field>
-              <ErrorMessage className={css.errorMessage} name="region" component="div" />
-            </div> */}
-
                   <div className={css.formGroup}>
                     <label className={css.label}>Регіон</label>
 
@@ -362,7 +324,6 @@ export default function LocationForm({
                       component="div"
                     />
                   </div>
-                  {/* Опис */}
                   <div className={css.formGroup}>
                     <label className={css.label} htmlFor="description">
                       Детальний опис
@@ -387,7 +348,6 @@ export default function LocationForm({
                     />
                   </div>
 
-                  {/* Карта */}
                   <div className={css.formGroup}>
                     <label className={css.label}>Оберіть розташування</label>
                     <MapPickerWrapper
@@ -400,7 +360,6 @@ export default function LocationForm({
                     />
                   </div>
 
-                  {/* Кнопки */}
                   <div className={css.buttonGroup}>
                     <button
                       className={`${css.locationSubmit} ${css.buttonGeneral}`}
