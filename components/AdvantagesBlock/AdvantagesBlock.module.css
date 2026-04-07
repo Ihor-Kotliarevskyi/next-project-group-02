@@ -63,7 +63,6 @@ padding-left: var(--container-padding-mobile);
   height: 64px;
 }
 
-/* Tablet */
 @media (min-width: 768px) {
   
 .advantagesContainer {
@@ -90,7 +89,6 @@ padding-left: var(--container-padding-tablet);
   }
 }
 
-/* Desktop */
 @media screen and (min-width: 1440px) {
   .advantagesSection {
     padding-bottom: 112px;

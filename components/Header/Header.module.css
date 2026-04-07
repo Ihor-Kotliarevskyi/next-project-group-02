@@ -28,11 +28,8 @@
     margin-left: auto;
 }
 
-/* ─── Desktop Nav ─── */
 .nav {
   display: none;
-  /* margin-left: auto;
-    padding: 32px; */
 }
 
 .navLink {
@@ -65,7 +62,6 @@
     width: 100%;
 }
 
-/* ─── Desktop Auth ─── */
 .auth {
   display: none;
   align-items: center;
@@ -173,7 +169,6 @@
     background-color: var(--color-button-primary-hover);
 }
 
-/* ─── Burger ─── */
 .burger {
   display: flex;
   flex-direction: column;
@@ -202,9 +197,6 @@
   transform-origin: center;
 }
 
-/* коли меню відкрите*/
-
-
 .burgerOpen:nth-child(1) {
     transform: translateY(7px) rotate(45deg);
 }
@@ -217,13 +209,10 @@
     transform: translateY(-7px) rotate(-45deg);
 } 
 
-/* ─── Mobile Menu ─── */
-
 .mobileMenu {
   display: flex;
-  align-items: center;
   flex-direction: column;
-  padding: 0 20px;
+  padding: 0 20px 32px;
   border-top: 1px solid var(--color-border);
   background-color: var(--color-bg-page);
   position: fixed;
@@ -232,11 +221,16 @@
   width: 100%;
   height: calc(100dvh - 72px);
   z-index: 9998;
+  overflow: hidden;
 }
 
 .mobileAuth {
-    display: flex;
-    /* margin-bottom: 92px; */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
 }
 
 .mobileLink {
@@ -258,9 +252,7 @@
 }
 
 .mobileDivider {
-  height: 80px;
-  background-color: var(--color-border);
-  margin: 8px 0;
+  flex: 1;
 }
 
 .mobileLocationAdd {
@@ -318,11 +310,7 @@
 }
 
 .mobileUserName {
-    /* max-width: 100px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;*/
-    font-size: 12px; 
+    font-size: 12px;
     margin-right: 8px;
 }
 
@@ -369,7 +357,6 @@
 }
 
 
-/* ─── Tablet ─────────────────── */
 @media (min-width: 768px) {
     .inner {
         max-width: 768px;
@@ -406,7 +393,6 @@
     }
 }
 
-/* ─── Desktop ────────────────── */
 @media (min-width: 1440px) {
     .inner {
         max-width: 1440px;

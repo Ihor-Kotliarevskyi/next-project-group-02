@@ -77,8 +77,6 @@ export default function AddReviewForm({ locationId }: { locationId: string }) {
     <form onSubmit={formik.handleSubmit} className={styles.form} noValidate>
       <h2 className={styles.title}>Залишити відгук</h2>
 
-      
-
       <div className={styles.field}>
         <label htmlFor="comment" className={styles.label}>
           Ваш відгук
@@ -130,9 +128,7 @@ export default function AddReviewForm({ locationId }: { locationId: string }) {
   <button
     type="button"
     className={styles.cancel}
-    onClick={() => {
-      console.log("Скасовано");
-    }}
+    onClick={() => router.back()}
   >
     Відмінити
   </button>

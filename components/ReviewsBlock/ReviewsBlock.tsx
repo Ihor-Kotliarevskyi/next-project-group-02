@@ -31,9 +31,7 @@ async function fetchReviews(): Promise<Feedback[]> {
       });
       const feedbacks: Feedback[] = fbRes.data?.data ?? [];
       collected.push(...feedbacks);
-    } catch {
-      /* skip failed location feedbacks */
-    }
+    } catch {}
   }
 
   const unique = Array.from(new Map(collected.map((r) => [r._id, r])).values());

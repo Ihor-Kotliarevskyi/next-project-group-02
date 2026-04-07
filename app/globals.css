@@ -2,37 +2,31 @@
 @import "swiper/swiper.css";
 
 :root {
-  /* ─── Buttons ─── */
   --color-button-primary: #cc6534;
   --color-button-secondary: rgba(0, 0, 0, 0.05);
   --color-button-primary-hover: #ffe5d9;
   --color-button-secondary-hover: #a95325;
   --color-button-secondary-active: #254c24;
 
-  /* ─── Slider ─── */
   --color-slider-normal: #ffe5d9;
   --color-slider-hover: #f2f2f2;
   --color-slider-active: #ffa57a;
   --color-slider-disabled: rgba(242, 242, 242, 0.4);
 
-  /* ─── Text ─── */
   --color-text-main: #4c2613;
   --color-text-input: #1b391b;
   --color-text-input-error: #b00101;
   --color-text-input-placeholder: rgba(0, 0, 0, 0.6);
 
-  /* ─── Backgrounds ─── */
   --color-bg-page: #fff2ec;
   --color-bg-white: #ffffff;
   --color-bg-input: #ffe5d9;
   --color-bg-footer: #ffe5d9;
   --color-bg-disabled: #f2f2f2;
 
-  /* ─── Overlays ─── */
   --color-overlay: rgba(0, 0, 0, 0.6);
   --color-overlay-light: rgba(0, 0, 0, 0.25);
 
-  /* ─── Typography ─── */
   --font-size-xs: 12px;
   --font-size-sm: 14px;
   --font-size-base: 16px;
@@ -50,17 +44,14 @@
   --line-height-normal: 1.5;
   --line-height-loose: 1.7;
 
-  /* ─── Layout ─── */
   --container-max: 1440px;
   --container-padding-mobile: 20px;
   --container-padding-tablet: 32px;
   --container-padding-desktop: 64px;
 
-  /* ─── Transitions ─── */
   --transition-base: 0.2s ease;
 }
 
-/* ─── Reset ─── */
 *,
 *::before,
 *::after {
@@ -69,7 +60,6 @@
   margin: 0;
 }
 
-/* ─── Base ─── */
 html {
   height: 100%;
   scroll-behavior: smooth;

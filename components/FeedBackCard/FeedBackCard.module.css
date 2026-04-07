@@ -48,7 +48,6 @@
   margin-top: -4px;
 }
 
-/* Tablet */
 @media (min-width: 768px) {
   .card {
     padding: 16px;
