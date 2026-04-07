@@ -223,7 +223,16 @@
   z-index: 9998;
   overflow: hidden;
 }
-
+.mobileAuthContainer,
+.mobileGuestContainer {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 24px;
+    width: 100%;
+    margin-top: auto;
+    margin-bottom: 92px;
+}
 .mobileAuth {
   display: flex;
   align-items: center;
@@ -258,6 +267,7 @@
 .mobileLocationAdd {
     border: 1px solid var(--color-button-primary);
     width: 100%;
+    max-width: 335px;
     border-radius: 6px;
     padding: 4px 10px;
     font-size: 14px;
@@ -315,11 +325,12 @@
 }
 
 .mobileNotAuth {
-    display: flex;
+    display: contents;
+    /* display: flex;
     flex-direction: column;
     gap: 24px;
-    width: 100%;
-    margin-bottom: 92px;
+    width: 100%; */
+    /* margin-bottom: 92px; */
 }
 .mobileLinkLog {
     border: 1px solid var(--color-overlay-light);
@@ -327,6 +338,7 @@
     border-radius: 6px;
     padding: 4px 10px;
     width: 100%;
+    max-width: 335px;
     font-size: 16px;
     text-align: center;
     font-weight: var(--font-weight-medium);
@@ -343,6 +355,7 @@
     border-radius: 6px;
     padding: 4px 10px;
     width: 100%;
+    max-width: 335px;
     font-size: 16px;
     text-align: center;
     font-weight: var(--font-weight-medium);
