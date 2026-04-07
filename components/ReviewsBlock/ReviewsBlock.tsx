@@ -12,6 +12,7 @@ import { Feedback } from "@/types/feedBackCard";
 import clientApi from "@/lib/api/clientApi";
 import styles from "./ReviewsBlock.module.css";
 import Icon from "@/components/Icon/Icon";
+import toast from "react-hot-toast";
 
 const MAX_REVIEWS = 9;
 
@@ -31,7 +32,9 @@ async function fetchReviews(): Promise<Feedback[]> {
       });
       const feedbacks: Feedback[] = fbRes.data?.data ?? [];
       collected.push(...feedbacks);
-    } catch {}
+    } catch {
+      toast.error("Не вдалося завантажити відгуки");
+    }
   }
 
   const unique = Array.from(new Map(collected.map((r) => [r._id, r])).values());
