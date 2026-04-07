@@ -58,7 +58,7 @@ export default async function ProfilePage({ params }: Props) {
   return (
     <main className={css.mainContent}>
       <div className={css.profile}>
-        <ProfileInfo user={user} />
+        <ProfileInfo user={user} isEditable={isOwnProfile} />
 
         <div className={css.locations}>
           {hasLocations ? (

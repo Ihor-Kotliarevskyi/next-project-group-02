@@ -22,7 +22,7 @@ export default async function Profile() {
   return (
     <main className={css.mainContent}>
       <div className={css.profile}>
-        <ProfileInfo user={user} />
+        <ProfileInfo user={user} isEditable={true} />
 
         <div className={css.locations}>
           {hasLocations ? (
