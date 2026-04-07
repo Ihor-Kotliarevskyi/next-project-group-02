@@ -326,7 +326,9 @@
 
 .mobileNotAuth {
     display: contents;
-    /* display: flex;
+}
+
+/* display: flex;
     flex-direction: column;
     gap: 16px;
     width: 100%;
