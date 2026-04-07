@@ -10,9 +10,9 @@ export const getLocationValidationSchema = (isEdit: boolean) =>
             if (!value) return true;
             return ["image/jpeg", "image/png"].includes(value.type);
           })
-          .test("fileSize", "Розмір фото не повинен перевищувати 1 МБ", (value) => {
+          .test("fileSize", "Розмір фото не повинен перевищувати 4 МБ", (value) => {
             if (!value) return true;
-            return value.size <= 1024 * 1024;
+            return value.size <= 4 * 1024 * 1024;
           }),
 
     name: Yup.string()

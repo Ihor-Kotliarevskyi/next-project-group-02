@@ -87,7 +87,8 @@
   transition: all 0.2s ease;
 }
 
-.editLink {
+.editLink,
+.deleteBtn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -97,11 +98,18 @@
   border: 1px solid #e7c7b5;
   border-radius: 8px;
   background-color: #f7ddd0;
+  color: #4c2613;
   transition: all 0.2s ease;
 }
 
+.deleteBtn {
+  padding: 0;
+  cursor: pointer;
+}
+
 .button:hover,
-.editLink:hover {
+.editLink:hover,
+.deleteBtn:hover {
   background-color: var(--color-button-secondary-hover);
   border-color: var(--color-button-secondary-hover);
   color: var(--color-bg-white);
@@ -110,6 +118,11 @@
 
 .editLink:hover img {
   filter: brightness(0) invert(1);
+}
+
+.deleteBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 @media (min-width: 768px) {

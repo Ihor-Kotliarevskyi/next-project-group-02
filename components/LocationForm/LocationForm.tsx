@@ -23,6 +23,7 @@ type Props = {
     region: string;
     description: string;
     image?: string;
+    imagePublicId?: string;
     coordinates?: { lat: number; lon: number };
   };
   regions: { slug: string; region: string }[];
@@ -76,19 +77,29 @@ export default function LocationForm({
     { setSubmitting }: FormikHelpers<LocationFormValues>,
   ) => {
     try {
-      let imageUrl = initialData?.image || "https://picsum.photos/300";
-      if (values.imageFile) {
-        imageUrl = await uploadImage(values.imageFile);
-      }
-
-      const payload = {
+      const payload: {
+        name: string;
+        locationType: string;
+        region: string;
+        description: string;
+        coordinates: { lat: number; lon: number };
+        image?: string;
+        imagePublicId?: string;
+      } = {
         name: values.name,
         locationType: values.locationType,
         region: values.region,
         description: values.description,
-        image: imageUrl,
         coordinates: { lat: values.lat, lon: values.lon },
       };
+
+      if (values.imageFile) {
+        const uploaded = await uploadImage(values.imageFile);
+        payload.image = uploaded.url;
+        payload.imagePublicId = uploaded.publicId;
+      } else if (!isEdit) {
+        payload.image = "https://picsum.photos/300";
+      }
 
       const data = isEdit
         ? await updateLocation(id!, payload)

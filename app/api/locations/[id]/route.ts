@@ -67,13 +67,17 @@ export async function DELETE(
     const { id } = await params;
     const cookie = req.headers.get("cookie") || "";
 
-    const { data } = await api.delete(`/locations/${id}`, {
+    const response = await api.delete(`/locations/${id}`, {
       headers: {
         Cookie: cookie,
       },
     });
 
-    return NextResponse.json(data);
+    if (response.status === 204 || !response.data) {
+      return new NextResponse(null, { status: 204 });
+    }
+
+    return NextResponse.json(response.data);
   } catch (error) {
     if (isAxiosError(error)) {
       return NextResponse.json(
