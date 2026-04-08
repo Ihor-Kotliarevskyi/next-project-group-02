@@ -1,5 +1,5 @@
 .card {
-  background: #ffe5d9;
+  background: var(--color-surface);
   border-radius: 16px;
   padding: 16px;
   display: flex;
@@ -13,17 +13,12 @@
   display: flex;
   gap: 4px;
   align-items: center;
-}
-
-.star {
-  color: #ffc107;
-  font-size: 18px;
-  line-height: 1;
+  color: var(--color-star);
 }
 
 .description {
   font-size: 16px;
-  color: #4c2613;
+  color: var(--color-text-main);
   line-height: 1.5;
   flex: 1;
   overflow: hidden;
@@ -36,14 +31,14 @@
 .author {
   font-size: 16px;
   font-weight: 600;
-  color: #4c2613;
+  color: var(--color-text-main);
   margin-top: 4px;
   line-height: 1.5;
 }
 
 .locationType {
   font-size: 12px;
-  color: #888;
+  color: var(--color-text-muted);
   font-weight: 400;
   margin-top: -4px;
 }

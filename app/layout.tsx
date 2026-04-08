@@ -28,6 +28,8 @@ export const metadata: Metadata = {
   },
 };
 
+const themeScript = `(function(){try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}})()`;
+
 export default function RootLayout({
   children,
   modal,
@@ -36,7 +38,10 @@ export default function RootLayout({
   modal: React.ReactNode;
 }) {
   return (
-    <html lang="uk" className={montserrat.variable}>
+    <html lang="uk" className={montserrat.variable} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body>
         <TanStackProvider>
           <AuthProvider>

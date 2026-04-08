@@ -1,5 +1,5 @@
 .section {
-  background: #fff2ec;
+  background: var(--color-bg-page);
 }
 
 .container {
@@ -9,13 +9,12 @@
   width: 100%;
 }
 
-
 .title {
   font-weight: 700;
   font-size: 28px;
   line-height: 1.2;
   letter-spacing: -0.01em;
-  color: #4c2613;
+  color: var(--color-text-main);
   margin-bottom: 40px;
 }
 
@@ -33,9 +32,9 @@
   width: 44px;
   height: 44px;
   border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  background: #ffe5d9;
-  color: #4c2613;
+  border: 1px solid var(--color-overlay-light);
+  background: var(--color-surface);
+  color: var(--color-text-main);
   padding: 12px;
   cursor: pointer;
   display: flex;
@@ -46,15 +45,15 @@
 }
 
 .arrowBtn:hover:not(:disabled) {
-  background: #ffa57a;
-  border-color: #ffa57a;
-  color: #4c2613;
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-text-main);
 }
 
 .arrowBtn:disabled {
-  background: #f2f2f2;
-  border-color: #ffa57a;
-  color: #4c2613;
+  background: var(--color-bg-disabled);
+  border-color: var(--color-accent);
+  color: var(--color-text-main);
   cursor: not-allowed;
   opacity: 0.6;
 }
@@ -63,7 +62,7 @@
 .error,
 .empty {
   text-align: center;
-  color: #888;
+  color: var(--color-text-muted);
   padding: 32px 0;
   font-size: 15px;
 }
@@ -88,5 +87,4 @@
   .title {
     font-size: 52px;
   }
-
 }

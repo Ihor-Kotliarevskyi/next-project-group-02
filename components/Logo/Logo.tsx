@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import css from "./Logo.module.css";
 
 export default function Logo() {
   return (
@@ -10,6 +11,7 @@ export default function Logo() {
           alt="Relax Map logo"
           width={129}
           height={36}
+          className={css.logoImg}
         />
       </Link>
     </div>

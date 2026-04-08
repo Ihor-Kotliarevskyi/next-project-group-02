@@ -21,7 +21,7 @@
   width: 100%;
   padding: 48px 0;
   text-align: center;
-  color: #6b5d56;
+  color: var(--color-text-warm-muted);
   font-size: 16px;
   line-height: 1.5;
 }

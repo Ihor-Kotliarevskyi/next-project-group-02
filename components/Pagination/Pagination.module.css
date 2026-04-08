@@ -21,10 +21,10 @@
   min-width: calc(40 * 100vw / 375);
   height: calc(40 * 100vw / 375);
   padding: calc(6 * 100vw / 375) calc(8 * 100vw / 375);
-  border: 1px solid #e5cfc2;
+  border: 1px solid var(--color-border-warm);
   border-radius: calc(8 * 100vw / 375);
-  background-color: #ffe5d9;
-  color: #4c2613;
+  background-color: var(--color-surface);
+  color: var(--color-text-main);
   font-size: calc(14 * 100vw / 375);
   font-weight: 500;
   line-height: 1;
@@ -38,24 +38,24 @@
 
 .pageBtn:hover,
 .pageBtn:focus-visible {
-  background-color: #ffa57a;
-  border-color: #ffa57a;
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
   outline: none;
 }
 
 .active {
-  background-color: #cc6534;
-  border-color: #cc6534;
-  color: #fff;
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
 }
 
 .pagerArrow {
   width: calc(40 * 100vw / 375);
   height: calc(40 * 100vw / 375);
   border-radius: calc(8 * 100vw / 375);
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  background: #ffe5d9;
-  color: #4c2613;
+  border: 1px solid var(--color-overlay-light);
+  background: var(--color-surface);
+  color: var(--color-text-main);
   padding: calc(10 * 100vw / 375);
   cursor: pointer;
   display: flex;
@@ -76,9 +76,9 @@
 
 .pagerArrow:hover:not(:disabled),
 .pagerArrow:focus-visible:not(:disabled) {
-  background: #ffa57a;
-  border-color: #ffa57a;
-  color: #4c2613;
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-text-main);
   outline: none;
 }
 
@@ -93,7 +93,7 @@
   justify-content: center;
   min-width: calc(20 * 100vw / 375);
   height: calc(40 * 100vw / 375);
-  color: #4c2613;
+  color: var(--color-text-main);
   font-size: calc(14 * 100vw / 375);
   line-height: 1;
 }

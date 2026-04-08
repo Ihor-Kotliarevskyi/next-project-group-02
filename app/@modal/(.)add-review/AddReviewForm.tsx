@@ -16,7 +16,7 @@ const schema = Yup.object({
     .required("Обовʼязково"),
 });
 
-const STAR_COLOR = "fill: #000;";
+const STAR_COLOR = "currentColor";
 
 function StarIcon({ type }: { type: "full" | "half" | "empty" }) {
   if (type === "full") {

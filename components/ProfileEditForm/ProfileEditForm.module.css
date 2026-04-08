@@ -76,7 +76,7 @@
   font-size: 16px;
   font-family: var(--font-family);
   color: var(--color-text-primary);
-  background-color: #ffe5d9;
+  background-color: var(--color-surface);
   outline: none;
   transition: border-color var(--transition-base);
 }
@@ -87,6 +87,26 @@
 
 .input::placeholder {
   color: var(--color-text-muted);
+}
+
+.input:-webkit-autofill,
+.input:-webkit-autofill:hover,
+.input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px var(--color-surface) inset;
+  -webkit-text-fill-color: var(--color-text-main);
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+[data-theme="dark"] .input:not(:placeholder-shown) {
+  background-color: var(--color-surface);
+  color: var(--color-text-main);
+}
+
+[data-theme="dark"] .input:-webkit-autofill,
+[data-theme="dark"] .input:-webkit-autofill:hover,
+[data-theme="dark"] .input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px #3d2419 inset;
+  -webkit-text-fill-color: #f5e6d8;
 }
 
 .error {
