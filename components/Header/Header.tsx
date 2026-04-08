@@ -9,6 +9,7 @@ import Logo from "../Logo/Logo";
 import Image from "next/image";
 import Logout from "../Logout/Logout";
 import Icon from "@/components/Icon/Icon";
+import ThemeToggle from "@/components/ThemeToggle/ThemeToggle";
 
 export default function Header() {
   const pathname = usePathname();
@@ -81,6 +82,8 @@ export default function Header() {
             )}
           </div>
         </div>
+
+        <ThemeToggle />
 
         <button
           type="button"
@@ -156,6 +159,7 @@ export default function Header() {
                       alt="Exit"
                       width={24}
                       height={24}
+                      className={css.logoutIcon}
                     />
                   </Link>
                 </div>

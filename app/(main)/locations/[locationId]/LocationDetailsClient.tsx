@@ -56,16 +56,14 @@ function StarIcon({ type }: { type: "full" | "half" | "empty" }) {
       </defs>
       <path
         d={starPath}
-        fill="#F4D9CD"
-        stroke="#1D241D"
+        style={{ fill: "var(--color-star-empty, #F4D9CD)", stroke: "var(--color-star-stroke, #1D241D)" }}
         strokeWidth="1.5"
         strokeLinejoin="round"
       />
       {type === "full" && (
         <path
           d={starPath}
-          fill="#1D241D"
-          stroke="#1D241D"
+          style={{ fill: "var(--color-star-full, #1D241D)", stroke: "var(--color-star-full, #1D241D)" }}
           strokeWidth="1.5"
           strokeLinejoin="round"
         />
@@ -73,8 +71,7 @@ function StarIcon({ type }: { type: "full" | "half" | "empty" }) {
       {type === "half" && (
         <path
           d={starPath}
-          fill="#1D241D"
-          stroke="#1D241D"
+          style={{ fill: "var(--color-star-full, #1D241D)", stroke: "var(--color-star-full, #1D241D)" }}
           strokeWidth="1.5"
           strokeLinejoin="round"
           clipPath={`url(#half-star-${type})`}

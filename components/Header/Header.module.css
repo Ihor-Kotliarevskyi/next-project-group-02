@@ -188,7 +188,7 @@
   display: block;
   width: 90%;
   height: 2px;
-  background-color: black;
+  background-color: var(--color-text-dark);
   border-radius: 999px;
   margin: 0 auto;
   transition:
@@ -326,6 +326,14 @@
 
 .mobileNotAuth {
     display: contents;
+}
+
+.logoutIcon {
+    display: block;
+}
+
+[data-theme="dark"] .logoutIcon {
+    filter: brightness(0) invert(1);
 }
 
 /* display: flex;

@@ -53,6 +53,22 @@
   color: rgba(0, 0, 0, 0.4);
 }
 
+[data-theme="dark"] .placeholder {
+  color: var(--color-text-input-placeholder);
+}
+
+[data-theme="dark"] .select,
+[data-theme="dark"] .locationInput,
+[data-theme="dark"] .dropdown {
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .uploadBtn,
+[data-theme="dark"] .locationCancel {
+  border-color: var(--color-border);
+  background-color: var(--color-button-secondary);
+}
+
 .dropdown {
   position: absolute;
   top: calc(100% + 4px);
@@ -149,6 +165,11 @@
   padding: 8px;
   min-height: 40px;
   background: var(--color-slider-normal);
+  color: var(--color-text-input);
+}
+
+.locationInput::placeholder {
+  color: var(--color-text-input-placeholder);
 }
 
 .locationInput:focus {
@@ -158,13 +179,13 @@
 
 .textarea {
   min-height: 180px;
-  resize: none;
-  overflow: hidden;
+  resize: vertical;
+  overflow-y: auto;
 }
 
 .inputError {
-  border-color: #b00101;
-  color: #b00101;
+  border-color: var(--color-error);
+  color: var(--color-error);
 }
 
 .inputError::placeholder {

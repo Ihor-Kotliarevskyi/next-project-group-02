@@ -2,31 +2,70 @@
 @import "swiper/swiper.css";
 
 :root {
+  /* ── Primary / Accent ── */
+  --color-primary: #cc6534;
+  --color-primary-dark: #a95325;
+  --color-primary-light: #ffa57a;
+  --color-accent: #ffa57a;
+  --color-star: #ffc107;
+  --color-star-full: #1D241D;
+  --color-star-empty: #F4D9CD;
+  --color-star-stroke: #1D241D;
+
+  /* ── Buttons ── */
   --color-button-primary: #cc6534;
-  --color-button-secondary: rgba(0, 0, 0, 0.05);
   --color-button-primary-hover: #ffe5d9;
+  --color-button-secondary: rgba(0, 0, 0, 0.05);
   --color-button-secondary-hover: #a95325;
   --color-button-secondary-active: #254c24;
 
+  /* ── Slider ── */
   --color-slider-normal: #ffe5d9;
   --color-slider-hover: #f2f2f2;
   --color-slider-active: #ffa57a;
   --color-slider-disabled: rgba(242, 242, 242, 0.4);
 
+  /* ── Text ── */
   --color-text-main: #4c2613;
+  --color-text-primary: #4c2613;
+  --color-text-secondary: #1b391b;
+  --color-text-dark: #1f1f1f;
+  --color-text-muted: #888888;
+  --color-text-warm-muted: #6b5d56;
+  --color-text-medium: #4c4c4c;
+  --color-text-green: #6f8864;
   --color-text-input: #1b391b;
   --color-text-input-error: #b00101;
   --color-text-input-placeholder: rgba(0, 0, 0, 0.6);
 
+  /* ── Backgrounds ── */
   --color-bg-page: #fff2ec;
   --color-bg-white: #ffffff;
   --color-bg-input: #ffe5d9;
   --color-bg-footer: #ffe5d9;
   --color-bg-disabled: #f2f2f2;
+  --color-bg-advantages: #fdf4ee;
+  --color-surface: #ffe5d9;
+  --color-surface-light: #f7ddd0;
 
+  /* ── Borders ── */
+  --color-border: #d0d5dd;
+  --color-border-warm: #e7c7b5;
+
+  /* ── Overlays ── */
   --color-overlay: rgba(0, 0, 0, 0.6);
   --color-overlay-light: rgba(0, 0, 0, 0.25);
 
+  /* ── Status ── */
+  --color-error: #b00101;
+
+  /* ── Misc / Aliases ── */
+  --color-scheme-2-text: #4c2613;
+  --color-coral-primary: #cc6534;
+  --radius-full: 9999px;
+  --font-family: var(--font-montserrat);
+
+  /* ── Typography ── */
   --font-size-xs: 12px;
   --font-size-sm: 14px;
   --font-size-base: 16px;
@@ -44,6 +83,7 @@
   --line-height-normal: 1.5;
   --line-height-loose: 1.7;
 
+  /* ── Layout ── */
   --container-max: 1440px;
   --container-padding-mobile: 20px;
   --container-padding-tablet: 32px;
@@ -52,6 +92,74 @@
   --transition-base: 0.2s ease;
 }
 
+/* ════════════════════════════════════════
+   DARK THEME
+   ════════════════════════════════════════ */
+[data-theme="dark"] {
+  /* ── Primary / Accent ── */
+  --color-primary: #e0754a;
+  --color-primary-dark: #c7643a;
+  --color-primary-light: #d4734a;
+  --color-accent: #d4734a;
+
+  /* ── Buttons ── */
+  --color-button-primary: #e0754a;
+  --color-button-primary-hover: #4a2e20;
+  --color-button-secondary: rgba(255, 255, 255, 0.06);
+  --color-button-secondary-hover: #e0754a;
+
+  /* ── Slider ── */
+  --color-slider-normal: #3d2419;
+  --color-slider-hover: #4a2e20;
+  --color-slider-active: #e0754a;
+  --color-slider-disabled: rgba(61, 36, 25, 0.4);
+
+  /* ── Text ── */
+  --color-text-main: #f5e6d8;
+  --color-text-primary: #f5e6d8;
+  --color-text-secondary: #a8c4a0;
+  --color-text-dark: #f5e6d8;
+  --color-text-muted: #8a7a72;
+  --color-text-warm-muted: #9a8a82;
+  --color-text-medium: #c4b4ac;
+  --color-text-green: #8fb88a;
+  --color-text-input: #f5e6d8;
+  --color-text-input-placeholder: rgba(245, 230, 216, 0.5);
+
+  /* ── Backgrounds ── */
+  --color-bg-page: #1a0d06;
+  --color-bg-white: #2d1812;
+  --color-bg-input: #3d2419;
+  --color-bg-footer: #2d1812;
+  --color-bg-disabled: #3d2419;
+  --color-bg-advantages: #221008;
+  --color-surface: #3d2419;
+  --color-surface-light: #4a2e20;
+
+  /* ── Borders ── */
+  --color-border: #4a3028;
+  --color-border-warm: #5a3828;
+
+  /* ── Overlays ── */
+  --color-overlay: rgba(0, 0, 0, 0.75);
+  --color-overlay-light: rgba(255, 255, 255, 0.12);
+
+  /* ── Stars ── */
+  --color-star-full: #e0754a;
+  --color-star-empty: #3d2419;
+  --color-star-stroke: #e0754a;
+
+  /* ── Status ── */
+  --color-error: #ff6b6b;
+  --color-text-input-error: #ff6b6b;
+
+  /* ── Misc ── */
+  --color-scheme-2-text: #f5e6d8;
+}
+
+/* ════════════════════════════════════════
+   RESET & BASE
+   ════════════════════════════════════════ */
 *,
 *::before,
 *::after {
@@ -80,35 +188,10 @@ body {
   line-height: var(--line-height-normal);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p {
-  margin: 0;
-}
-
-p:last-child {
-  margin-bottom: 0;
-}
-
-ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p {
+h1, h2, h3, h4, h5, h6, p {
   margin: 0;
 }
 
@@ -155,6 +238,7 @@ svg {
   height: auto;
 }
 
+/* ── Layout helpers ── */
 .mainLayout {
   display: flex;
   flex-direction: column;
@@ -172,20 +256,20 @@ svg {
 }
 
 @media screen and (min-width: 375px) {
-  .container {
-    max-width: 375px;
-  }
+  .container { max-width: 375px; }
 }
 
 @media screen and (min-width: 768px) {
   .container {
     max-width: 768px;
+    padding: 0 var(--container-padding-tablet);
   }
 }
 
 @media screen and (min-width: 1440px) {
   .container {
     max-width: 1440px;
+    padding: 0 var(--container-padding-desktop);
   }
 }
 
@@ -194,13 +278,9 @@ svg {
 }
 
 @media screen and (min-width: 768px) {
-  .section {
-    padding: 60px 32px;
-  }
+  .section { padding: 60px 32px; }
 }
 
 @media screen and (min-width: 1440px) {
-  .section {
-    padding: 80px 64px;
-  }
+  .section { padding: 80px 64px; }
 }

@@ -5,7 +5,7 @@
 .heading {
   font-size: 28px;
   font-weight: 700;
-  color: #274628;
+  color: var(--color-text-secondary);
   margin-bottom: 24px;
 }
 
@@ -22,11 +22,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f2f5f0;
+  background: var(--color-surface);
   border-radius: 20px;
-  color: #6f8864;
+  color: var(--color-text-green);
   font-size: 15px;
-  border: 1px dashed #6f8864;
+  border: 1px dashed var(--color-text-green);
 }
 
 @media (min-width: 768px) {
@@ -36,6 +36,7 @@
 
   .heading {
     font-size: 44px;
+    color: var(--color-text-secondary);
   }
 }
 

@@ -1,5 +1,5 @@
 .section {
-  background: #fff2ec;
+  background: var(--color-bg-page);
   padding-bottom: 48px;
 }
 
@@ -15,7 +15,7 @@
 
 .title {
   margin: 0 0 clamp(34.13px, calc(40 / 375 * 100vw), 40px);
-  color: #1f1f1f;
+  color: var(--color-text-dark);
   font-size: clamp(30.72px, calc(36 / 375 * 100vw), 36px);
   line-height: 1.08;
   font-weight: 700;
@@ -27,7 +27,7 @@
   width: 100%;
   padding: 48px 0;
   text-align: center;
-  color: #6b5d56;
+  color: var(--color-text-warm-muted);
   font-size: 16px;
   line-height: 1.5;
 }

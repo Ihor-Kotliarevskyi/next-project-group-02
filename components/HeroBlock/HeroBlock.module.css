@@ -65,8 +65,8 @@
   font-weight: 400;
   line-height: 1.5;
   letter-spacing: 0%;
-  background-color: #ffe5d9;
-  color: #00000099;
+  background-color: var(--color-surface);
+  color: var(--color-text-input-placeholder);
   transition: all 0.25s ease;
 }
 
@@ -78,20 +78,35 @@
   padding: 8px;
   border-radius: 6px;
   border: none;
-  background: #cc6534;
+  background: var(--color-primary);
   color: white;
   cursor: pointer;
   transition: 0.3s;
 }
 
 .heroSearch input:focus {
-  border: 1px solid #cc6534;
+  border: 1px solid var(--color-primary);
 }
 
 .heroSearch button:hover {
-  background: #ffe5d9;
+  background: var(--color-surface);
   transform: translateY(-2px);
-  color: black;
+  color: var(--color-text-dark);
+}
+
+[data-theme="dark"] .heroSearch input {
+  background-color: rgba(245, 230, 216, 0.15);
+  color: #f5e6d8;
+  border-color: rgba(245, 230, 216, 0.3);
+}
+
+[data-theme="dark"] .heroSearch input::placeholder {
+  color: rgba(245, 230, 216, 0.5);
+}
+
+[data-theme="dark"] .heroSearch input:focus {
+  background-color: rgba(245, 230, 216, 0.22);
+  border-color: var(--color-primary);
 }
 
 @media screen and (min-width: 768px) {

@@ -1,6 +1,6 @@
 import styles from "./FeedBackCard.module.css";
 
-const STAR_COLOR = "fill: #000;";
+const STAR_COLOR = "currentColor";
 
 function StarIcon({ type }: { type: "full" | "half" | "empty" }) {
   if (type === "full") {

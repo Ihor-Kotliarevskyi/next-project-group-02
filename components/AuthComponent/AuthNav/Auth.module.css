@@ -2,7 +2,7 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #fff2ec;
+  background-color: var(--color-bg-page);
 }
 
 .content {
@@ -46,13 +46,13 @@
   padding: 12px 0 8px;
   cursor: pointer;
   position: relative;
-  color: #8f8178;
+  color: var(--color-text-muted);
   transition: 0.2s;
 }
 
 .authBtn:hover,
 .authBtn.active {
-  color: #000;
+  color: var(--color-text-dark);
 }
 
 .title {
@@ -78,31 +78,56 @@
   padding: 0 16px;
   border-radius: 8px;
   border: 1px solid transparent;
-  background-color: #ffe5d9;
+  background-color: var(--color-surface);
+  color: var(--color-text-main);
   font-size: 14px;
 }
 
 .input::placeholder {
-  color: #9a8f88;
+  color: var(--color-text-muted);
 }
 
 .input:hover {
-  background-color: #fdd9c9;
+  background-color: var(--color-surface-light);
 }
 
 .input:focus {
   outline: none;
-  border-color: #c7642f;
-  background-color: #fff;
+  border-color: var(--color-primary-dark);
+  background-color: var(--color-bg-white);
+}
+
+.input:-webkit-autofill,
+.input:-webkit-autofill:hover,
+.input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px var(--color-surface) inset;
+  -webkit-text-fill-color: var(--color-text-main);
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+[data-theme="dark"] .input:focus {
+  background-color: var(--color-surface-light);
+}
+
+[data-theme="dark"] .input:not(:placeholder-shown) {
+  background-color: var(--color-surface);
+  color: var(--color-text-main);
+}
+
+[data-theme="dark"] .input:-webkit-autofill,
+[data-theme="dark"] .input:-webkit-autofill:hover,
+[data-theme="dark"] .input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px #3d2419 inset;
+  -webkit-text-fill-color: #f5e6d8;
 }
 
 .input.inputError {
-  border-color: red;
+  border-color: var(--color-error);
 }
 
 .error {
   font-size: 12px;
-  color: red;
+  color: var(--color-error);
 }
 
 .submitBtn {
@@ -114,7 +139,7 @@
   border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
-  background-color: #c7642f;
+  background-color: var(--color-primary-dark);
   border: none;
   color: white;
   cursor: pointer;
@@ -122,11 +147,11 @@
 }
 
 .submitBtn:hover {
-  background-color: #a95325;
+  background-color: var(--color-primary);
 }
 
 .submitBtn:active {
-  background-color: #8e471f;
+  background-color: var(--color-primary-dark);
 }
 
 .submitBtn:disabled {
@@ -141,9 +166,10 @@
   text-align: center;
   margin-top: auto;
 }
+
 .footer p {
   font-size: 12px;
-  color: #555;
+  color: var(--color-text-muted);
 }
 
 .authBtn.active::after {
@@ -153,7 +179,7 @@
   left: 50%;
   transform: translateX(-50%);
   height: 1px;
-  background-color: #c5b5aa;
+  background-color: var(--color-border-warm);
   width: 70%;
 }
 

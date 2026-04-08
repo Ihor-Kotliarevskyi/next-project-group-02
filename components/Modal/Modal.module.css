@@ -1,20 +1,20 @@
 .backdrop {
-    position: fixed;
-    inset: 0;
-    z-index: 1000;
-    background: rgba(17, 17, 17, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-    overflow-y: auto;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(17, 17, 17, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overflow-y: auto;
 }
 
 .modal {
   position: relative;
   width: 100%;
   max-width: 334px;
-  background: #fff2ec;
+  background: var(--color-bg-white);
   border-radius: 24px;
   padding: 64px 20px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
@@ -31,7 +31,7 @@
   font-size: 28px;
   line-height: 1;
   cursor: pointer;
-  color: #101828;
+  color: var(--color-text-dark);
   transition: color var(--transition-base);
 }
 

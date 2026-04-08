@@ -1,0 +1,7 @@
+.logoImg {
+  display: block;
+}
+
+[data-theme="dark"] .logoImg {
+  filter: brightness(0) invert(1);
+}
