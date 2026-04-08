@@ -1,5 +1,5 @@
-import ConfirmationModal from "@/components/ConfirmationModal/ConfirmationModal";
+import LogoutConfirmModal from "@/components/LogoutConfirmModal/LogoutConfirmModal";
 
 export default function LogoutConfirmPage() {
-  return <ConfirmationModal />;
+  return <LogoutConfirmModal />;
 }

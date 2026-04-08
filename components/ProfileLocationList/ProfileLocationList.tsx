@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { useLocationStore } from "@/lib/store/locationStore";
 import LocationCard from "@/components/LocationCard/LocationCard";
 import Pagination from "@/components/Pagination/Pagination";
+import DeleteLocationModal from "@/components/DeleteLocationModal/DeleteLocationModal";
 import css from "./ProfileLocationList.module.css";
 import { Location } from "@/types/location";
 import { getLocationTypes } from "@/lib/api/clientApi";
@@ -26,6 +27,18 @@ export default function ProfileLocationList({
   const page = Number(searchParams.get("page") ?? "1");
 
   const [limit, setLimit] = useState(4);
+  const [deletingLocation, setDeletingLocation] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
+
+  const handleRequestDelete = useCallback((id: string, name: string) => {
+    setDeletingLocation({ id, name });
+  }, []);
+
+  const handleCloseDeleteModal = useCallback(() => {
+    setDeletingLocation(null);
+  }, []);
 
   useEffect(() => {
     const mql = window.matchMedia("(min-width: 1440px)");
@@ -89,6 +102,7 @@ export default function ProfileLocationList({
                 }
                 rate={location.rate}
                 isEditable={isEditable}
+                onDelete={isEditable ? handleRequestDelete : undefined}
               />
             ))
           )}
@@ -98,6 +112,14 @@ export default function ProfileLocationList({
           <Pagination currentPage={currentPage} totalPages={totalPages} />
         )}
       </div>
+
+      {deletingLocation && (
+        <DeleteLocationModal
+          locationId={deletingLocation.id}
+          locationName={deletingLocation.name}
+          onClose={handleCloseDeleteModal}
+        />
+      )}
     </section>
   );
 }

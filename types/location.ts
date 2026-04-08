@@ -1,6 +1,7 @@
 export type Location = {
   _id: string;
   image: string;
+  imagePublicId?: string;
   name: string;
   locationType: string;
   region: string;
@@ -18,6 +19,7 @@ export type NewLocation = {
   region: string;
   description: string;
   image?: string;
+  imagePublicId?: string;
 };
 
 export type LocationFormValues = {

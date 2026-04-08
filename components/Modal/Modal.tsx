@@ -13,15 +13,20 @@ import Icon from "@/components/Icon/Icon";
 
 type ModalProps = {
   children: ReactNode;
+  onClose?: () => void;
 };
 
-export default function Modal({ children }: ModalProps) {
+export default function Modal({ children, onClose }: ModalProps) {
   const router = useRouter();
   const contentRef = useRef<HTMLDivElement>(null);
 
   const closeModal = useCallback(() => {
-    router.back();
-  }, [router]);
+    if (onClose) {
+      onClose();
+    } else {
+      router.back();
+    }
+  }, [onClose, router]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {

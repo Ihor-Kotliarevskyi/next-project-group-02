@@ -1,56 +1,52 @@
 "use client";
 
-import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { useAuthStore } from "@/lib/store/authStore";
-import { logout as logoutApi } from "@/lib/api/clientApi";
 import Modal from "@/components/Modal/Modal";
 import css from "./ConfirmationModal.module.css";
 
-export default function ConfirmationModal() {
-  const queryClient = useQueryClient();
-  const logout = useAuthStore((state) => state.logout);
-  const [isLoading, setIsLoading] = useState(false);
+type ConfirmationModalProps = {
+  title: string;
+  text?: string;
+  confirmLabel: string;
+  cancelLabel?: string;
+  loadingLabel?: string;
+  isLoading?: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+};
 
-  const handleCancel = () => {
-    window.history.back();
-  };
-
-  const handleConfirm = async () => {
-    setIsLoading(true);
-    try {
-      await logoutApi();
-    } finally {
-      logout();
-      queryClient.removeQueries({ queryKey: ["currentUser"] });
-      setIsLoading(false);
-      window.location.href = "/";
-    }
-  };
-
+export default function ConfirmationModal({
+  title,
+  text,
+  confirmLabel,
+  cancelLabel = "Скасувати",
+  loadingLabel = "Завантаження...",
+  isLoading = false,
+  onConfirm,
+  onCancel,
+}: ConfirmationModalProps) {
   return (
-    <Modal>
+    <Modal onClose={onCancel}>
       <div className={css.content}>
-        <h2 className={css.title}>Ви точно хочете вийти?</h2>
-        <p className={css.text}>Ми будемо сумувати за вами!</p>
+        <h2 className={css.title}>{title}</h2>
+        {text && <p className={css.text}>{text}</p>}
 
         <div className={css.actions}>
           <button
             type="button"
             className={css.cancelBtn}
-            onClick={handleCancel}
+            onClick={onCancel}
             disabled={isLoading}
           >
-            Скасувати
+            {cancelLabel}
           </button>
 
           <button
             type="button"
             className={css.confirmBtn}
-            onClick={handleConfirm}
+            onClick={onConfirm}
             disabled={isLoading}
           >
-            {isLoading ? "Завантаження..." : "Вийти"}
+            {isLoading ? loadingLabel : confirmLabel}
           </button>
         </div>
       </div>

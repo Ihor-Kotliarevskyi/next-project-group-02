@@ -57,8 +57,8 @@ export default function ProfileEditForm({ user }: ProfileEditFormProps) {
       }
 
       if (avatarFile) {
-        const uploadedUrl = await uploadImage(avatarFile);
-        payload.avatarUrl = uploadedUrl;
+        const uploaded = await uploadImage(avatarFile);
+        payload.avatarUrl = uploaded.url;
       }
 
       const response = await updateMe(payload);
