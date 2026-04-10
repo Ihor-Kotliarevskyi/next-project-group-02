@@ -5,6 +5,7 @@ import { getRegionsServer, getLocationTypesServer } from "@/lib/api/serverApi";
 export const metadata: Metadata = {
   title: "Додати локацію",
   description: "Додайте нове місце для відпочинку на Relax Map",
+  robots: { index: false },
 };
 
 export default async function Page() {

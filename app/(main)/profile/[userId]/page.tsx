@@ -18,12 +18,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { userId } = await params;
   try {
     const user = await getUserByIdServer(userId);
+    const ogImages =
+      user.avatarUrl
+        ? [{ url: user.avatarUrl, alt: user.name }]
+        : user.avatar
+          ? [{ url: user.avatar, alt: user.name }]
+          : [];
+
     return {
       title: `${user.name} — профіль`,
       description: `Профіль користувача ${user.name} на Relax Map`,
       openGraph: {
-        title: `${user.name} — профіль`,
+        title: `${user.name} — профіль | Relax Map`,
         description: `Профіль користувача ${user.name} на Relax Map`,
+        images: ogImages,
       },
     };
   } catch {

@@ -13,7 +13,11 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL
+      ?? process.env.NEXT_PUBLIC_API_URL
+      ?? "http://localhost:3000"
+  ),
   title: {
     default: "Relax Map",
     template: "%s | Relax Map",
@@ -25,6 +29,9 @@ export const metadata: Metadata = {
     title: "Relax Map",
     description: "Знаходьте та діліться місцями для відпочинку в Україні",
     locale: "uk_UA",
+  },
+  twitter: {
+    card: "summary_large_image",
   },
 };
 

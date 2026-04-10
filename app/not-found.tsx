@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import styles from "./not-found.module.css";
+
+export const metadata: Metadata = {
+  title: "Сторінку не знайдено",
+  description: "На жаль, сторінка, яку ви шукаєте, не існує",
+  robots: { index: false },
+};
 
 export default function NotFound() {
   return (
