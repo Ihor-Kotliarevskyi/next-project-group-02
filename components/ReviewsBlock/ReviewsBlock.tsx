@@ -61,7 +61,7 @@ export default function ReviewsBlock() {
   });
 
   return (
-    <section className={styles.section}>
+    <section id="reviews" className={styles.section}>
       <div className={styles.container}>
         <h2 className={styles.title}>Останні відгуки</h2>
         {isLoading && (

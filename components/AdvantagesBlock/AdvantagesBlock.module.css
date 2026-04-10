@@ -30,6 +30,14 @@
   padding: 16px;
   border-radius: 16px;
   transition: all 0.25s ease;
+  display: block;
+  text-decoration: none;
+}
+
+.advantagesCard:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+  cursor: pointer;
 }
 
 .advantagesCardTitle {
