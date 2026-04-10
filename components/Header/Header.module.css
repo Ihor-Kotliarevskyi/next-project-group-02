@@ -87,6 +87,19 @@
     color: var(--color-primary);
 }
 
+.avatarLink,
+.mobileAvatarLink {
+    display: flex;
+    flex-shrink: 0;
+    border-radius: 50%;
+    transition: opacity var(--transition-base);
+}
+
+.avatarLink:hover,
+.mobileAvatarLink:hover {
+    opacity: 0.8;
+}
+
 .profilePage {
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
@@ -116,11 +129,16 @@
 }
 
 .userName {
-    max-width: 100px;
+    margin-left: 8px;
+    max-width: 120px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 12px;
+    font-size: 18px;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    min-width: 72px;
+    width: auto;
 }
 
 .locationAdd {

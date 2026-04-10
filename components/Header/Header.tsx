@@ -86,22 +86,26 @@ export default function Header() {
                 <Link href="/locations/add" className={css.locationAdd}>
                   Поділитись локацією
                 </Link>
-                <Link href={`/profile`} className={css.profileLink}>
-                  {user.avatarUrl ? (
-                    <Image
-                      src={user.avatarUrl}
-                      alt={user.name}
-                      className={css.avatar}
-                      width={32}
-                      height={32}
-                    />
-                  ) : (
-                    <span className={css.avatarFallback}>
-                      {user.name.charAt(0).toUpperCase()}
-                    </span>
-                  )}
-                  <span className={css.userName}>{user.name}</span>
-                </Link>
+                <div className={css.profileLink}>
+                  <Link href="/profile/edit?openAvatar=1" className={css.avatarLink} scroll={false}>
+                    {user.avatarUrl ? (
+                      <Image
+                        src={user.avatarUrl}
+                        alt={user.name}
+                        className={css.avatar}
+                        width={32}
+                        height={32}
+                      />
+                    ) : (
+                      <span className={css.avatarFallback}>
+                        {user.name.charAt(0).toUpperCase()}
+                      </span>
+                    )}
+                  </Link>
+                  <Link href="/profile" className={css.userName}>
+                    {user.name}
+                  </Link>
+                </div>
                 <div className={css.exitHeader}>
                   <Logout />
                 </div>
@@ -174,22 +178,26 @@ export default function Header() {
                   Поділитись локацією
                 </Link>
                 <div className={css.mobileAuth}>
-                  <Link href={`/profile`} className={css.mobileProfileLink}>
-                    {user.avatarUrl ? (
-                      <Image
-                        src={user.avatarUrl}
-                        alt={user.name}
-                        className={css.mobileAvatar}
-                        width={32}
-                        height={32}
-                      />
-                    ) : (
-                      <span className={css.mobileAvatarFallback}>
-                        {user.name.charAt(0).toUpperCase()}
-                      </span>
-                    )}
-                    <span className={css.mobileUserName}>{user.name}</span>
-                  </Link>
+                  <div className={css.mobileProfileLink}>
+                    <Link href="/profile/edit?openAvatar=1" className={css.mobileAvatarLink} scroll={false} onClick={closeMenu}>
+                      {user.avatarUrl ? (
+                        <Image
+                          src={user.avatarUrl}
+                          alt={user.name}
+                          className={css.mobileAvatar}
+                          width={32}
+                          height={32}
+                        />
+                      ) : (
+                        <span className={css.mobileAvatarFallback}>
+                          {user.name.charAt(0).toUpperCase()}
+                        </span>
+                      )}
+                    </Link>
+                    <Link href="/profile" className={css.mobileUserName} onClick={closeMenu}>
+                      {user.name}
+                    </Link>
+                  </div>
                   <Link
                     href="/logout-confirm"
                     className={css.mobileLink}

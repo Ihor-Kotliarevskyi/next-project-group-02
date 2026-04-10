@@ -17,6 +17,11 @@ export const uploadImage = async (file: File): Promise<UploadedImage> => {
   );
 
   if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    const message = errData?.error?.message ?? "";
+    if (res.status === 400 && message.toLowerCase().includes("file size")) {
+      throw new Error("FILE_TOO_LARGE");
+    }
     throw new Error("Не вдалося завантажити зображення");
   }
 
