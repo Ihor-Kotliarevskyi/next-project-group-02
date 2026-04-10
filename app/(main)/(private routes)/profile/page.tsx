@@ -8,6 +8,7 @@ import css from "./ProfilePage.module.css";
 export const metadata: Metadata = {
   title: "Мій профіль",
   description: "Ваш профіль на Relax Map",
+  robots: { index: false },
 };
 
 export default async function Profile() {

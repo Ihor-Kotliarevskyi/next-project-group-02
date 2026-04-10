@@ -18,7 +18,7 @@ export default function HeroBlock() {
       <div className={styles.heroOverlay} />
       <div className={styles.heroContent}>
         <h3 className={styles.heroSubtitle}>
-          Кожен куточок твоєї країни - це історія, яку варто пережити.
+          Кожен куточок України - це історія, яку варто пережити.
           Знайди ідеальне місце для відпочинку серед тисяч перевірених локацій.
         </h3>
         <h1 className={styles.heroTitle}>Рідна. Незвідана. Твоя.</h1>

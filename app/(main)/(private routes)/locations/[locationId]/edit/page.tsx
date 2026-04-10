@@ -13,6 +13,7 @@ type Props = {
 export const metadata: Metadata = {
   title: "Редагування локації",
   description: "Редагуйте інформацію про місце відпочинку на Relax Map",
+  robots: { index: false },
 };
 
 export default async function Page({ params }: Props) {

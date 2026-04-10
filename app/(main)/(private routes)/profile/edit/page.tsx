@@ -6,6 +6,7 @@ import css from "./EditPage.module.css";
 export const metadata: Metadata = {
   title: "Редагування профілю",
   description: "Редагуйте свій профіль на Relax Map",
+  robots: { index: false },
 };
 
 export default async function Page() {
