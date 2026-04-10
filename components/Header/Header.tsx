@@ -38,11 +38,21 @@ export default function Header() {
     { href: "/", label: "Головна" },
   ];
 
+    const handleScrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+
   return (
     <header className={css.header}>
       <div className={css.inner}>
-        <Logo />
-
+<button
+            onClick={handleScrollToTop}
+            className={css.logoWrapper}
+            aria-label="Scroll to top"
+          >
+            <Logo />
+          </button>
         <div className={css.headerSearch}>
           <input
             type="text"

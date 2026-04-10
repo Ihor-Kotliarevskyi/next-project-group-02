@@ -3,11 +3,13 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import ReviewsSection from "@/components/ReviewsSection/ReviewsSection";
 import { Feedback } from "@/types/feedBackCard";
 import LocationMapWrapper from "./LocationMapWrapper";
 import { ReviewAddedDetail } from "@/types/reviewEvents";
 import { locationTypeLabels, regionLabels } from "@/utils/labels";
+import Icon from "@/components/Icon/Icon";
 import styles from "./page.module.css";
 
 type Owner = {
@@ -136,9 +138,18 @@ export default function LocationDetailsClient({
       ? location.ownerId?._id
       : location.ownerId;
   const roundedRate = useMemo(() => roundToHalf(averageRate), [averageRate]);
+  const router = useRouter();
 
   return (
     <>
+      <button
+        type="button"
+        onClick={() => router.back()}
+        className={styles.backBtn}
+      >
+        <Icon name="arrow-left" width={16} height={16} aria-hidden={true} />
+        Назад до локацій
+      </button>
       <article className={styles.card}>
         <div className={styles.imageWrap}>
           <Image

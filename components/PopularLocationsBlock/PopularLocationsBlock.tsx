@@ -18,7 +18,7 @@ export default function PopularLocationsBlock() {
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["popularLocations"],
-    queryFn: () => getLocations({ page: 1, limit: 6 }),
+    queryFn: () => getLocations({ page: 1, limit: 12, sortBy: "rate", order: "desc" }),
   });
 
   const { data: locationTypes = [] } = useQuery<
@@ -35,7 +35,9 @@ export default function PopularLocationsBlock() {
 
   const locations = useMemo(() => {
     const list = (data?.locations as Location[]) ?? [];
-    return [...list].sort((a, b) => b.rate - a.rate);
+    return [...list]
+      .filter((loc) => loc.rate >= 3.5)
+      .sort((a, b) => b.rate - a.rate);
   }, [data]);
 
   return (
