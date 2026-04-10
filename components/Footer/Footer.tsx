@@ -49,11 +49,6 @@ export default function Footer() {
                 Головна
               </Link>
             </li>
-            <li className={css.items}>
-              <Link href="/locations" className={css.itemsLink}>
-                Місця відпочинку
-              </Link>
-            </li>
           </ul>
         </div>
         <div className={css.copy}>

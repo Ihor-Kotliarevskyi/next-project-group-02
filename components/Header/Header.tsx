@@ -1,32 +1,61 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import css from "./Header.module.css";
 import Logo from "../Logo/Logo";
 import Image from "next/image";
 import Logout from "../Logout/Logout";
-import Icon from "@/components/Icon/Icon";
 import ThemeToggle from "@/components/ThemeToggle/ThemeToggle";
 
 export default function Header() {
   const pathname = usePathname();
+  const router = useRouter();
   const user = useAuthStore((s) => s.user);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [query, setQuery] = useState("");
+
+  const handleSearch = useCallback(() => {
+    const trimmedQuery = query.trim();
+    if (!trimmedQuery) return;
+    router.push(`/locations?search=${encodeURIComponent(trimmedQuery)}`);
+    setQuery("");
+    setMenuOpen(false);
+  }, [query, router]);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") handleSearch();
+    },
+    [handleSearch],
+  );
 
   const closeMenu = () => setMenuOpen(false);
 
   const navLinks = [
     { href: "/", label: "Головна" },
-    { href: "/locations", label: "Місця відпочинку" },
   ];
 
   return (
     <header className={css.header}>
       <div className={css.inner}>
         <Logo />
+
+        <div className={css.headerSearch}>
+          <input
+            type="text"
+            className={css.headerSearchInput}
+            placeholder="Пошук локацій..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
+          <button className={css.headerSearchBtn} onClick={handleSearch}>
+            Знайти
+          </button>
+        </div>
 
         <div className={css.rightSide}>
           <nav className={css.nav}>
@@ -44,9 +73,6 @@ export default function Header() {
           <div className={css.auth}>
             {user ? (
               <>
-                <Link href="/profile" className={css.profilePage}>
-                  Мій Профіль
-                </Link>
                 <Link href="/locations/add" className={css.locationAdd}>
                   Поділитись локацією
                 </Link>
@@ -106,6 +132,20 @@ export default function Header() {
 
       {menuOpen && (
         <div className={css.mobileMenu}>
+          <div className={css.mobileSearch}>
+            <input
+              type="text"
+              className={css.mobileSearchInput}
+              placeholder="Пошук локацій..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+            <button className={css.mobileSearchBtn} onClick={handleSearch}>
+              Знайти
+            </button>
+          </div>
+
           {navLinks.map(({ href, label }) => (
             <Link
               key={href}
@@ -119,15 +159,6 @@ export default function Header() {
 
           {user ? (
             <>
-              <Link
-                href={`/profile`}
-                className={css.mobileLink}
-                onClick={closeMenu}
-              >
-                Мій профіль
-              </Link>
-
-              {/* <div className={css.mobileDivider} /> */}
               <div className={css.mobileAuthContainer}>
                 <Link href="/locations/add" className={css.mobileLocationAdd}>
                   Поділитись локацією
