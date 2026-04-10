@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useRef, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { updateMe } from "@/lib/api/clientApi";
 import { uploadImage } from "@/utils/uploadImage";
@@ -23,27 +23,46 @@ export default function ProfileEditForm({ user }: ProfileEditFormProps) {
 
   const currentAvatar = user.avatarUrl || user.avatar || "/default-avatar.png";
 
-  const [name, setName] = useState("");
+  const [name, setName] = useState(user.name || "");
   const [avatarPreview, setAvatarPreview] = useState<string>(currentAvatar);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get("openAvatar") === "1") {
+      const timer = setTimeout(() => fileInputRef.current?.click(), 100);
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams]);
+
+  const MAX_FILE_SIZE_MB = 10;
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+      setError(`Зображення завелике. Максимальний розмір — ${MAX_FILE_SIZE_MB} МБ.`);
+      e.target.value = "";
+      return;
+    }
+
+    setError("");
     setAvatarFile(file);
     setAvatarPreview(URL.createObjectURL(file));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
 
     const trimmedName = name.trim();
-    if (!trimmedName && !avatarFile) {
+    const nameChanged = trimmedName !== (user.name || "").trim();
+    if (!nameChanged && !avatarFile) {
       router.push("/profile");
       return;
     }
@@ -52,7 +71,7 @@ export default function ProfileEditForm({ user }: ProfileEditFormProps) {
     try {
       const payload: { name?: string; avatarUrl?: string } = {};
 
-      if (trimmedName) {
+      if (nameChanged && trimmedName) {
         payload.name = trimmedName;
       }
 
@@ -66,8 +85,12 @@ export default function ProfileEditForm({ user }: ProfileEditFormProps) {
       setUser(updatedUser);
 
       router.push("/profile");
-    } catch {
-      setError("Не вдалося зберегти зміни. Спробуйте ще раз.");
+    } catch (err) {
+      if (err instanceof Error && err.message === "FILE_TOO_LARGE") {
+        setError(`Зображення завелике. Максимальний розмір — ${MAX_FILE_SIZE_MB} МБ.`);
+      } else {
+        setError("Не вдалося зберегти зміни. Спробуйте ще раз.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -88,20 +111,24 @@ export default function ProfileEditForm({ user }: ProfileEditFormProps) {
               height={100}
               className={css.avatarPreview}
             />
-            <button
-              type="button"
-              className={css.uploadBtn}
-              onClick={() => fileInputRef.current?.click()}
-            >
-              Завантажити фото
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              hidden
-              onChange={handleFileChange}
-            />
+            <div className={css.uploadWrapper}>
+              <button
+                type="button"
+                className={css.uploadBtn}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                Завантажити фото
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                tabIndex={-1}
+                aria-hidden="true"
+                className={css.fileInput}
+                onChange={handleFileChange}
+              />
+            </div>
           </div>
         </div>
 
@@ -112,6 +139,7 @@ export default function ProfileEditForm({ user }: ProfileEditFormProps) {
           <input
             id="name"
             type="text"
+            autoComplete="off"
             className={css.input}
             placeholder="Введіть нове ім'я"
             value={name}

@@ -19,6 +19,26 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+.effectOverlay .imageWrapper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  z-index: 1;
+  border-radius: 12px 12px 0 0;
+}
+
+.effectOverlay:has(.button:hover) .image {
+  transform: scale(1.08);
+}
+
+.effectOverlay:has(.button:hover) .imageWrapper::after {
+  opacity: 1;
 }
 
 .content {

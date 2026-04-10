@@ -11,9 +11,10 @@ type SearchBoxProps = {
 };
 
 const sortOptions = [
-  { value: "name:asc", label: "За назвою" },
-  { value: "rate:desc", label: "За рейтингом" },
-  { value: "createdAt:desc", label: "Новіші спочатку" },
+  { value: "name:asc", label: "від А до Я" },
+  { value: "name:desc", label: "від Я до А" },
+  { value: "rate:desc", label: "за рейтингом" },
+  { value: "createdAt:desc", label: "новіші спочатку" },
 ];
 
 export default function SearchBox({ regions, locationTypes }: SearchBoxProps) {
@@ -127,7 +128,7 @@ export default function SearchBox({ regions, locationTypes }: SearchBoxProps) {
   };
 
   const activeSortLabel =
-    sortOptions.find((option) => option.value === currentSort)?.label ?? "За назвою";
+    sortOptions.find((option) => option.value === currentSort)?.label ?? "від А до Я";
   const activeLocationTypeLabel =
     selectedTypes.length > 0
       ? `Тип: ${selectedTypes.length}`

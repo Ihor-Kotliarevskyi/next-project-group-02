@@ -44,6 +44,21 @@
   color: var(--color-text-primary);
 }
 
+.uploadWrapper {
+  position: relative;
+}
+
+.fileInput {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .uploadBtn {
   border: 1px solid var(--color-overlay-light);
   background-color: var(--color-button-secondary);
@@ -136,7 +151,9 @@
 }
 
 .cancelBtn:hover:not(:disabled) {
-  background-color: var(--color-border);
+  background-color: var(--color-button-primary);
+  color: var(--color-bg-white);
+  border-color: var(--color-button-primary);
 }
 
 .cancelBtn:disabled {
@@ -159,6 +176,8 @@
 
 .saveBtn:hover:not(:disabled) {
   background-color: var(--color-button-primary-hover);
+  color: var(--color-text-main);
+  border-color: var(--color-button-primary);
 }
 
 .saveBtn:disabled {

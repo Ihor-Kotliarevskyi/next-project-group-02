@@ -42,7 +42,7 @@ export default function LocationCard({
   const roundedRate = Math.round(rate);
 
   return (
-    <article className={styles.card}>
+    <article className={`${styles.card} ${styles.effectOverlay}`}>
       <div className={styles.imageWrapper}>
         <Image
           src={image}
