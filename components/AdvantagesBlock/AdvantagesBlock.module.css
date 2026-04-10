@@ -12,7 +12,7 @@
 }
 
 .advantagesTitle {
-  color: var(--color-text-secondary);
+  color: var(--color-text-green);
   font-weight: bold;
   font-size: 28px;
   margin-bottom: 32px;
@@ -34,7 +34,7 @@
 }
 
 .advantagesCardTitle {
-  color: var(--color-text-secondary);
+  color: var(--color-text-green);
   font-size: 18px;
   font-weight: 700;
   padding-bottom: 16px;
@@ -44,7 +44,7 @@
 
 .advantagesCardText {
   font-size: 16px;
-  color: var(--color-text-secondary);
+  color: var(--color-text-green);
   font-weight: 400;
   letter-spacing: 0%;
   line-height: 1.5;
@@ -60,7 +60,7 @@
   display: block;
   width: 64px;
   height: 64px;
-  color: var(--color-text-secondary);
+  color: var(--color-text-green);
 }
 
 @media (min-width: 768px) {
