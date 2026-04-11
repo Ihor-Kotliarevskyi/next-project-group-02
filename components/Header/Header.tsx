@@ -36,6 +36,8 @@ export default function Header() {
 
   const navLinks = [
     { href: "/", label: "Головна" },
+    { href: "/locations", label: "Локації" },
+    { href: "/users", label: "Мандрівники" },
   ];
 
     const handleScrollToTop = () => {
@@ -83,9 +85,6 @@ export default function Header() {
           <div className={css.auth}>
             {user ? (
               <>
-                <Link href="/locations/add" className={css.locationAdd}>
-                  Поділитись локацією
-                </Link>
                 <div className={css.profileLink}>
                   <Link href="/profile/edit?openAvatar=1" className={css.avatarLink} scroll={false}>
                     {user.avatarUrl ? (
@@ -174,9 +173,6 @@ export default function Header() {
           {user ? (
             <>
               <div className={css.mobileAuthContainer}>
-                <Link href="/locations/add" className={css.mobileLocationAdd}>
-                  Поділитись локацією
-                </Link>
                 <div className={css.mobileAuth}>
                   <div className={css.mobileProfileLink}>
                     <Link href="/profile/edit?openAvatar=1" className={css.mobileAvatarLink} scroll={false} onClick={closeMenu}>

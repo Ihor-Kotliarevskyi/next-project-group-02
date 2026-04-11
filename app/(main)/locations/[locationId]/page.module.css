@@ -40,6 +40,114 @@
   object-fit: cover;
 }
 
+/* Main swiper + hover nav arrows */
+.mainSwiperWrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  overflow: hidden;
+}
+
+.mainSwiper {
+  width: 100%;
+  height: 100%;
+}
+
+.mainSwiperSlide {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.photoNavBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease, background 0.2s ease;
+}
+
+.mainSwiperWrap:hover .photoNavBtn {
+  opacity: 1;
+}
+
+.photoNavBtn:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.photoNavPrev {
+  left: 12px;
+}
+
+.photoNavNext {
+  right: 12px;
+}
+
+/* Gallery strip */
+.galleryStrip {
+  margin-top: 12px;
+}
+
+.gallerySwiper {
+  width: 100%;
+}
+
+.galleryThumb {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.galleryImg {
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.galleryThumb:hover .galleryImg {
+  transform: scale(1.05);
+}
+
+.galleryControls {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.galleryBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--color-overlay-light);
+  background: var(--color-button-secondary);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.galleryBtn:hover {
+  background: var(--color-button-primary);
+  color: #fff;
+  border-color: var(--color-button-primary);
+}
+
 .content {
   gap: 12px;
 }
@@ -148,7 +256,7 @@
 
   .title {
     color: var(--color-text-secondary);
-    font-size: 58px;
+    font-size: 42px;
     font-weight: 800;
     line-height: 1.06;
     letter-spacing: -0.03em;
@@ -192,7 +300,7 @@
   .card {
     grid-template-columns: 480px 760px;
     column-gap: 68px;
-    grid-template-rows: 146px auto 12px auto 12px auto 200px auto;
+    grid-template-rows: auto 24px auto 12px auto 12px auto 24px auto;
     row-gap: 0;
     align-items: start;
     justify-content: center;
@@ -201,12 +309,18 @@
     overflow: visible;
   }
 
+  .backBtn {
+    grid-column: 1;
+    grid-row: 1;
+    margin-bottom: 0;
+  }
+
   .imageWrap {
     grid-column: 2;
-    grid-row: 1 / 8;
+    grid-row: 1 / 10;
     width: 100%;
     min-height: 0;
-    height: 520px;
+    height: 580px;
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
@@ -218,7 +332,7 @@
 
   .ratingRow {
     grid-column: 1;
-    grid-row: 2;
+    grid-row: 3;
     align-self: start;
     gap: 10px;
     color: var(--color-text-main);
@@ -226,11 +340,12 @@
     font-weight: 600;
     letter-spacing: 0.02em;
     margin-top: 0;
+    width: auto;
   }
 
   .meta {
     grid-column: 1;
-    grid-row: 4;
+    grid-row: 5;
     align-self: start;
     margin-top: 0;
   }
@@ -238,15 +353,16 @@
   .title {
     max-width: 420px;
     color: var(--color-text-secondary);
-    font-size: 56px;
+    font-size: 40px;
     font-weight: 800;
-    line-height: 1.08;
-    letter-spacing: -0.03em;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    padding: 0;
   }
 
   .details {
     grid-column: 1;
-    grid-row: 6;
+    grid-row: 7;
     align-self: start;
     gap: 10px;
     color: var(--color-text-secondary);
@@ -262,6 +378,14 @@
   .details strong {
     color: var(--color-text-secondary);
     font-weight: 700;
+    font-size: 16px;
+  }
+
+  .galleryStrip {
+    grid-column: 1;
+    grid-row: 9;
+    align-self: start;
+    margin-top: 0;
   }
 
   .authorLink {
@@ -277,9 +401,9 @@
 
   .description {
     grid-column: 1 / span 2;
-    grid-row: 8;
+    grid-row: 10;
     justify-self: center;
-    margin-top: 0;
+    margin-top: 40px;
     max-width: 1060px;
     color: var(--color-text-warm-muted);
     font-size: 16px;

@@ -26,9 +26,14 @@ export default function ProfileInfo({ user, isEditable }: ProfileInfoProps) {
         <h2 className={css.userName}>{user.name}</h2>
         <p className={css.articles}>Статей: {user.articlesAmount}</p>
         {isEditable && (
-          <Link href="/profile/edit" className={css.editBtn}>
-            Редагувати профіль
-          </Link>
+          <div className={css.actions}>
+            <Link href="/profile/edit" className={css.editBtn}>
+              Редагувати профіль
+            </Link>
+            <Link href="/locations/add" className={css.addBtn}>
+              + Поділитись локацією
+            </Link>
+          </div>
         )}
       </div>
     </div>

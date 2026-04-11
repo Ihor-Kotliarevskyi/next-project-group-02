@@ -95,6 +95,7 @@ export default function ProfileLocationList({
                 key={location._id}
                 _id={location._id}
                 image={location.image}
+                imagePosition={location.imagePosition}
                 name={location.name}
                 locationType={
                   locationTypeLabels.get(location.locationType) ??

@@ -1,19 +1,17 @@
 "use client";
 
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import toast from "react-hot-toast";
-import { LocationFormValues } from "@/types/location";
-import { createLocation, updateLocation } from "@/lib/api/clientApi";
+import { LocationFormValues, LocationPhoto } from "@/types/location";
+import { createLocation, updateLocation, addLocationPhotos } from "@/lib/api/clientApi";
 import css from "./LocationForm.module.css";
 import { getLocationValidationSchema } from "@/lib/validation/locationSchema";
 import { uploadImage } from "@/utils/uploadImage";
 import MapPickerWrapper from "@/components/MapPicker/MapPickerWrapper";
-import { useMemo } from "react";
-import { useRef } from "react";
+import LocationPhotoSection from "@/components/LocationPhotoSection/LocationPhotoSection";
 
 type Props = {
   id?: string;
@@ -24,6 +22,8 @@ type Props = {
     description: string;
     image?: string;
     imagePublicId?: string;
+    imagePosition?: string;
+    photos?: LocationPhoto[];
     coordinates?: { lat: number; lon: number };
   };
   regions: { slug: string; region: string }[];
@@ -39,83 +39,88 @@ export default function LocationForm({
   const isEdit = !!id;
   const queryClient = useQueryClient();
   const router = useRouter();
-  const placeholder = "/images/location-form-placeholder-image.jpg";
   const validationSchema = getLocationValidationSchema(isEdit);
 
-  const [imagePreview, setImagePreview] = useState<string>(placeholder);
-  useEffect(() => {
-    setImagePreview(initialData?.image || placeholder);
-  }, [initialData]);
+  const initialImagePosition = initialData?.imagePosition ?? "50% 50%";
 
-  useEffect(() => {
-    const currentPreview = imagePreview;
+  const [imagePosition, setImagePosition] = useState(initialImagePosition);
 
-    return () => {
-      if (currentPreview.startsWith("blob:")) {
-        URL.revokeObjectURL(currentPreview);
-      }
-    };
-  }, [imagePreview]);
+  const [externalDirty, setExternalDirty] = useState(false);
+  const [mainFile, setMainFile] = useState<File | null>(null);
+  const [extraFiles, setExtraFiles] = useState<File[]>([]);
+
+  const [photoKey, setPhotoKey] = useState(0);
 
   const initialValues = useMemo(
     () => ({
       name: initialData?.name ?? "",
       locationType:
-        locationTypes.find((t) => t.slug === initialData?.locationType)?.slug ||
-        "",
-      region: regions.find((r) => r.slug === initialData?.region)?.slug || "",
-      description: initialData?.description || "",
+        locationTypes.find((t) => t.slug === initialData?.locationType)?.slug ?? "",
+      region: regions.find((r) => r.slug === initialData?.region)?.slug ?? "",
+      description: initialData?.description ?? "",
       imageFile: null,
       lat: initialData?.coordinates?.lat ?? 0,
       lon: initialData?.coordinates?.lon ?? 0,
     }),
-    [initialData, locationTypes, regions],
+    [initialData, locationTypes, regions]
   );
 
   const handleSubmit = async (
     values: LocationFormValues,
-    { setSubmitting }: FormikHelpers<LocationFormValues>,
+    { setSubmitting }: FormikHelpers<LocationFormValues>
   ) => {
     try {
-      const payload: {
-        name: string;
-        locationType: string;
-        region: string;
-        description: string;
-        coordinates: { lat: number; lon: number };
-        image?: string;
-        imagePublicId?: string;
-      } = {
-        name: values.name,
-        locationType: values.locationType,
-        region: values.region,
-        description: values.description,
-        coordinates: { lat: values.lat, lon: values.lon },
-      };
-
-      if (values.imageFile) {
-        const uploaded = await uploadImage(values.imageFile);
-        payload.image = uploaded.url;
-        payload.imagePublicId = uploaded.publicId;
-      } else if (!isEdit) {
-        payload.image = "https://picsum.photos/300";
-      }
-
-      const data = isEdit
-        ? await updateLocation(id!, payload)
-        : await createLocation(payload);
-
-      await queryClient.invalidateQueries({ queryKey: ["currentUser"] });
-      router.push(`/locations/${data._id}`);
-      router.refresh();
-    } catch {
       if (isEdit) {
-        toast.error("Не вдалося зберегти зміни. Спробуйте ще раз.");
+        await updateLocation(id!, {
+          name: values.name,
+          locationType: values.locationType,
+          region: values.region,
+          description: values.description,
+          coordinates: { lat: values.lat, lon: values.lon },
+          imagePosition,
+        });
+        await queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+        router.push(`/locations/${id}`);
+        router.refresh();
       } else {
-        toast.error(
-          "Не вдалося створити локацію. Зареєструйтеся або увійдіть.",
-        );
+        let imageUrl = "https://picsum.photos/300";
+        let imagePublicId: string | undefined;
+
+        if (mainFile) {
+          const uploaded = await uploadImage(mainFile);
+          imageUrl = uploaded.url;
+          imagePublicId = uploaded.publicId;
+        }
+
+        const data = await createLocation({
+          name: values.name,
+          locationType: values.locationType,
+          region: values.region,
+          description: values.description,
+          coordinates: { lat: values.lat, lon: values.lon },
+          image: imageUrl,
+          imagePublicId,
+          imagePosition,
+        });
+
+        if (extraFiles.length > 0) {
+          try {
+            await addLocationPhotos(data._id, extraFiles);
+          } catch {
+            toast.error("Локацію створено, але деякі фото не вдалося завантажити.");
+          }
+        }
+
+        await queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+        router.push(`/locations/${data._id}`);
+        router.refresh();
       }
+    } catch {
+      toast.error(
+        isEdit
+          ? "Не вдалося зберегти зміни. Спробуйте ще раз."
+          : "Не вдалося створити локацію. Зареєструйтеся або увійдіть."
+      );
     } finally {
       setSubmitting(false);
     }
@@ -123,7 +128,6 @@ export default function LocationForm({
 
   const [isTypeOpen, setIsTypeOpen] = useState(false);
   const [isRegionOpen, setIsRegionOpen] = useState(false);
-
   const typeRef = useRef<HTMLDivElement>(null);
   const regionRef = useRef<HTMLDivElement>(null);
 
@@ -132,17 +136,12 @@ export default function LocationForm({
       if (typeRef.current && !typeRef.current.contains(e.target as Node)) {
         setIsTypeOpen(false);
       }
-
       if (regionRef.current && !regionRef.current.contains(e.target as Node)) {
         setIsRegionOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
@@ -173,50 +172,45 @@ export default function LocationForm({
             values,
           }) => {
             const selectedLabel = locationTypes.find(
-              (l) => l.slug === values.locationType,
+              (l) => l.slug === values.locationType
             )?.type;
+
+            const canSubmit =
+              isValid && !isSubmitting && (!isEdit || dirty || externalDirty);
 
             return (
               <Form>
                 <div className={css.locationFormWrapper}>
+
+                  {/* ── Photo section ── */}
                   <div className={css.formGroup}>
-                    <p className={css.label}>Обкладинка</p>
+                    <p className={css.label}>Фотографії</p>
 
-                    <input
-                      id="fileInput"
-                      type="file"
-                      accept="image/jpeg, image/png"
-                      hidden
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        setFieldTouched("imageFile", true);
-                        if (file) {
+                    {isEdit ? (
+                      <LocationPhotoSection
+                        mode="edit"
+                        locationId={id!}
+                        mainImageUrl={initialData?.image ?? ""}
+                        mainImagePosition={initialData?.imagePosition}
+                        initialPhotos={initialData?.photos ?? []}
+                        onFocalPointChange={(fp) => {
+                          setImagePosition(fp);
+                        }}
+                        onExternalDirty={() => setExternalDirty(true)}
+                      />
+                    ) : (
+                      <LocationPhotoSection
+                        key={photoKey}
+                        mode="create"
+                        onMainChange={(file, focalPoint) => {
+                          setMainFile(file);
+                          setImagePosition(focalPoint);
                           setFieldValue("imageFile", file);
-                          setImagePreview(URL.createObjectURL(file));
-                        }
-                      }}
-                    />
-
-                    {imagePreview && (
-                      <Image
-                        src={imagePreview}
-                        className={css.photoPreview}
-                        alt="preview"
-                        width={120}
-                        height={80}
-                        unoptimized
+                          setFieldTouched("imageFile", true);
+                        }}
+                        onExtrasChange={(files) => setExtraFiles(files)}
                       />
                     )}
-
-                    <button
-                      type="button"
-                      className={`${css.uploadBtn} ${css.buttonGeneral}`}
-                      onClick={() =>
-                        document.getElementById("fileInput")?.click()
-                      }
-                    >
-                      Завантажте фото
-                    </button>
 
                     <ErrorMessage
                       className={css.errorMessage}
@@ -225,6 +219,7 @@ export default function LocationForm({
                     />
                   </div>
 
+                  {/* ── Name ── */}
                   <div className={css.formGroup}>
                     <label className={css.label} htmlFor="name">
                       Назва місця
@@ -233,10 +228,9 @@ export default function LocationForm({
                       id="name"
                       name="name"
                       placeholder="Введіть назву місця"
-                      className={`
-                ${css.locationInput}
-                ${errors.name && touched.name ? css.inputError : ""}
-              `}
+                      className={`${css.locationInput} ${
+                        errors.name && touched.name ? css.inputError : ""
+                      }`}
                     />
                     <ErrorMessage
                       className={css.errorMessage}
@@ -245,9 +239,9 @@ export default function LocationForm({
                     />
                   </div>
 
+                  {/* ── Location type ── */}
                   <div className={css.formGroup}>
                     <label className={css.label}>Тип місця</label>
-
                     <div className={css.selectWrapper} ref={typeRef}>
                       <div
                         className={`${css.select} ${isTypeOpen ? css.selectOpen : ""} ${
@@ -261,16 +255,13 @@ export default function LocationForm({
                       >
                         {selectedLabel || "Оберіть тип місця"}
                       </div>
-
                       {isTypeOpen && (
                         <div className={css.dropdown}>
                           {locationTypes.map((location) => (
                             <div
                               key={location.slug}
                               className={`${css.option} ${
-                                values.locationType === location.slug
-                                  ? css.active
-                                  : ""
+                                values.locationType === location.slug ? css.active : ""
                               }`}
                               onClick={() => {
                                 setFieldValue("locationType", location.slug);
@@ -283,7 +274,6 @@ export default function LocationForm({
                         </div>
                       )}
                     </div>
-
                     <ErrorMessage
                       className={css.errorMessage}
                       name="locationType"
@@ -291,9 +281,9 @@ export default function LocationForm({
                     />
                   </div>
 
+                  {/* ── Region ── */}
                   <div className={css.formGroup}>
                     <label className={css.label}>Регіон</label>
-
                     <div className={css.selectWrapper} ref={regionRef}>
                       <div
                         className={`${css.select} ${isRegionOpen ? css.selectOpen : ""} ${
@@ -305,10 +295,9 @@ export default function LocationForm({
                           setFieldTouched("region", true);
                         }}
                       >
-                        {regions.find((r) => r.slug === values.region)
-                          ?.region || "Оберіть регіон"}
+                        {regions.find((r) => r.slug === values.region)?.region ||
+                          "Оберіть регіон"}
                       </div>
-
                       {isRegionOpen && (
                         <div className={css.dropdown}>
                           {regions.map((region) => (
@@ -328,19 +317,22 @@ export default function LocationForm({
                         </div>
                       )}
                     </div>
-
                     <ErrorMessage
                       className={css.errorMessage}
                       name="region"
                       component="div"
                     />
                   </div>
+
+                  {/* ── Description ── */}
                   <div className={css.formGroup}>
                     <label className={css.label} htmlFor="description">
                       Детальний опис
                     </label>
                     <Field
-                      className={`${css.locationInput}  ${errors.description && touched.description ? css.inputError : ""} ${css.textarea}`}
+                      className={`${css.locationInput} ${
+                        errors.description && touched.description ? css.inputError : ""
+                      } ${css.textarea}`}
                       as="textarea"
                       id="description"
                       name="description"
@@ -359,6 +351,7 @@ export default function LocationForm({
                     />
                   </div>
 
+                  {/* ── Map ── */}
                   <div className={css.formGroup}>
                     <label className={css.label}>Оберіть розташування</label>
                     <MapPickerWrapper
@@ -371,14 +364,15 @@ export default function LocationForm({
                     />
                   </div>
 
+                  {/* ── Buttons ── */}
                   <div className={css.buttonGroup}>
                     <button
                       className={`${css.locationSubmit} ${css.buttonGeneral}`}
                       type="submit"
-                      disabled={!isValid || isSubmitting || !dirty}
+                      disabled={!canSubmit}
                     >
                       {isSubmitting ? (
-                        <span className={css.loader}></span>
+                        <span className={css.loader} />
                       ) : isEdit ? (
                         "Зберегти зміни"
                       ) : (
@@ -389,18 +383,16 @@ export default function LocationForm({
                       className={`${css.locationCancel} ${css.buttonGeneral}`}
                       type="button"
                       onClick={() => {
-                        if (!dirty) {
+                        if (!dirty && !externalDirty && mainFile === null) {
                           router.push("/locations");
                           return;
                         }
-
                         resetForm();
-                        setImagePreview(initialData?.image || placeholder);
-
-                        const input = document.getElementById(
-                          "fileInput",
-                        ) as HTMLInputElement;
-                        if (input) input.value = "";
+                        setMainFile(null);
+                        setExtraFiles([]);
+                        setImagePosition(initialImagePosition);
+                        setExternalDirty(false);
+                        setPhotoKey((k) => k + 1);
                       }}
                     >
                       {isEdit ? "Відмінити зміни" : "Відмінити"}

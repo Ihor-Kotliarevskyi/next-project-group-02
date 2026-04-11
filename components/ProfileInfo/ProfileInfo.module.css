@@ -36,23 +36,45 @@
   color: var(--color-text-dark);
 }
 
-.editBtn {
-  display: inline-block;
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
   margin-top: 12px;
-  border: 1px solid var(--color-overlay-light);
-  background-color: var(--color-button-secondary);
+}
+
+.editBtn,
+.addBtn {
+  display: inline-block;
   border-radius: 6px;
   padding: 6px 16px;
   font-size: 14px;
   font-weight: var(--font-weight-medium);
+  transition: background-color var(--transition-base), color var(--transition-base), border-color var(--transition-base);
+}
+
+.editBtn {
+  border: 1px solid var(--color-overlay-light);
+  background-color: var(--color-button-secondary);
   color: var(--color-text-main);
-  transition: background-color var(--transition-base), color var(--transition-base);
 }
 
 .editBtn:hover {
   background-color: var(--color-button-primary);
   color: #ffffff;
   border-color: var(--color-button-primary);
+}
+
+.addBtn {
+  border: 1px solid var(--color-button-primary);
+  background-color: var(--color-button-primary);
+  color: #ffffff;
+}
+
+.addBtn:hover {
+  background-color: var(--color-button-primary-hover);
+  color: var(--color-text-main);
+  border-color: var(--color-button-primary-hover);
 }
 
 @media (min-width: 768px) {

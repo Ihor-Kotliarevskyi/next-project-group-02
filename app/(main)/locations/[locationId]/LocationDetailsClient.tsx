@@ -1,10 +1,14 @@
-﻿"use client";
+"use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+import type { Swiper as SwiperType } from "swiper";
 import ReviewsSection from "@/components/ReviewsSection/ReviewsSection";
+import PhotoLightbox from "@/components/PhotoLightbox/PhotoLightbox";
 import { Feedback } from "@/types/feedBackCard";
 import LocationMapWrapper from "./LocationMapWrapper";
 import { ReviewAddedDetail } from "@/types/reviewEvents";
@@ -18,9 +22,16 @@ type Owner = {
   avatar?: string;
 };
 
+type LocationPhoto = {
+  _id: string;
+  url: string;
+  publicId: string;
+};
+
 type LocationDetailsViewModel = {
   _id: string;
   image: string;
+  imagePosition?: string;
   name: string;
   locationType: string | { type: string; slug: string };
   region: string;
@@ -28,6 +39,7 @@ type LocationDetailsViewModel = {
   description: string;
   ownerId?: string | Owner;
   feedbacksId?: string[];
+  photos?: LocationPhoto[];
   coordinates?: { lat: number; lon: number };
 };
 
@@ -107,6 +119,19 @@ export default function LocationDetailsClient({
     initialReviews.length
   );
   const [averageRate, setAverageRate] = useState(location.rate);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const mainSwiperRef = useRef<SwiperType | null>(null);
+  const gallerySwiperRef = useRef<SwiperType | null>(null);
+
+  // All photos: main + additional
+  const allPhotos = useMemo(
+    () => [location.image, ...(location.photos?.map((p) => p.url) ?? [])],
+    [location.image, location.photos]
+  );
+
+  const hasMultiplePhotos = allPhotos.length > 1;
+  // Additional photos for gallery strip (excluding main cover)
+  const galleryPhotos = location.photos ?? [];
 
   useEffect(() => {
     let reviewCount = initialReviewCount;
@@ -114,9 +139,7 @@ export default function LocationDetailsClient({
     const handleReviewAdded = (event: Event) => {
       const detail = (event as CustomEvent<ReviewAddedDetail | undefined>).detail;
       const newRate = detail?.review?.rate;
-
       if (typeof newRate !== "number") return;
-
       setAverageRate((prevAverage) => {
         const nextCount = reviewCount + 1;
         const nextAverage = (prevAverage * reviewCount + newRate) / nextCount;
@@ -142,26 +165,84 @@ export default function LocationDetailsClient({
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => router.back()}
-        className={styles.backBtn}
-      >
-        <Icon name="arrow-left" width={16} height={16} aria-hidden={true} />
-        Назад до локацій
-      </button>
       <article className={styles.card}>
+        {/* Back button — col 1, row 1 on desktop */}
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className={styles.backBtn}
+        >
+          <Icon name="arrow-left" width={16} height={16} aria-hidden={true} />
+          Назад до локацій
+        </button>
+
+        {/* Main photo — col 2, all rows on desktop. Swiper if multiple photos */}
         <div className={styles.imageWrap}>
-          <Image
-            src={location.image}
-            alt={location.name}
-            fill
-            priority
-            quality={90}
-            sizes="(min-width: 1440px) 760px, (min-width: 768px) calc(100vw - 20px), calc(100vw - 40px)"
-            className={styles.image}
-          />
+          {hasMultiplePhotos ? (
+            <div className={styles.mainSwiperWrap}>
+              <Swiper
+                modules={[Navigation]}
+                loop={true}
+                className={styles.mainSwiper}
+                onSwiper={(s) => { mainSwiperRef.current = s; }}
+              >
+                {allPhotos.map((url, i) => (
+                  <SwiperSlide key={i}>
+                    <div
+                      className={styles.mainSwiperSlide}
+                      onClick={() => setLightboxIndex(i)}
+                      role="button"
+                      tabIndex={0}
+                      aria-label="Відкрити фото"
+                    >
+                      <Image
+                        src={url}
+                        alt={location.name}
+                        fill
+                        priority={i === 0}
+                        quality={90}
+                        sizes="(min-width: 1440px) 760px, (min-width: 768px) calc(100vw - 20px), calc(100vw - 40px)"
+                        className={styles.image}
+                        style={i === 0 && location.imagePosition ? { objectPosition: location.imagePosition } : undefined}
+                      />
+                    </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+              <button
+                className={`${styles.photoNavBtn} ${styles.photoNavPrev}`}
+                onClick={() => mainSwiperRef.current?.slidePrev()}
+                aria-label="Попереднє фото"
+              >
+                <Icon name="arrow-left" width={18} height={18} aria-hidden />
+              </button>
+              <button
+                className={`${styles.photoNavBtn} ${styles.photoNavNext}`}
+                onClick={() => mainSwiperRef.current?.slideNext()}
+                aria-label="Наступне фото"
+              >
+                <Icon name="arrow-left" width={18} height={18} style={{ transform: "scaleX(-1)" }} aria-hidden />
+              </button>
+            </div>
+          ) : (
+            <Image
+              src={location.image}
+              alt={location.name}
+              fill
+              priority
+              quality={90}
+              sizes="(min-width: 1440px) 760px, (min-width: 768px) calc(100vw - 20px), calc(100vw - 40px)"
+              className={styles.image}
+              onClick={() => setLightboxIndex(0)}
+              style={{
+                cursor: "pointer",
+                ...(location.imagePosition ? { objectPosition: location.imagePosition } : {}),
+              }}
+            />
+          )}
         </div>
+
+        {/* Rating — col 1, row 2 */}
         <div className={styles.content}>
           <div className={styles.ratingRow}>
             <span
@@ -184,9 +265,11 @@ export default function LocationDetailsClient({
             <span className={styles.ratingDot} aria-hidden="true" />
             <span>{formatRate(averageRate)}</span>
           </div>
+
           <div className={styles.meta}>
             <h1 className={styles.title}>{location.name}</h1>
           </div>
+
           <div className={styles.details}>
             <p>
               <strong>Регіон:</strong>{" "}
@@ -200,10 +283,7 @@ export default function LocationDetailsClient({
             <p>
               <strong>Автор статті:</strong>{" "}
               {ownerId ? (
-                <Link
-                  href={`/profile/${ownerId}`}
-                  className={styles.authorLink}
-                >
+                <Link href={`/profile/${ownerId}`} className={styles.authorLink}>
                   {ownerName}
                 </Link>
               ) : (
@@ -211,9 +291,62 @@ export default function LocationDetailsClient({
               )}
             </p>
           </div>
+
+          {/* Gallery strip — shown on desktop below info, on mobile after photo */}
+          {galleryPhotos.length > 0 && (
+            <div className={styles.galleryStrip}>
+              <Swiper
+                modules={[Navigation]}
+                slidesPerView={2}
+                spaceBetween={8}
+                className={styles.gallerySwiper}
+                onSwiper={(s) => { gallerySwiperRef.current = s; }}
+              >
+                {galleryPhotos.map((photo, i) => (
+                  <SwiperSlide key={photo._id}>
+                    <div
+                      className={styles.galleryThumb}
+                      onClick={() => setLightboxIndex(i + 1)}
+                      role="button"
+                      tabIndex={0}
+                      aria-label="Відкрити фото"
+                    >
+                      <Image
+                        src={photo.url}
+                        alt={location.name}
+                        fill
+                        className={styles.galleryImg}
+                        sizes="160px"
+                      />
+                    </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+              {galleryPhotos.length > 2 && (
+                <div className={styles.galleryControls}>
+                  <button
+                    className={styles.galleryBtn}
+                    onClick={() => gallerySwiperRef.current?.slidePrev()}
+                    aria-label="Попереднє"
+                  >
+                    <Icon name="arrow-left" width={14} height={14} aria-hidden />
+                  </button>
+                  <button
+                    className={styles.galleryBtn}
+                    onClick={() => gallerySwiperRef.current?.slideNext()}
+                    aria-label="Наступне"
+                  >
+                    <Icon name="arrow-left" width={14} height={14} style={{ transform: "scaleX(-1)" }} aria-hidden />
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
           <p className={styles.description}>{location.description}</p>
         </div>
       </article>
+
       <LocationMapWrapper
         coordinates={location.coordinates}
         locationName={location.name}
@@ -223,6 +356,14 @@ export default function LocationDetailsClient({
         isAuthenticated={isAuthenticated}
         initialReviews={initialReviews}
       />
+
+      {lightboxIndex !== null && (
+        <PhotoLightbox
+          photos={allPhotos}
+          initialIndex={lightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+        />
+      )}
     </>
   );
 }
