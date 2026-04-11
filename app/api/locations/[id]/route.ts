@@ -47,7 +47,7 @@ export async function PATCH(
   } catch (error) {
     if (isAxiosError(error)) {
       return NextResponse.json(
-        { error: error.message },
+        { error: error.response?.data || error.message },
         { status: error.response?.status ?? 500 }
       );
     }

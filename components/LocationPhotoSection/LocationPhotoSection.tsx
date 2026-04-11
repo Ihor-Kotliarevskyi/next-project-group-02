@@ -123,7 +123,6 @@ export default function LocationPhotoSection(props: Props) {
         await updateLocation(props.locationId, {
           image: target.url,
           imagePublicId: target.savedPublicId,
-          imagePosition: target.focalPoint,
         });
         await deleteLocationPhoto(props.locationId, target.savedId);
 
