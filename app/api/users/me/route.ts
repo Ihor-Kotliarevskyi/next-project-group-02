@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     if (isAxiosError(error)) {
       const status = error.response?.status ?? 500;
       if (status === 401 || status === 403) {
-        return NextResponse.json(null);
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
       logErrorResponse(error.response?.data);
       return NextResponse.json(
