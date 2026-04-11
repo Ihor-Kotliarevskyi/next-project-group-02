@@ -20,10 +20,8 @@ type PhotoEntry = {
   url: string;
   isMain: boolean;
   focalPoint: string;
-  // edit mode
   savedId?: string;
   savedPublicId?: string;
-  // create mode
   file?: File;
 };
 
@@ -81,20 +79,17 @@ export default function LocationPhotoSection(props: Props) {
   const [uploading, setUploading] = useState(false);
   const [busyKey, setBusyKey] = useState<string | null>(null);
 
-  // Revoke blob URLs on unmount (create mode)
   useEffect(() => {
     return () => {
       entries.forEach((e) => {
         if (e.url.startsWith("blob:")) URL.revokeObjectURL(e.url);
       });
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const selectedEntry =
     entries.find((e) => e.key === selectedKey) ?? entries[0] ?? null;
 
-  // ── notify parent (create mode) ──────────────────────────────────────────
   const notifyCreate = (updated: PhotoEntry[]) => {
     if (props.mode !== "create") return;
     const main = updated.find((e) => e.isMain);
@@ -103,7 +98,6 @@ export default function LocationPhotoSection(props: Props) {
     props.onExtrasChange(extras.flatMap((e) => (e.file ? [e.file] : [])));
   };
 
-  // ── focal point ──────────────────────────────────────────────────────────
   const handleFocalPoint = (key: string, fp: string) => {
     const entry = entries.find((e) => e.key === key);
     const next = entries.map((e) => (e.key === key ? { ...e, focalPoint: fp } : e));
@@ -118,7 +112,6 @@ export default function LocationPhotoSection(props: Props) {
     }
   };
 
-  // ── set as main ──────────────────────────────────────────────────────────
   const handleSetMain = async (targetKey: string) => {
     const target = entries.find((e) => e.key === targetKey);
     if (!target || target.isMain) return;
@@ -133,7 +126,7 @@ export default function LocationPhotoSection(props: Props) {
           imagePosition: target.focalPoint,
         });
         await deleteLocationPhoto(props.locationId, target.savedId);
-        // Remove promoted photo from extras, update main entry's url/focalPoint
+
         setEntries((prev) =>
           prev
             .filter((e) => e.key !== targetKey)
@@ -151,7 +144,6 @@ export default function LocationPhotoSection(props: Props) {
         setBusyKey(null);
       }
     } else {
-      // Create mode: just flip the isMain flag
       const updated = entries.map((e) => ({ ...e, isMain: e.key === targetKey }));
       setEntries(updated);
       setSelectedKey(targetKey);
@@ -159,13 +151,12 @@ export default function LocationPhotoSection(props: Props) {
     }
   };
 
-  // ── delete ───────────────────────────────────────────────────────────────
   const handleDelete = async (targetKey: string) => {
     const target = entries.find((e) => e.key === targetKey);
     if (!target) return;
 
     if (props.mode === "edit") {
-      if (target.isMain || !target.savedId) return; // can't delete main in edit mode
+      if (target.isMain || !target.savedId) return;
       setBusyKey(targetKey);
       try {
         await deleteLocationPhoto(props.locationId, target.savedId);
@@ -181,7 +172,6 @@ export default function LocationPhotoSection(props: Props) {
     } else {
       if (target.url.startsWith("blob:")) URL.revokeObjectURL(target.url);
       let updated = entries.filter((e) => e.key !== targetKey);
-      // If main deleted, promote first remaining
       if (target.isMain && updated.length > 0) {
         updated = updated.map((e, i) => (i === 0 ? { ...e, isMain: true } : e));
       }
@@ -191,7 +181,6 @@ export default function LocationPhotoSection(props: Props) {
     }
   };
 
-  // ── upload ───────────────────────────────────────────────────────────────
   const handleFilesChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
     if (inputRef.current) inputRef.current.value = "";
@@ -270,7 +259,6 @@ export default function LocationPhotoSection(props: Props) {
         onChange={handleFilesChange}
       />
 
-      {/* FocalPointPicker or empty-state upload button */}
       {selectedEntry ? (
         <FocalPointPicker
           src={selectedEntry.url}
@@ -289,7 +277,6 @@ export default function LocationPhotoSection(props: Props) {
         </button>
       )}
 
-      {/* Thumbnail strip */}
       {entries.length > 0 && (
         <div className={css.strip}>
           {entries.map((entry) => {
@@ -325,14 +312,12 @@ export default function LocationPhotoSection(props: Props) {
                   }
                 />
 
-                {/* Main badge */}
                 {entry.isMain && (
                   <span className={css.mainBadge} title="Головне фото">
                     ★
                   </span>
                 )}
 
-                {/* Promote to main */}
                 {!entry.isMain && (
                   <button
                     type="button"
@@ -348,7 +333,6 @@ export default function LocationPhotoSection(props: Props) {
                   </button>
                 )}
 
-                {/* Delete — always for create, extras-only for edit */}
                 {(props.mode === "create" || !entry.isMain) && (
                   <button
                     type="button"
@@ -367,7 +351,6 @@ export default function LocationPhotoSection(props: Props) {
             );
           })}
 
-          {/* Add more cell */}
           {canAddMore && (
             <button
               type="button"

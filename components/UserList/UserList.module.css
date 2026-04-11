@@ -1,4 +1,3 @@
-/* ── Section / Container ── */
 .section {
   background: var(--color-bg-page);
   padding-bottom: 48px;
@@ -30,7 +29,6 @@
   text-align: center;
 }
 
-/* ── Custom sort dropdown (identical to SearchBox) ── */
 .control {
   width: 256px;
   height: 40px;

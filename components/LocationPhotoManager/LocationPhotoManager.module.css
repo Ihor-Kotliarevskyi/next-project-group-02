@@ -4,7 +4,6 @@
   gap: 12px;
 }
 
-/* Upload button (shown when no main photo yet) */
 .uploadBtn {
   align-self: flex-start;
   color: var(--color-text-main);
@@ -30,7 +29,6 @@
   background-color: var(--color-button-secondary);
 }
 
-/* Main photo preview */
 .mainWrap {
   position: relative;
   width: 100%;
@@ -41,7 +39,7 @@
 .mainImgWrap {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 15 / 10;
 }
 
 .mainImg {
@@ -100,7 +98,6 @@
   text-decoration: underline;
 }
 
-/* Extra thumbnails grid */
 .grid {
   display: flex;
   flex-wrap: wrap;
@@ -129,7 +126,6 @@
   object-fit: cover;
 }
 
-/* Promote to main button */
 .promoteBtn {
   position: absolute;
   bottom: 4px;
@@ -153,7 +149,6 @@
   background: rgba(0, 0, 0, 0.85);
 }
 
-/* Remove button */
 .removeBtn {
   position: absolute;
   top: 4px;

@@ -43,17 +43,12 @@ export default function LocationForm({
 
   const initialImagePosition = initialData?.imagePosition ?? "50% 50%";
 
-  // Focal point of the main photo — included in every submit payload
   const [imagePosition, setImagePosition] = useState(initialImagePosition);
 
-  // Enables "Зберегти зміни" when photo ops happen outside Formik
   const [externalDirty, setExternalDirty] = useState(false);
-
-  // Create mode: main file + extras for submit
   const [mainFile, setMainFile] = useState<File | null>(null);
   const [extraFiles, setExtraFiles] = useState<File[]>([]);
 
-  // Key to force-remount LocationPhotoSection on cancel (create mode)
   const [photoKey, setPhotoKey] = useState(0);
 
   const initialValues = useMemo(
@@ -76,7 +71,6 @@ export default function LocationForm({
   ) => {
     try {
       if (isEdit) {
-        // Edit mode: photo management is immediate; only text + imagePosition here
         await updateLocation(id!, {
           name: values.name,
           locationType: values.locationType,
@@ -89,7 +83,6 @@ export default function LocationForm({
         router.push(`/locations/${id}`);
         router.refresh();
       } else {
-        // Create mode: upload main photo, then create location, then upload extras
         let imageUrl = "https://picsum.photos/300";
         let imagePublicId: string | undefined;
 
@@ -399,7 +392,7 @@ export default function LocationForm({
                         setExtraFiles([]);
                         setImagePosition(initialImagePosition);
                         setExternalDirty(false);
-                        setPhotoKey((k) => k + 1); // remount photo section
+                        setPhotoKey((k) => k + 1);
                       }}
                     >
                       {isEdit ? "Відмінити зміни" : "Відмінити"}

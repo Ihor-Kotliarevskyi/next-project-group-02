@@ -110,7 +110,7 @@
 .mainImgWrap {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 15 / 10;
   border-radius: 10px;
   overflow: hidden;
 }

@@ -4,7 +4,7 @@ import { useRef, useEffect } from "react";
 import Image from "next/image";
 import css from "./LocationPhotoManager.module.css";
 
-const MAX_EXTRAS = 9; // 10 total minus 1 main
+const MAX_EXTRAS = 9;
 
 type Props = {
   mainFile: File | null;
@@ -25,7 +25,6 @@ export default function LocationPhotoManager({
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Revoke blob URLs on unmount
   useEffect(() => {
     return () => {
       if (mainPreview?.startsWith("blob:")) URL.revokeObjectURL(mainPreview);
@@ -33,8 +32,6 @@ export default function LocationPhotoManager({
         if (p.startsWith("blob:")) URL.revokeObjectURL(p);
       });
     };
-    // intentionally run only on unmount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleFilesSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,7 +39,6 @@ export default function LocationPhotoManager({
     if (!newFiles.length) return;
 
     if (!mainFile) {
-      // First file becomes main, rest go to extras
       const [first, ...rest] = newFiles;
       const mainPrev = URL.createObjectURL(first);
       onMainChange(first, mainPrev);
@@ -52,7 +48,6 @@ export default function LocationPhotoManager({
       const newPreviews = toAdd.map((f) => URL.createObjectURL(f));
       onExtrasChange([...extraFiles, ...toAdd], [...extraPreviews, ...newPreviews]);
     } else {
-      // Already have a main — all new files go to extras
       const remaining = MAX_EXTRAS - extraFiles.length;
       const toAdd = newFiles.slice(0, remaining);
       const newPreviews = toAdd.map((f) => URL.createObjectURL(f));
@@ -66,7 +61,6 @@ export default function LocationPhotoManager({
     const newMain = extraFiles[index];
     const newMainPreview = extraPreviews[index];
 
-    // Old main goes to front of extras
     const newExtras = [...extraFiles];
     const newExtraPreviews = [...extraPreviews];
     newExtras.splice(index, 1);
@@ -92,7 +86,6 @@ export default function LocationPhotoManager({
   const removeMain = () => {
     if (mainPreview?.startsWith("blob:")) URL.revokeObjectURL(mainPreview);
     if (extraFiles.length > 0) {
-      // Promote first extra to main
       onMainChange(extraFiles[0], extraPreviews[0]);
       onExtrasChange(extraFiles.slice(1), extraPreviews.slice(1));
     } else {

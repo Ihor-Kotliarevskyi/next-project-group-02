@@ -5,7 +5,7 @@ import css from "./FocalPointPicker.module.css";
 
 type Props = {
   src: string;
-  value: string; // CSS object-position, e.g. "42% 67%"
+  value: string;
   onChange: (value: string) => void;
 };
 
@@ -48,19 +48,13 @@ export default function FocalPointPicker({ src, value, onChange }: Props) {
         onPointerMove={handlePointerMove}
         style={{ backgroundImage: `url(${src})`, backgroundPosition: value }}
       >
-        {/* Light overlay over the whole image */}
         <div className={css.overlay} />
-
-        {/* Detail-page frame (760×580). box-shadow dims the area outside it */}
-        <div className={css.detailFrame}>
+s
+        {/* <div className={css.detailFrame}>
           <span className={css.frameLabel}>Сторінка локації</span>
-        </div>
-
-        {/* Crosshair */}
+        </div> */}
         <div className={css.crossH} style={{ top: `${y}%` }} aria-hidden="true" />
         <div className={css.crossV} style={{ left: `${x}%` }} aria-hidden="true" />
-
-        {/* Focal point dot */}
         <div
           className={css.dot}
           style={{ left: `${x}%`, top: `${y}%` }}
