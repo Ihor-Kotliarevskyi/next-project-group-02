@@ -85,6 +85,19 @@ export const deleteLocation = (id: string) =>
 export const updateMe = (data: { name?: string; avatarUrl?: string }) =>
   clientApi.patch("/users/me", data).then((r) => r.data);
 
+export const addLocationPhotos = (id: string, files: File[]) => {
+  const formData = new FormData();
+  files.forEach((f) => formData.append("images", f));
+  return clientApi
+    .post(`/locations/${id}/photos`, formData)
+    .then((r) => r.data);
+};
+
+export const deleteLocationPhoto = (locationId: string, photoId: string) =>
+  clientApi
+    .delete(`/locations/${locationId}/photos/${photoId}`)
+    .then((r) => r.data);
+
 export const getUsers = (params?: {
   page?: number;
   limit?: number;

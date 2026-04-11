@@ -18,6 +18,12 @@ type Owner = {
   avatar?: string;
 };
 
+type LocationPhoto = {
+  _id: string;
+  url: string;
+  publicId: string;
+};
+
 type LocationDetailsViewModel = {
   _id: string;
   image: string;
@@ -28,6 +34,7 @@ type LocationDetailsViewModel = {
   description: string;
   ownerId?: string | Owner;
   feedbacksId?: string[];
+  photos?: LocationPhoto[];
   coordinates?: { lat: number; lon: number };
 };
 
@@ -214,6 +221,27 @@ export default function LocationDetailsClient({
           <p className={styles.description}>{location.description}</p>
         </div>
       </article>
+      {location.photos && location.photos.length > 0 && (
+        <section className={styles.photosSection}>
+          <h2 className={styles.photosTitle}>Фотогалерея</h2>
+          <ul className={styles.photosGrid}>
+            {location.photos.map((photo) => (
+              <li key={photo._id} className={styles.photoItem}>
+                <div className={styles.photoWrapper}>
+                  <Image
+                    src={photo.url}
+                    alt={location.name}
+                    fill
+                    className={styles.photoImg}
+                    sizes="(min-width: 1440px) 340px, (min-width: 768px) calc(50vw - 40px), calc(100vw - 40px)"
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       <LocationMapWrapper
         coordinates={location.coordinates}
         locationName={location.name}

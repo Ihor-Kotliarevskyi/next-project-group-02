@@ -102,6 +102,41 @@
   margin-top: 20px;
 }
 
+.photosSection {
+  margin-top: 32px;
+}
+
+.photosTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  margin-bottom: 16px;
+}
+
+.photosGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.photoItem {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.photoWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+}
+
+.photoImg {
+  object-fit: cover;
+}
+
 .notFound {
   padding: 40px 16px;
   text-align: center;
@@ -124,6 +159,15 @@
   .page {
     max-width: 768px;
     padding: 64px 32px 0 32px;
+  }
+
+  .photosGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .photosTitle {
+    font-size: 24px;
   }
 
   .card {
@@ -187,6 +231,11 @@
   .page {
     max-width: 1440px;
     padding: 72px 64px 0 64px;
+  }
+
+  .photosGrid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
   }
 
   .card {

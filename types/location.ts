@@ -1,3 +1,9 @@
+export type LocationPhoto = {
+  _id: string;
+  url: string;
+  publicId: string;
+};
+
 export type Location = {
   _id: string;
   image: string;
@@ -9,6 +15,7 @@ export type Location = {
   description: string;
   ownerId: string;
   feedbacksId: string[];
+  photos?: LocationPhoto[];
   createdAt?: string;
   coordinates?: { lat: number; lon: number };
 };

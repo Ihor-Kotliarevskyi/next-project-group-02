@@ -12,6 +12,8 @@ import css from "./LocationForm.module.css";
 import { getLocationValidationSchema } from "@/lib/validation/locationSchema";
 import { uploadImage } from "@/utils/uploadImage";
 import MapPickerWrapper from "@/components/MapPicker/MapPickerWrapper";
+import LocationPhotos from "@/components/LocationPhotos/LocationPhotos";
+import { LocationPhoto } from "@/types/location";
 import { useMemo } from "react";
 import { useRef } from "react";
 
@@ -24,6 +26,7 @@ type Props = {
     description: string;
     image?: string;
     imagePublicId?: string;
+    photos?: LocationPhoto[];
     coordinates?: { lat: number; lon: number };
   };
   regions: { slug: string; region: string }[];
@@ -370,6 +373,15 @@ export default function LocationForm({
                       }}
                     />
                   </div>
+
+                  {isEdit && id && (
+                    <div className={css.formGroup}>
+                      <LocationPhotos
+                        locationId={id}
+                        initialPhotos={initialData?.photos ?? []}
+                      />
+                    </div>
+                  )}
 
                   <div className={css.buttonGroup}>
                     <button

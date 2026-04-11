@@ -12,6 +12,12 @@ type Owner = {
   avatar?: string;
 };
 
+type LocationPhoto = {
+  _id: string;
+  url: string;
+  publicId: string;
+};
+
 type LocationDetails = {
   _id: string;
   image: string;
@@ -22,6 +28,7 @@ type LocationDetails = {
   description: string;
   ownerId?: string | Owner;
   feedbacksId?: string[];
+  photos?: LocationPhoto[];
   coordinates?: { lat: number; lon: number };
 };
 
