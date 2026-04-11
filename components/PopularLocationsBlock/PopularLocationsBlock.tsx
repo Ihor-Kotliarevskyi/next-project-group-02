@@ -81,6 +81,7 @@ export default function PopularLocationsBlock() {
                     <LocationCard
                       _id={location._id}
                       image={location.image}
+                      imagePosition={location.imagePosition}
                       name={location.name}
                       locationType={
                         locationTypeLabels.get(location.locationType) ??

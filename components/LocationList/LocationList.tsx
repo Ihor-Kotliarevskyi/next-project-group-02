@@ -20,8 +20,8 @@ export default function LocationList() {
   const search = searchParams.get("search") ?? "";
   const region = searchParams.get("region") ?? "";
   const locationType = searchParams.getAll("locationType");
-  const sortBy = searchParams.get("sortBy") || "name";
-  const order = searchParams.get("order") || "asc";
+  const sortBy = searchParams.get("sortBy") || "rate";
+  const order = searchParams.get("order") || "desc";
   const page = Number(searchParams.get("page") ?? "1");
 
   const [limit, setLimit] = useState(6);
@@ -132,6 +132,7 @@ export default function LocationList() {
                 key={location._id}
                 _id={location._id}
                 image={location.image}
+                imagePosition={location.imagePosition}
                 name={location.name}
                 locationType={
                   locationTypeLabels.get(location.locationType) ??

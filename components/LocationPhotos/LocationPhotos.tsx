@@ -13,12 +13,20 @@ const MAX_FILE_SIZE_MB = 4;
 type Props = {
   locationId: string;
   initialPhotos: LocationPhoto[];
+  mainImageUrl?: string;
+  onSetMain?: (photo: LocationPhoto) => Promise<void>;
 };
 
-export default function LocationPhotos({ locationId, initialPhotos }: Props) {
+export default function LocationPhotos({
+  locationId,
+  initialPhotos,
+  mainImageUrl,
+  onSetMain,
+}: Props) {
   const [photos, setPhotos] = useState<LocationPhoto[]>(initialPhotos);
   const [isUploading, setIsUploading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [settingMainId, setSettingMainId] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFilesChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,7 +57,7 @@ export default function LocationPhotos({ locationId, initialPhotos }: Props) {
     try {
       const updated = await addLocationPhotos(locationId, files);
       setPhotos(updated.photos ?? []);
-      toast.success("Фото успішно додано");
+      toast.success("Фото збережено автоматично");
     } catch {
       toast.error("Не вдалося завантажити фото. Спробуйте ще раз.");
     } finally {
@@ -63,6 +71,7 @@ export default function LocationPhotos({ locationId, initialPhotos }: Props) {
     try {
       const updated = await deleteLocationPhoto(locationId, photoId);
       setPhotos(updated.photos ?? []);
+      toast.success("Фото видалено");
     } catch {
       toast.error("Не вдалося видалити фото.");
     } finally {
@@ -70,8 +79,37 @@ export default function LocationPhotos({ locationId, initialPhotos }: Props) {
     }
   };
 
+  const handleSetMain = async (photo: LocationPhoto) => {
+    if (!onSetMain) return;
+    setSettingMainId(photo._id);
+    try {
+      await onSetMain(photo);
+      setPhotos((prev) => prev.filter((p) => p._id !== photo._id));
+      toast.success("Головне фото змінено автоматично");
+    } catch {
+      toast.error("Не вдалося змінити головне фото.");
+    } finally {
+      setSettingMainId(null);
+    }
+  };
+
   return (
     <div className={css.wrapper}>
+      {mainImageUrl && (
+        <div className={css.mainSection}>
+          <p className={css.label}>Головне фото</p>
+          <div className={css.mainImgWrap}>
+            <Image
+              src={mainImageUrl}
+              alt="Головне фото"
+              fill
+              className={css.mainImg}
+              unoptimized
+            />
+          </div>
+        </div>
+      )}
+
       <p className={css.label}>
         Додаткові фото{" "}
         <span className={css.counter}>
@@ -93,11 +131,22 @@ export default function LocationPhotos({ locationId, initialPhotos }: Props) {
                   unoptimized
                 />
               </div>
+              {onSetMain && (
+                <button
+                  type="button"
+                  className={css.setMainBtn}
+                  onClick={() => handleSetMain(photo)}
+                  disabled={settingMainId === photo._id}
+                  title="Зробити головним"
+                >
+                  {settingMainId === photo._id ? "…" : "★"}
+                </button>
+              )}
               <button
                 type="button"
                 className={css.deleteBtn}
                 onClick={() => handleDelete(photo._id)}
-                disabled={deletingId === photo._id}
+                disabled={deletingId === photo._id || settingMainId === photo._id}
                 aria-label="Видалити фото"
               >
                 {deletingId === photo._id ? "…" : "✕"}
@@ -105,6 +154,10 @@ export default function LocationPhotos({ locationId, initialPhotos }: Props) {
             </li>
           ))}
         </ul>
+      )}
+
+      {onSetMain && photos.length > 0 && (
+        <p className={css.hint}>Натисніть ★ на фото, щоб зробити його головним</p>
       )}
 
       <input

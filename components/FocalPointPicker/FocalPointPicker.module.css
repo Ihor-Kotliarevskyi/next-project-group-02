@@ -1,0 +1,112 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hint {
+  font-size: 13px;
+  color: var(--color-text-warm-muted);
+  line-height: 1.4;
+}
+
+/* ── Picker container ────────────────────────────────────────────── */
+.container {
+  position: relative;
+  width: 100%;
+  height: 260px;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: crosshair;
+  background-size: cover;
+  background-repeat: no-repeat;
+  user-select: none;
+  touch-action: none;
+}
+
+/* ── Subtle base overlay (makes crosshair visible on bright images) */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Detail-page frame (760 : 580 ≈ 1.31 : 1) ────────────────────
+   box-shadow with huge spread dims everything OUTSIDE the frame.
+   The frame itself stays clear (no fill), so the image inside is
+   barely dimmed (only the .overlay above).
+────────────────────────────────────────────────────────────────── */
+.detailFrame {
+  position: absolute;
+  /* maintain 760:580 ratio, fit inside the container */
+  aspect-ratio: 760 / 580;
+  max-width: 100%;
+  max-height: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  border: 2px dashed rgba(255, 255, 255, 0.85);
+  border-radius: 4px;
+  /* dims the area OUTSIDE the frame */
+  box-shadow: 0 0 0 1200px rgba(0, 0, 0, 0.38);
+
+  pointer-events: none;
+  z-index: 2;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.frameLabel {
+  display: inline-block;
+  margin: 6px;
+  padding: 2px 7px;
+  background: rgba(0, 0, 0, 0.5);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 3px;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+
+/* ── Crosshair lines ─────────────────────────────────────────────── */
+.crossH,
+.crossV {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.crossH {
+  left: 0;
+  right: 0;
+  height: 1px;
+  transform: translateY(-50%);
+}
+
+.crossV {
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  transform: translateX(-50%);
+}
+
+/* ── Focal point dot ─────────────────────────────────────────────── */
+.dot {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid var(--color-button-primary, #1d241d);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.35);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 4;
+}

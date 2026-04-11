@@ -21,6 +21,7 @@ type LocationPhoto = {
 type LocationDetails = {
   _id: string;
   image: string;
+  imagePosition?: string;
   name: string;
   locationType: string | { type: string; slug: string };
   region: string;

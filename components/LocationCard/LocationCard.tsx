@@ -26,6 +26,7 @@ type LocationCardProps = Pick<
   Location,
   "_id" | "image" | "name" | "locationType" | "rate"
 > & {
+  imagePosition?: string;
   isEditable?: boolean;
   onDelete?: (id: string, name: string) => void;
 };
@@ -36,6 +37,7 @@ export default function LocationCard({
   name,
   locationType,
   rate,
+  imagePosition,
   isEditable,
   onDelete,
 }: LocationCardProps) {
@@ -51,6 +53,7 @@ export default function LocationCard({
           fill
           sizes="(min-width: 1440px) 389px, (min-width: 768px) calc((100vw - 88px) / 2), 100vw"
           className={styles.image}
+          style={imagePosition ? { objectPosition: imagePosition } : undefined}
         />
       </div>
       <div className={styles.content}>

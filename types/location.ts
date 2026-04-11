@@ -8,6 +8,7 @@ export type Location = {
   _id: string;
   image: string;
   imagePublicId?: string;
+  imagePosition?: string;
   name: string;
   locationType: string;
   region: string;
