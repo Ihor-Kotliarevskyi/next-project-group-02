@@ -5,6 +5,28 @@ const clientApi = axios.create({
   withCredentials: true,
 });
 
+clientApi.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      originalRequest.url !== "/auth/login" &&
+      originalRequest.url !== "/auth/session"
+    ) {
+      originalRequest._retry = true;
+      try {
+        await axios.post("/api/auth/session");
+        return clientApi(originalRequest);
+      } catch (refreshError) {
+        return Promise.reject(refreshError);
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default clientApi;
 
 export const login = (data: { email: string; password: string }) =>

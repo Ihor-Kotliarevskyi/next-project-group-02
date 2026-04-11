@@ -42,7 +42,7 @@ function applyCookies(response: NextResponse, setCookieHeader: string): void {
   }
 }
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const accessToken = request.cookies.get("accessToken")?.value;
