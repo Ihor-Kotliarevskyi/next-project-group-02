@@ -17,7 +17,7 @@ clientApi.interceptors.response.use(
     ) {
       originalRequest._retry = true;
       try {
-        await axios.post("/api/auth/session");
+        await clientApi.post("/auth/session");
         return clientApi(originalRequest);
       } catch (refreshError) {
         return Promise.reject(refreshError);

@@ -77,11 +77,9 @@ export default function LocationForm({
           region: values.region,
           description: values.description,
           coordinates: { lat: values.lat, lon: values.lon },
-          imagePosition,
         });
-        await queryClient.invalidateQueries({ queryKey: ["currentUser"] });
-        router.push(`/locations/${id}`);
-        router.refresh();
+        await queryClient.invalidateQueries();
+        window.location.href = `/locations/${id}`;
       } else {
         let imageUrl = "https://picsum.photos/300";
         let imagePublicId: string | undefined;
@@ -100,7 +98,6 @@ export default function LocationForm({
           coordinates: { lat: values.lat, lon: values.lon },
           image: imageUrl,
           imagePublicId,
-          imagePosition,
         });
 
         if (extraFiles.length > 0) {
@@ -115,11 +112,13 @@ export default function LocationForm({
         router.push(`/locations/${data._id}`);
         router.refresh();
       }
-    } catch {
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      const axiosDetail = JSON.stringify((error as any)?.response?.data || {});
       toast.error(
         isEdit
-          ? "Не вдалося зберегти зміни. Спробуйте ще раз."
-          : "Не вдалося створити локацію. Зареєструйтеся або увійдіть."
+          ? `Не вдалося зберегти зміни. Спробуйте ще раз. ${message} ${axiosDetail}`
+          : `Не вдалося створити локацію. ${message} ${axiosDetail}`
       );
     } finally {
       setSubmitting(false);
