@@ -11,10 +11,10 @@ type SearchBoxProps = {
 };
 
 const sortOptions = [
-  { value: "name:asc", label: "від А до Я" },
-  { value: "name:desc", label: "від Я до А" },
-  { value: "rate:desc", label: "за рейтингом" },
-  { value: "createdAt:desc", label: "новіші спочатку" },
+  { value: "name:asc", label: "Від А до Я" },
+  { value: "name:desc", label: "Від Я до А" },
+  { value: "rate:desc", label: "За рейтингом" },
+  { value: "createdAt:desc", label: "Новіші спочатку" },
 ];
 
 export default function SearchBox({ regions, locationTypes }: SearchBoxProps) {
@@ -33,8 +33,8 @@ export default function SearchBox({ regions, locationTypes }: SearchBoxProps) {
   const isFirstSearchSync = useRef(true);
   const region = searchParams.get("region") ?? "";
   const selectedTypes = searchParams.getAll("locationType");
-  const sortBy = searchParams.get("sortBy") || "name";
-  const order = searchParams.get("order") || "asc";
+  const sortBy = searchParams.get("sortBy") || "rate";
+  const order = searchParams.get("order") || "desc";
 
   const currentSort = `${sortBy}:${order}`;
 
@@ -54,7 +54,6 @@ export default function SearchBox({ regions, locationTypes }: SearchBoxProps) {
     }, 300);
 
     return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchInput]);
 
   useEffect(() => {

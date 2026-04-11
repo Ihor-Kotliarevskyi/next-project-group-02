@@ -84,3 +84,13 @@ export const deleteLocation = (id: string) =>
 
 export const updateMe = (data: { name?: string; avatarUrl?: string }) =>
   clientApi.patch("/users/me", data).then((r) => r.data);
+
+export const getUsers = (params?: {
+  page?: number;
+  limit?: number;
+  sortBy?: "name" | "articlesAmount";
+  order?: "asc" | "desc";
+}) =>
+  clientApi
+    .get("/users", { params })
+    .then((r) => ({ users: r.data.data, pagination: r.data.pagination }));

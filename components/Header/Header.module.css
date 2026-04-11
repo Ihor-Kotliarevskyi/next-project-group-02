@@ -38,7 +38,7 @@
 }
 
 .navLink {
-    font-size: var(--font-size-sm);
+    font-size: 18px;
     font-weight: var(--font-weight-medium);
     color: var(--color-text-muted);
     padding: 4px 0;

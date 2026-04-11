@@ -5,4 +5,6 @@ export interface User {
   avatar: string;
   avatarUrl?: string;
   articlesAmount: number;
+  createdAt?: string;
+  updatedAt?: string;
 }

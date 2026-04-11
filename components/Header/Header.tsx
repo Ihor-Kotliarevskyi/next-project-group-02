@@ -36,6 +36,8 @@ export default function Header() {
 
   const navLinks = [
     { href: "/", label: "Головна" },
+    { href: "/locations", label: "Локації" },
+    { href: "/users", label: "Мандрівники" },
   ];
 
     const handleScrollToTop = () => {
